@@ -16,6 +16,6 @@ urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root),
 
     (r'^$', frontpage),
-    (r'^(\d{4,4})/(\d{2,2})/([-a-z]+)$', articlepage),
+    (r'^(\d{4})/(\d{2})/([-a-z]+)$', articlepage),
     (r'^tag/(.+)$', tagpage),
 )

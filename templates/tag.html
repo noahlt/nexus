@@ -1,0 +1,23 @@
+<html>
+
+<head>
+<title>Nexus: Articles tagged '{{ tag.name }}'</title>
+</head>
+
+<body>
+<p>DRAFT</p>
+
+<a href="/">home</a>
+
+<h1>{{ tag.name }}</h1>
+<ul>
+  {% for article in articles %}
+  <li><h3><a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{{ article.title }}</a></h3>
+    {{ article.snippet }}
+  </li>
+  {% endfor %}
+</ul>
+
+</body>
+
+</html>

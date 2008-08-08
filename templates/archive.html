@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+    <title>
+        {% block title %}Nexus Archives{% endblock %}
+    </title>
+    <style>
+        {% include "archives.css" %}
+    </style>
+</head>
+<body>
+    <h1>
+        {% block header %}The Nexus{% endblock %}
+    </h1>
+    <div class=navbar>
+        {% block navbar %}{% endblock %}
+    </div>
+    <div class=content>
+        {% block content %}There seems to be nothing here.{% endblock %}
+    </div>
+</body>
+</html>

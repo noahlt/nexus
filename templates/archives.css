@@ -1,0 +1,14 @@
+.preview, .page {
+    color: gray;
+    padding: 5px;
+    text-decoration: none;
+}
+
+.navbar {
+    margin: 20px;
+}
+
+.page:hover {
+    opacity: 0.5;
+    color: black;
+}

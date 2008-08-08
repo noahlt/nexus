@@ -1,0 +1,17 @@
+{% extends "archive.html" %}
+
+{% block navbar %}
+    <a href="..">Back</a>
+{% endblock %}
+
+{% block header %}
+    {{ block.super }} - Issue {{ issue.date }}
+{% endblock %}
+
+{% block content %}
+    {% for page in issue.pages.all %}
+        <a class=preview href="{{ page.get_pdf_url }}">
+            <img src="{{ page.get_thumbnail_url }}">
+        </a>
+    {% endfor %}
+{% endblock %}

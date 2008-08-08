@@ -1,0 +1,9 @@
+{% extends "archive.html" %}
+
+{% block content %}
+    {% for issue in issues %}
+        <a class=page href="{{ issue.date }}">
+            <img src="{{ issue.get_thumbnail_url }}">
+        </a>
+    {% endfor %}
+{% endblock %}

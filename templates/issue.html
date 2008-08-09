@@ -13,9 +13,11 @@
 {% endblock %}
 
 {% block content %}
-    {% for page in issue.pages.all %}
-        <a class=preview href="{{ page.get_pdf_url }}">
-            <img class=thumb src="{{ page.get_thumbnail_url }}">
-        </a>
+    {% for pdf in issue.pages.all %}
+        {% for page in pdf.pages.all %}
+            <a class=preview href="{{ page.get_pdf_url }}">
+                <img class=thumb src="{{ page.get_thumbnail_url }}">
+            </a>
+        {% endfor %}
     {% endfor %}
 {% endblock %}

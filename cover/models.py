@@ -25,7 +25,7 @@ class Tag(models.Model):
 
 class Article(models.Model):
     title = models.CharField(maxlength=50)
-    slug = models.SlugField(maxlength=20)
+    slug = models.SlugField(maxlength=20, prepopulate_from=["title"])
     snippet = models.CharField(maxlength=600)
     fulltext = models.TextField()
     date = models.DateField()

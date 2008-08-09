@@ -8,6 +8,7 @@ import os
 
 JOIN_PATH = 'cache/joins/'
 THUMBS_PATH = 'cache/thumbs/'
+BURST_PATH = 'pdf/'
 STOCK_FAILED_PAGE = settings.MEDIA_ROOT + 'stock/FAILED_PAGE.pdf'
 
 def pdf_validator(field_data, all_data):
@@ -25,6 +26,25 @@ def pdf_validator(field_data, all_data):
     elif not magic_ok and not ext_ok:
         raise ValidationError("That is not a PDF file.")
 
+def burst_pdf(input):
+    """Creates new files for all input pages and returns their relative paths."""
+    output_dir = settings.MEDIA_ROOT + BURST_PATH
+    if not exists(output_dir):
+        os.makedirs(output_dir)
+    base = basename(input)[0:-4]
+    os.system("pdftk '%s' burst output '%s+%%i.pdf'" % (input, output_dir + base))
+    os.remove("doc_data.txt")
+    results = []
+    i = 1 # go and count up what pdftk did:
+    while True:
+        path = '%s+%i.pdf' % (base, i)
+        if exists(output_dir + path):
+            results.append(BURST_PATH + path)
+        else:
+            break
+        i += 1
+    return results
+
 # it takes only a few seconds to join hundreds of pages
 def joined_pdfs(inputs):
     """Returns url to cached union of the inputs, generating one if not available.
@@ -37,7 +57,7 @@ def joined_pdfs(inputs):
     inputs = "'" + "' '".join(inputs) + "'"
     if not exists(dirname(output)):
         os.makedirs(dirname(output))
-    os.system('pdftk %s cat output %s' % (inputs, output))
+    os.system("pdftk %s cat output %s" % (inputs, output))
     return url
 
 # Warning: This is very slow. Do not ever feed it multi-page pdfs.

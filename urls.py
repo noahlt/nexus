@@ -23,7 +23,10 @@ urlpatterns = patterns('',
     # I hope no one's using it after 2999
     (r'^archive/(\d{4}-\d{2}-\d{2})/$', page_gallery),
     (r'^tag/(.+)$/', tagpage),
+)
 
     # Do not use in production!
-    (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-)
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    )

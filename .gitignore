@@ -4,4 +4,5 @@
 *.DS_Store
 *.db
 .hidden
-/media
+/media/cache
+/media/pdf

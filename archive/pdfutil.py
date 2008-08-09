@@ -6,6 +6,10 @@ from os.path import basename, dirname, exists
 from django.core.validators import ValidationError
 import os
 
+JOIN_PATH = 'cache/joins/'
+THUMBS_PATH = 'cache/thumbs/'
+STOCK_FAILED_PAGE = settings.MEDIA_ROOT + 'stock/FAILED_PAGE.pdf'
+
 def pdf_validator(field_data, all_data):
     try:
         magic_ok = field_data['content'].startswith('%PDF')
@@ -23,27 +27,18 @@ def pdf_validator(field_data, all_data):
 
 # it takes only a few seconds to join hundreds of pages
 def joined_pdfs(inputs):
-    """Returns url to cached union of the inputs, generating one if not available."""
-    path = 'joins/' + '%i.pdf' % abs(tuple(inputs).__hash__())
+    """Returns url to cached union of the inputs, generating one if not available.
+    Takes an absolute path to pdf as inputs."""
+    path = JOIN_PATH + '%i.pdf' % abs(hash(tuple(inputs)))
     output = settings.MEDIA_ROOT + path
-    inputs = "'" + "' '".join([settings.MEDIA_ROOT + i for i in inputs]) + "'"
+    url = settings.MEDIA_URL + path
+    if exists(output):
+        return url
+    inputs = "'" + "' '".join(inputs) + "'"
     if not exists(dirname(output)):
-        os.mkdir(dirname(output))
-    if not exists(output):
-        os.system('pdftk %s cat output %s' % (inputs, output))
-    return settings.MEDIA_URL + path
-
-def pdf_to_thumbnail(input, size):
-    """Returns url to cached thumbnail, generating one if not available."""
-    input = settings.MEDIA_ROOT + input
-    suffix = '@%i.png' % size
-    path = 'thumbs/' + basename(input[0:-4] + suffix)
-    output = settings.MEDIA_ROOT + path
-    if not exists(dirname(output)):
-        os.mkdir(dirname(output))
-    if not exists(output):
-        __evince_t(input, output, size) or __imagemagick_t(input, output, size)
-    return settings.MEDIA_URL + path
+        os.makedirs(dirname(output))
+    os.system('pdftk %s cat output %s' % (inputs, output))
+    return url
 
 # Warning: This is very slow. Do not ever feed it multi-page pdfs.
 def __imagemagick_t(input, output, size):
@@ -62,3 +57,21 @@ def __evince_t(input, output, size):
     image.thumbnail((size,size), Image.ANTIALIAS)
     image.save(output, "PNG")
     return True
+
+def pdf_to_thumbnail(input, size, abort=False):
+    """Returns url to cached thumbnail, generating one if not available.
+    Takes an absolute path to a pdf as input."""
+    suffix = '@%i.png' % size
+    path = THUMBS_PATH + basename(input[0:-4] + suffix)
+    output = settings.MEDIA_ROOT + path
+    url = settings.MEDIA_URL + path
+    if exists(output):
+        return url
+    if not exists(dirname(output)):
+        os.makedirs(dirname(output))
+    try:
+        __evince_t(input, output, size) or __imagemagick_t(input, output, size)
+    except Exception:
+        if not abort:
+            return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, True)
+    return url

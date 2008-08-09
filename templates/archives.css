@@ -6,5 +6,25 @@
 }
 
 .navbar {
-    margin: 20px;
+    margin: 2em;
+}
+
+.content {
+	margin: 0em 1em 2em 1em;
+}
+
+.thumb {
+	text-decoration: none;
+	margin: 0em .5em 2em .5em;
+	underline: none;
+	border: solid 1px;
+}
+
+.link {
+	color: #305cb6;
+	text-decoration: none;
+}
+
+.link:hover {
+	border-bottom: 1px solid #305cb6;
 }

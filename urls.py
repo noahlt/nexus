@@ -4,7 +4,7 @@ from archive.views import issue_gallery, page_gallery
 from nexus import settings
 
 # Uncomment the next two lines to enable the admin:
-from django.contrib import admin
+#from django.contrib import admin
 #admin.autodiscover()
 
 urlpatterns = patterns('',

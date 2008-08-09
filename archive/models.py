@@ -1,5 +1,5 @@
 from django.db import models
-from pdfutil import pdf_to_thumbnail, pdf_validator
+from pdfutil import pdf_to_thumbnail, pdf_validator, joined_pdfs
 from os.path import basename
 
 class Page(models.Model):
@@ -24,9 +24,11 @@ class Issue(models.Model):
     date = models.DateField()
     pages = models.ManyToManyField(Page)
 
-    # first page might change
     def get_thumbnail_url(self):
         return pdf_to_thumbnail(self.pages.all()[0].pdf, 256)
+
+    def get_join_url(self):
+        return joined_pdfs([page.pdf for page in self.pages.all()])
 
     def __str__(self):
         return "%s" % self.date

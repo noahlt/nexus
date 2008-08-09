@@ -1,5 +1,9 @@
 {% extends "archive.html" %}
 
+{% block navbar %}
+Click on a thumbnail to view its contents.
+{% endblock %}
+
 {% block content %}
     {% for issue in issues %}
         <a class=page href="{{ issue.date }}">

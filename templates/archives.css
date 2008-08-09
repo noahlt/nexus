@@ -2,6 +2,7 @@
     color: gray;
     padding: 5px;
     text-decoration: none;
+	outline: none;
 }
 
 .navbar {

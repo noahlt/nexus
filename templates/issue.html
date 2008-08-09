@@ -1,11 +1,15 @@
 {% extends "archive.html" %}
 
-{% block navbar %}
-    <a href="..">Back</a>
+{% block header %}
+    The Nexus - Issue {{ issue.date }}
 {% endblock %}
 
-{% block header %}
-    {{ block.super }} - Issue {{ issue.date }}
+{% block navbar %}
+    <a href="..">Archive Home</a>
+	<br><br>
+	Click on a preview to download the page, or
+	<a href="{{ issue.get_join_url }}">here</a>
+	to grab the complete set.
 {% endblock %}
 
 {% block content %}

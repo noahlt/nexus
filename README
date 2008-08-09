@@ -1,5 +1,5 @@
 Dependencies:
-	python-django >= 1.0
+	python-django = 0.96
 	python-pysqlite2 
 	python-imaging (PIL)
 	python-magic OR evince

@@ -7,8 +7,3 @@
 .navbar {
     margin: 20px;
 }
-
-.page:hover {
-    opacity: 0.5;
-    color: black;
-}

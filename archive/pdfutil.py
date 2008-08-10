@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import PythonMagick
 import Image
 from nexus import settings
 from os.path import basename, dirname, exists
@@ -61,22 +60,20 @@ def joined_pdfs(inputs):
     return url
 
 # Warning: This is very slow. Do not ever feed it multi-page pdfs.
-def __imagemagick_t(input, output, size):
+def __imagemagick(input, output, size):
     """Imagemagick backend for thumbnailing a PDF."""
+    import PythonMagick
     pdf = PythonMagick.Image(input)
     scale = size / float(max(pdf.height(), pdf.width()))
     pdf.scale('%ix%i' % (pdf.size().width()*scale, pdf.size().height()*scale))
     pdf.write(output)
-    return True
 
-def __evince_t(input, output, size):
+def __evince(input, output, size):
     """Evince backend for thumbnailing a PDF."""
-    if os.system("evince-thumbnailer -s %i '%s' '%s'" % (size,input,output)):
-        return False
+    assert os.system("evince-thumbnailer -s %i '%s' '%s'" % (size,input,output)) == 0
     image = Image.open(output) # resize AGAIN to produce consistent sizes
     image.thumbnail((size,size), Image.ANTIALIAS)
     image.save(output, 'PNG')
-    return True
 
 def pdf_to_thumbnail(input, size, abort=False):
     """Returns url to cached thumbnail, generating one if not available.
@@ -90,7 +87,9 @@ def pdf_to_thumbnail(input, size, abort=False):
     if not exists(dirname(output)):
         os.makedirs(dirname(output))
     try:
-        __evince_t(input, output, size) or __imagemagick_t(input, output, size)
+        __evince(input, output, size)
+    except AssertionError:
+        __imagemagick(input, output, size)
     except Exception:
         if not abort:
             return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, True)

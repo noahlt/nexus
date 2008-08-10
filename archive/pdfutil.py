@@ -71,11 +71,11 @@ def __imagemagick_t(input, output, size):
 
 def __evince_t(input, output, size):
     """Evince backend for thumbnailing a PDF."""
-    if os.system("evince-thumbnailer -s %i %s %s" % (size,input,output)):
+    if os.system("evince-thumbnailer -s %i '%s' '%s'" % (size,input,output)):
         return False
     image = Image.open(output) # resize AGAIN to produce consistent sizes
     image.thumbnail((size,size), Image.ANTIALIAS)
-    image.save(output, "PNG")
+    image.save(output, 'PNG')
     return True
 
 def pdf_to_thumbnail(input, size, abort=False):

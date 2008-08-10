@@ -1,0 +1,23 @@
+{% extends "archive.html" %}
+
+{% block header %}
+    The Nexus - Issue {{ issue.date }}
+{% endblock %}
+
+{% block navbar %}
+    <a class=link href="..">Archive Home</a>
+	<br><br>
+	Click below to download a page or
+	<a class=link href="{{ issue.get_join_url }}">here</a>
+	to grab the complete set.
+{% endblock %}
+
+{% block content %}
+    {% for pdf in issue.pages.all %}
+        {% for page in pdf.pages.all %}
+            <a class=preview href="{{ page.get_pdf_url }}">
+                <img class=thumb src="{{ page.get_thumbnail_url }}">
+            </a>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}

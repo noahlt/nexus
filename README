@@ -1,0 +1,6 @@
+Dependencies:
+	python-django = 0.96
+	python-pysqlite2 
+	python-imaging (PIL)
+	evince OR python-magic (not recommended)
+	pdftk (for combining pdfs)

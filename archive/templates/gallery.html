@@ -1,0 +1,15 @@
+{% extends "archive.html" %}
+
+{% block navbar %}
+<a class=link href="..">Nexus Home</a>
+<br><br>
+Click below to see what's behind these front pages.
+{% endblock %}
+
+{% block content %}
+    {% for issue in issues %}
+        <a class=page href="{{ issue.date }}">
+            <img class=thumb src="{{ issue.get_thumbnail_url }}">
+        </a>
+    {% endfor %}
+{% endblock %}

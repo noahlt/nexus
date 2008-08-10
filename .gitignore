@@ -2,3 +2,7 @@
 \#*#
 *~
 *.DS_Store
+*.db
+.hidden
+/media/cache
+/media/pdf

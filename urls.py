@@ -1,9 +1,11 @@
 from django.conf.urls.defaults import *
 from cover.views import frontpage, articlepage, tagpage
+from archive.views import issue_gallery, page_gallery
+from nexus import settings
 
 # Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
+#from django.contrib import admin
+#admin.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
@@ -13,9 +15,18 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line for to enable the admin:
-    (r'^admin/(.*)', admin.site.root),
+    (r'^admin/', include('django.contrib.admin.urls')),
 
     (r'^$', frontpage),
-    (r'^(\d{4,4})/(\d{2,2})/([-a-z]+)$', articlepage),
-    (r'^tag/(.+)$', tagpage),
+    (r'^(\d{4})/(\d{2})/([-_a-z0-9]+)/$', articlepage),
+    (r'^archive/$', issue_gallery),
+    # I hope no one's using it after 2999
+    (r'^archive/(\d{4}-\d{2}-\d{2})/$', page_gallery),
+    (r'^tag/(.+)$/', tagpage),
 )
+
+    # Do not use in production!
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    )

@@ -2,7 +2,6 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 from nexus import settings
-from os import remove
 from os.path import basename
 from pdfutil import *
 
@@ -17,13 +16,6 @@ class SinglePage(models.Model):
     def save(self):
         super(SinglePage, self).save()
         self.calculate_thumbnail_url() 
-
-    def delete(self):
-        try:
-            remove(self.pdf.path)
-        except:
-            pass
-        super(SinglePage, self).delete()
 
     def calculate_thumbnail_url(self):
         return pdf_to_thumbnail(self.pdf.path, 512)
@@ -43,8 +35,14 @@ class PDF(models.Model):
 
     def delete(self):
         for page in self.pages.all():
-            page.delete()
-        super(PDF, self).delete()
+            try:
+                page.delete()
+            except IOError:
+                pass
+        try:
+            super(PDF, self).delete()
+        except IOError:
+            pass
 
     def calculate_thumbnail_url(self):
         return self.pages.all()[0].calculate_thumbnail_url()

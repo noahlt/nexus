@@ -9,7 +9,7 @@ Click below to see what's behind these front pages.
 {% block content %}
     {% for issue in issues %}
         <a class=page href="{{ issue.date }}">
-            <img class=thumb src="{{ issue.get_thumbnail_url }}">
+            <img class=thumb src="{{ issue.calculate_thumbnail_url }}">
         </a>
     {% endfor %}
 {% endblock %}

@@ -1,10 +1,11 @@
 from django.db import models
+from django.contrib import admin
 
 # Create your models here.
 
 class Author(models.Model):
-    first_name = models.CharField(maxlength=30)
-    last_name  = models.CharField(maxlength=40)
+    first_name = models.CharField(max_length=30)
+    last_name  = models.CharField(max_length=40)
     year = models.PositiveSmallIntegerField()
 
     def __str__(self):
@@ -14,7 +15,7 @@ class Author(models.Model):
         pass
     
 class Tag(models.Model):
-    name = models.CharField(maxlength = 30)
+    name = models.CharField(max_length = 30)
 
     def __str__(self):
         return self.name
@@ -24,9 +25,9 @@ class Tag(models.Model):
 
 
 class Article(models.Model):
-    title = models.CharField(maxlength=50)
-    slug = models.SlugField(maxlength=20, prepopulate_from=["title"])
-    snippet = models.CharField(maxlength=600)
+    title = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=20)
+    snippet = models.CharField(max_length=600)
     fulltext = models.TextField()
     date = models.DateField()
     authors = models.ManyToManyField(Author)
@@ -41,3 +42,6 @@ class Article(models.Model):
 
     class Admin:
         pass
+
+class ArticleAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('title',)}

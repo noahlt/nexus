@@ -3,7 +3,7 @@ import PythonMagick
 import Image
 from nexus import settings
 from os.path import basename, dirname, exists
-from django.core.validators import ValidationError
+from django.forms import ValidationError
 import os
 
 JOIN_PATH = 'cache/joins/'
@@ -11,12 +11,12 @@ THUMBS_PATH = 'cache/thumbs/'
 BURST_PATH = 'pdf/'
 STOCK_FAILED_PAGE = settings.MEDIA_ROOT + 'stock/FAILED_PAGE.pdf'
 
-def pdf_validator(field_data, all_data):
+def validate_pdf(in_memory_uploaded_file):
+    ext_ok = in_memory_uploaded_file['filename'].endswith('.pdf')
     try:
-        magic_ok = field_data['content'].startswith('%PDF')
-        ext_ok = field_data['filename'].endswith('.pdf')
+        magic_ok = in_memory_uploaded_file['content'].startswith('%PDF')
     except Exception:
-        if not field_data.endswith('.pdf'):
+        if not ext_ok:
             raise ValidationError("That is not a PDF file.")
         return
     if magic_ok and not ext_ok:

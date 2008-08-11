@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.db import models
+from os.path import basename
 from pdfutil import *
 
 class Page(models.Model):
@@ -15,7 +16,7 @@ class Page(models.Model):
         return pdf_to_thumbnail(self.pdf.path, 512)
 
     def __str__(self):
-        return "%s" % self.pdf
+        return "%s" % basename(self.pdf.path)
 
 class PDF(models.Model):
     order = models.IntegerField()
@@ -31,11 +32,8 @@ class PDF(models.Model):
             s.save()
             self.page_set.add(s)
 
-    def calculate_thumbnail_url(self):
-        return self.page_set.all()[0].calculate_thumbnail_url()
-
     def __str__(self):
-        return "%i : %s" % (self.order, self.pdf)
+        return "%s" % basename(self.pdf.path)
 
     class Meta:
         ordering = ['order']
@@ -50,7 +48,7 @@ class PDFInline(admin.TabularInline):
     form = PDFAdminForm
 
 class IssueAdminForm(forms.ModelForm):
-    # XXX manual validateion since unique=True doesn't work with inlined forms
+    # XXX manual validation since unique=True doesn't work with inlined forms
     def clean_date(self):
         if 'date' not in self.changed_data:
             return self.cleaned_data['date']
@@ -69,7 +67,7 @@ class Issue(models.Model):
 
     def calculate_thumbnail_url(self):
         try:
-            return pdf_to_thumbnail(self.pdf_set.all()[0].pdf.path, 256)
+            return pdf_to_thumbnail(self.pdf_set.all()[0].page_set.all()[0].pdf.path, 256)
         except IndexError: # someone deleted all the pages
             return pdf_to_thumbnail(STOCK_EMPTY_ISSUE, 256)
 

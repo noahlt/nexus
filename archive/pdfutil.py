@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import Image
 from nexus import settings
 from os.path import basename, dirname, exists
@@ -9,6 +8,33 @@ JOIN_PATH = 'cache/joins/'
 THUMBS_PATH = 'cache/thumbs/'
 BURST_PATH = 'pdf/'
 STOCK_FAILED_PAGE = settings.MEDIA_ROOT + 'stock/FAILED_PAGE.pdf'
+FAILED_PAGE_URL = settings.MEDIA_URL + 'stock/EMPTY_ISSUE.pdf'
+
+# This is only 2-3x slower than evince for short pdfs.
+# However, do not ***EVER*** feed it multi-page pdfs if you fear the OOM killer.
+def __imagemagick_thumbnailer(input, output, size):
+    """Imagemagick backend for thumbnailing a PDF."""
+    input, output = input.encode(), output.encode() # c++ signatures hate unicode
+    import PythonMagick
+    pdf = PythonMagick.Image(input)
+    scale = size / float(max(pdf.size().height(), pdf.size().width()))
+    pdf.scale('%ix%i' % (pdf.size().width()*scale, pdf.size().height()*scale))
+    pdf.write(output)
+
+def __evince_thumbnailer(input, output, size):
+    """Evince backend for thumbnailing a PDF."""
+    os.system("evince-thumbnailer -s %i '%s' '%s'" % (size,input,output))
+    image = Image.open(output) # resize AGAIN to produce consistent sizes
+    image.thumbnail((size,size), Image.ANTIALIAS)
+    image.save(output, 'PNG')
+
+try:
+    if exists('/usr/bin/evince-thumbnailer'):
+        __thumbnail_backend = __evince_thumbnailer
+    else:
+        __thumbnail_backend = __imagemagick_thumbnailer
+except:
+    __thumbnail_backend = __imagemagick_thumbnailer
 
 def validate_pdf(in_memory_uploaded_file):
     ext_ok = in_memory_uploaded_file.name.endswith('.pdf')
@@ -45,7 +71,7 @@ def burst_pdf(input):
     if i == 2: # well, that was pointless
         path = '%s+%i.pdf' % (base, 1)
         os.remove(output_dir + path)
-        return [input]
+        return [BURST_PATH + basename(input)]
     return results
 
 # it takes only a few seconds to join hundreds of pages
@@ -60,28 +86,20 @@ def joined_pdfs(inputs):
     inputs = "'" + "' '".join(inputs) + "'"
     if not exists(dirname(output)):
         os.makedirs(dirname(output))
-    os.system("pdftk %s cat output %s" % (inputs, output))
+    try:
+        os.system("pdftk %s cat output %s" % (inputs, output))
+    except:
+        return FAILED_PAGE_URL
+    else:
+        if not exists(output):
+            return FAILED_PAGE_URL
     return url
 
-# Warning: This is very slow. Do not ever feed it multi-page pdfs.
-def __imagemagick(input, output, size):
-    """Imagemagick backend for thumbnailing a PDF."""
-    import PythonMagick
-    pdf = PythonMagick.Image(input)
-    scale = size / float(max(pdf.height(), pdf.width()))
-    pdf.scale('%ix%i' % (pdf.size().width()*scale, pdf.size().height()*scale))
-    pdf.write(output)
 
-def __evince(input, output, size):
-    """Evince backend for thumbnailing a PDF."""
-    assert os.system("evince-thumbnailer -s %i '%s' '%s'" % (size,input,output)) == 0
-    image = Image.open(output) # resize AGAIN to produce consistent sizes
-    image.thumbnail((size,size), Image.ANTIALIAS)
-    image.save(output, 'PNG')
-
-def pdf_to_thumbnail(input, size, abort=False):
+def pdf_to_thumbnail(input, size, abort_on_error=False):
     """Returns url to cached thumbnail, generating one if not available.
-    Takes an absolute path to a pdf as input."""
+    Takes an absolute path to a pdf as input.
+    Tries very hard to return something sane."""
     suffix = '@%i.png' % size
     path = THUMBS_PATH + basename(input[0:-4] + suffix)
     output = settings.MEDIA_ROOT + path
@@ -91,10 +109,11 @@ def pdf_to_thumbnail(input, size, abort=False):
     if not exists(dirname(output)):
         os.makedirs(dirname(output))
     try:
-        __evince(input, output, size)
-    except AssertionError:
-        __imagemagick(input, output, size)
-    except Exception:
-        if not abort:
+        __thumbnail_backend(input, output, size)
+    except:
+        if not abort_on_error:
+            return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, True)
+    else:
+        if not exists(output) and not abort_on_error:
             return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, True)
     return url

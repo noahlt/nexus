@@ -1,3 +1,4 @@
+{% load webdesign %}
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
 <title>Nexus</title>
@@ -92,20 +93,22 @@ $(document).ready(function() {
   <a id="toggleprint" class="controllink" href="#">collapse &uarr;</a>
   <h2>From the Print Edition</h2>
   <ul>
-  <li><h3><a href="#">Lorem ipsum</a></h3><p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Mauris mi diam, ornare non, consectetuer sed, congue eu, nisi. Proin tincidunt. Maecenas dictum lorem. Fusce non tortor ac dui porttitor tempor.</p></li>
+  <li><h3><a href="#">{% lorem 4 w random %}</a></h3>
+    {% lorem 1 p random %}
+  </li>
 
-  <li><h3><a href="#">Suspendisse sollicitudin euismod mauris</a></h3>
-  <p>Morbi rhoncus, tortor eu tincidunt cursus, lacus lorem viverra velit, sit amet pulvinar nibh est at ante. Maecenas congue, magna id faucibus cursus, felis urna pulvinar eros, sed sollicitudin lectus nibh nec dolor. Pellentesque tincidunt molestie pede.</p></li>
+  <li><h3><a href="#">{% lorem 2 w random %}</a></h3>
+    {% lorem 1 p random %}
+  </li>
 
-  <li><h3><a href="#">Quisque posuere</a></h3>
-  <p>Nullam vel dui nec nulla tempor condimentum. Sed sit amet pede ac ipsum tempor pellentesque. Sed facilisis metus sed nunc. Sed dictum, lorem in tempor auctor, libero libero aliquam justo, non pellentesque felis justo sed pede. Donec leo mi, luctus bibendum, nunc.</p></li>
+  <li><h3><a href="#">{% lorem 2 w random %}</a></h3>
+    {% lorem 1 p random %}
+  </li>
 
-  <li><h3><a href="#">Nulla malesuada</a></h3>
-  <p>Sed imperdiet ligula sed sem. Nullam urna purus, ultrices at, convallis in, malesuada id, est. Sed rutrum tincidunt velit. Pellentesque vel ipsum. Quisque dui arcu, ultrices gravida, vulputate vitae, tempor non, tortor.</p></li>
-
-  <li><h3><a href="#">Vivamus erat</a></h3>
-  <p>Curabitur lorem urna, cursus eget, pellentesque non, imperdiet sed, augue. Cras molestie lacus in nulla. Donec facilisis. Sed blandit porttitor magna. Donec ut neque quis sem blandit tincidunt.</p></li>
-</ul>
+  <li><h3><a href="#">{% lorem 3 w random %}</a></h3>
+    {% lorem 1 p random %}
+  </li>
+  </ul>
 
 <div id="printnav">
   <a class="controllink" href="#">more articles from this issue</a> | 

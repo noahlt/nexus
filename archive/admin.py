@@ -1,5 +1,5 @@
 from archive.models import *
 from django.contrib import admin
 
-admin.site.register(PDF, PDFAdmin)
-admin.site.register(Issue)
+admin.site.register(Issue, IssueAdmin)
+admin.site.register(PDF)

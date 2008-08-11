@@ -6,8 +6,9 @@ import os
 
 JOIN_PATH = 'cache/joins/'
 THUMBS_PATH = 'cache/thumbs/'
-BURST_PATH = 'pdf/'
+PDF_PATH = 'pdf/'
 STOCK_FAILED_PAGE = settings.MEDIA_ROOT + 'stock/FAILED_PAGE.pdf'
+STOCK_EMPTY_ISSUE = settings.MEDIA_ROOT + 'stock/EMPTY_ISSUE.pdf'
 FAILED_PAGE_URL = settings.MEDIA_URL + 'stock/EMPTY_ISSUE.pdf'
 
 # This is only 2-3x slower than evince for short pdfs.
@@ -53,25 +54,33 @@ def validate_pdf(in_memory_uploaded_file):
 
 def burst_pdf(input):
     """Creates new files for all input pages and returns their relative paths."""
-    output_dir = settings.MEDIA_ROOT + BURST_PATH
+    output_dir = settings.MEDIA_ROOT + PDF_PATH
     if not exists(output_dir):
         os.makedirs(output_dir)
     base = basename(input)[0:-4]
     os.system("pdftk '%s' burst output '%s+%%i.pdf'" % (input, output_dir + base))
-    os.remove('doc_data.txt')
+    try: # pdftk insists on spitting this out
+        os.remove('doc_data.txt')
+    except OSError:
+        pass
     results = []
     i = 1 # go and count up what pdftk did:
     while True:
         path = '%s+%i.pdf' % (base, i)
         if exists(output_dir + path):
-            results.append(BURST_PATH + path)
+            results.append(PDF_PATH + path)
         else:
             break
         i += 1
-    if i == 2: # well, that was pointless
-        path = '%s+%i.pdf' % (base, 1)
-        os.remove(output_dir + path)
-        return [BURST_PATH + basename(input)]
+## FIXME: breaks related fields autodeletion (custom delete()'s aren't called,
+##        so you get IOErrors when it tries to delete the missing underlying file.
+#    if i <= 2: # well, that was pointless
+#        path = '%s+%i.pdf' % (base, 1)
+#        try:
+#            os.remove(output_dir + path)
+#        except:
+#            pass
+#        return [PDF_PATH + basename(input)]
     return results
 
 # it takes only a few seconds to join hundreds of pages
@@ -94,7 +103,6 @@ def joined_pdfs(inputs):
         if not exists(output):
             return FAILED_PAGE_URL
     return url
-
 
 def pdf_to_thumbnail(input, size, abort_on_error=False):
     """Returns url to cached thumbnail, generating one if not available.

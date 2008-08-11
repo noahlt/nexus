@@ -67,6 +67,9 @@ $(document).ready(function() {
         $("#results li")
           .not("."+tagslug)
           .show("fast");
+        if (!$("#tags li").hasClass("activetag")) {
+          $("#tags #alltags").addClass("activetag");
+        }
       }
      });
 

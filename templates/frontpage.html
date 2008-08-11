@@ -31,6 +31,10 @@ a:hover {
   text-align: center;
 }
 
+.activetag {
+  background-color: gray;
+}
+
 </style>
 </head>
 
@@ -47,6 +51,24 @@ $(document).ready(function() {
       $("#print p").show("fast");
     }
   });
+
+  $("#tags li").click(function() {
+    tagslug = $(this).attr("className").split(" ")[1];
+    $(this).toggleClass("activetag");
+    if ($(this).hasClass("activetag")) {
+      $("#results li")
+        .not("."+tagslug)
+        .hide("fast");
+    } else {
+      $("#results li")
+        .not("."+tagslug)
+        .show("fast");
+    }
+  });
+
+  $("#tags li a").click(function(event) {
+    event.preventDefault();
+  });
 });
 </script>
 
@@ -61,7 +83,7 @@ $(document).ready(function() {
   <a id="toggleprint" class="controllink" href="#">collapse &uarr;</a>
   <h2>From the Print Edition</h2>
   <ul>
-  <li><h3><a href="#">Lorem ipsum</a></h3><p>Lorem ipsum dolor sit amet, consectetuer     adipiscing elit. Mauris mi diam, ornare non, consectetuer sed, congue eu, nisi. Proin tincidunt. Maecenas dictum lorem. Fusce non tortor ac dui porttitor tempor.</p></li>
+  <li><h3><a href="#">Lorem ipsum</a></h3><p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Mauris mi diam, ornare non, consectetuer sed, congue eu, nisi. Proin tincidunt. Maecenas dictum lorem. Fusce non tortor ac dui porttitor tempor.</p></li>
 
   <li><h3><a href="#">Suspendisse sollicitudin euismod mauris</a></h3>
   <p>Morbi rhoncus, tortor eu tincidunt cursus, lacus lorem viverra velit, sit amet pulvinar nibh est at ante. Maecenas congue, magna id faucibus cursus, felis urna pulvinar eros, sed sollicitudin lectus nibh nec dolor. Pellentesque tincidunt molestie pede.</p></li>
@@ -84,9 +106,9 @@ $(document).ready(function() {
 
 <div id="grid">
   <ul id="gridtypes"><li>Articles</li><li>Blogs</li><li>Photos</li><li>Sports</li></ul>
-  <ul id="threads">
+  <ul id="tags">
     {% for tag in tags %}
-    <li class="t{{ tag.num }}"><a href="/tag/{{ tag.name }}">{{ tag.name }}</a></li>
+    <li class="t{{ tag.num }} {{ tag.slug }}"><a href="/tag/{{ tag.slug }}">{{ tag.name }}</a></li>
     {% endfor %}
   </ul>
   <ul id="dates">
@@ -121,7 +143,7 @@ $(document).ready(function() {
   </ul>
   <ul id="results">
     {% for article in articles %}
-    <li><h3><a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{{ article.title }}</a></h3>
+    <li class="{{ article.tagclasses }}"><h3><a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{{ article.title }}</a></h3>
       {{ article.snippet }}
     </li>
     {% endfor %}

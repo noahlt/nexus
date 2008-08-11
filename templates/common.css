@@ -153,17 +153,17 @@ h2 {
   text-align: center;
 }
 
-#threads, #dates {
+#tags, #dates {
   background-color: #222;
   width: 15%;
 }
 
-#threads {
+#tags {
   float: left;
   margin-left: -2em;
 }
 
-#threads li.t5 {
+#tags li.t5 {
   border-right: 5px solid #b31111;
 }
 
@@ -175,14 +175,14 @@ li.t3:hover { background-color: #89295a; }
 li.t4:hover { background-color: #36661f; }
 li.t0:hover { background-color: #575c00; }
 
-#threads li.t5 { border-right: 5px solid #b31111; }
-#threads li.t1 { border-right: 5px solid #005454; }
-#threads li.t2 { border-right: 5px solid #423584; }
-#threads li.t3 { border-right: 5px solid #89295a; }
-#threads li.t4 { border-right: 5px solid #36661f; }
-#threads li.t0 { border-right: 5px solid #575c00; }
+#tags li.t5 { border-right: 5px solid #b31111; }
+#tags li.t1 { border-right: 5px solid #005454; }
+#tags li.t2 { border-right: 5px solid #423584; }
+#tags li.t3 { border-right: 5px solid #89295a; }
+#tags li.t4 { border-right: 5px solid #36661f; }
+#tags li.t0 { border-right: 5px solid #575c00; }
 
-#threads a, #threads a:hover { color: #FFF; border: none; }
+#tags a, #tags a:hover { color: #FFF; border: none; }
 
 #dates {
   float: right;

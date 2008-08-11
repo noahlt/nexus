@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     (r'^(\d{4})/(\d{2})/([-_a-z0-9]+)/$', articlepage),
     (r'^archive/$', issue_gallery),
     (r'^archive/(\d{4}-\d{2}-\d{2})/$', page_gallery),
-    (r'^tag/(.+)$/', tagpage),
+    (r'^tag/(.+)$', tagpage),
 )
 
     # Do not use in production!

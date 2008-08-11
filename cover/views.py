@@ -14,6 +14,11 @@ def frontpage(request):
         tag.num = num % 6
         
     articles = Article.objects.all()[0:10]
+    # Article tags are stored (in slug form) as the classes of the li's that
+    # wrap articles, so the js doesn't have to look up article tags itself.
+    for article in articles:
+        article.tagclasses = ' '.join(tag.slug for tag in article.tags.all())
+
     return render_to_response('frontpage.html', locals())
 
 def articlepage(request, year, month, slug):
@@ -23,7 +28,7 @@ def articlepage(request, year, month, slug):
         raise Http404
     return HttpResponse(article.title)
 
-def tagpage(request, name):
-    tag = get_object_or_404(Tag, name=name)
+def tagpage(request, slug):
+    tag = get_object_or_404(Tag, slug=slug)
     articles = tag.article_set.all()
     return render_to_response('tag.html', locals())

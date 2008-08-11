@@ -32,6 +32,10 @@ a:hover {
   text-align: center;
 }
 
+.activetag {
+  background-color: gray;
+}
+
 </style>
 </head>
 
@@ -48,6 +52,33 @@ $(document).ready(function() {
       $("#print p").show("fast");
     }
   });
+
+  $("#tags li")
+    .not("#alltags")
+    .click(function() {
+      tagslug = $(this).attr("className").split(" ")[1];
+      $(this).toggleClass("activetag");
+      if ($(this).hasClass("activetag")) {
+        $("#results li")
+          .not("."+tagslug)
+          .hide("fast");
+        $("#tags #alltags").removeClass("activetag");
+      } else {
+        $("#results li")
+          .not("."+tagslug)
+          .show("fast");
+      }
+     });
+
+  $("#tags #alltags").click(function() {
+    $(this).addClass("activetag");
+    $("#tags li").not("#alltags").removeClass("activetag");
+    $("#results li").show("fast");
+  });
+
+  $("#tags li a").click(function(event) {
+    event.preventDefault();
+  });
 });
 </script>
 
@@ -62,10 +93,6 @@ $(document).ready(function() {
   <a id="toggleprint" class="controllink" href="#">collapse &uarr;</a>
   <h2>From the Print Edition</h2>
   <ul>
-  <li><h3><a href="#">{% lorem 2 w %}</a></h3>
-    {% lorem 1 p %}
-  </li>
-
   <li><h3><a href="#">{% lorem 4 w random %}</a></h3>
     {% lorem 1 p random %}
   </li>
@@ -81,7 +108,7 @@ $(document).ready(function() {
   <li><h3><a href="#">{% lorem 3 w random %}</a></h3>
     {% lorem 1 p random %}
   </li>
-</ul>
+  </ul>
 
 <div id="printnav">
   <a class="controllink" href="#">more articles from this issue</a> | 
@@ -91,10 +118,11 @@ $(document).ready(function() {
 
 <div id="grid">
   <ul id="gridtypes"><li>Articles</li><li>Blogs</li><li>Photos</li><li>Sports</li></ul>
-  <ul id="threads">
+  <ul id="tags">
     {% for tag in tags %}
-    <li class="t{{ tag.num }}"><a href="/tag/{{ tag.name }}">{{ tag.name }}</a></li>
+    <li class="t{{ tag.num }} {{ tag.slug }}"><a href="/tag/{{ tag.slug }}">{{ tag.name }}</a></li>
     {% endfor %}
+    <li class="activetag" id="alltags">(Show All)</li>
   </ul>
   <ul id="dates">
     <li><h3>2007-08</h3>
@@ -128,7 +156,7 @@ $(document).ready(function() {
   </ul>
   <ul id="results">
     {% for article in articles %}
-    <li><h3><a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{{ article.title }}</a></h3>
+    <li class="{{ article.tagclasses }}"><h3><a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{{ article.title }}</a></h3>
       {{ article.snippet }}
     </li>
     {% endfor %}

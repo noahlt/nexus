@@ -13,9 +13,13 @@ class Author(models.Model):
     
 class Tag(models.Model):
     name = models.CharField(max_length = 30)
+    slug = models.SlugField(max_length = 30)
 
     def __str__(self):
         return self.name
+
+class TagAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('name',)}
 
 class Article(models.Model):
     title = models.CharField(max_length=50)
@@ -35,3 +39,4 @@ class Article(models.Model):
 
 class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
+    

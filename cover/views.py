@@ -4,7 +4,11 @@ from cover.models import Article, Tag
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 
+
+
 def frontpage(request):
+    from nexus.settings import MEDIA_URL ## FIXME
+
     tags = Tag.objects.all()
     for num, tag in enumerate(tags):
         tag.num = num % 6

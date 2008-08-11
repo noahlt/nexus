@@ -105,18 +105,13 @@ h2 {
 
 #print ul {
   margin: 1em;
-  padding-bottom: 1.5em;
 }
 
-#print ul li {
-  margin-bottom: 1em;
-}
 
 #grid {
   background-color:#333333;
   margin-left:2em;
   margin-right:2em;
-  margin-top:-1em;
   padding:1em;
   overflow: show;
 }

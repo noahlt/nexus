@@ -13,8 +13,42 @@ a:hover {
   border-bottom: 1px solid #305cb6;
 }
 
+#toggleprint {
+  float: right;
+}
+
+.controllink {
+  font-size: small;
+}
+
+.controllink:hover {
+  border: 0;
+  color: darkblue; /* FIXME */
+}
+
+#printnav {
+  clear: left;
+  text-align: center;
+}
+
 </style>
 </head>
+
+<script type="text/javascript" src="{{ MEDIA_URL }}/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $("#toggleprint").click(function(event) {
+    event.preventDefault();
+    if ($(this).text()[0] == 'c') {
+      $(this).html("expand &darr;");
+      $("#print p").hide("fast");
+    } else {
+      $(this).html("collapse &uarr;");
+      $("#print p").show("fast");
+    }
+  });
+});
+</script>
 
 <body>
 <h1>The Nexus</h1>
@@ -24,9 +58,8 @@ a:hover {
 </ul>
 
 <div id="print">
-  <h2>From the Print Edition
-  (see also our <a href="archive">Archives</a>)
-  </h2>
+  <a id="toggleprint" class="controllink" href="#">collapse &uarr;</a>
+  <h2>From the Print Edition</h2>
   <ul>
   <li><h3><a href="#">Lorem ipsum</a></h3><p>Lorem ipsum dolor sit amet, consectetuer     adipiscing elit. Mauris mi diam, ornare non, consectetuer sed, congue eu, nisi. Proin tincidunt. Maecenas dictum lorem. Fusce non tortor ac dui porttitor tempor.</p></li>
 
@@ -42,6 +75,11 @@ a:hover {
   <li><h3><a href="#">Vivamus erat</a></h3>
   <p>Curabitur lorem urna, cursus eget, pellentesque non, imperdiet sed, augue. Cras molestie lacus in nulla. Donec facilisis. Sed blandit porttitor magna. Donec ut neque quis sem blandit tincidunt.</p></li>
 </ul>
+
+<div id="printnav">
+  <a class="controllink" href="#">more articles from this issue</a> | 
+  <a class="controllink" href="/archive/">see full archives</a>
+</div>
 </div>
 
 <div id="grid">

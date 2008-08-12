@@ -30,9 +30,11 @@ def tagpage(request, slug):
 @require_POST
 def more_tag(request):
     tag = Tag.objects.get(slug=request.POST['slug'])
-    articles = tag.article_set.all()[0:10]
+    have_articles = request.POST.getlist('have')
+    articles = tag.article_set.all()[0:10] #! FIXME arbitrary limit
     response = json.write([{'tagclasses': article.tagclasses.split(" "),
+                            'slug': article.slug,
                             'html':'<li class="%s"><h3><a href="%s">%s</a></h3>%s</li>' % (article.tagclasses, article.slug, article.title, article.snippet)
                             }
-                           for article in articles])
+                           for article in articles if article.slug not in have_articles])
     return HttpResponse(response, mimetype="application/json")

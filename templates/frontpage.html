@@ -42,6 +42,10 @@ a:hover {
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+  var have_articles = $("#results li h3").map(function() {
+      return $(this).attr("className");
+    }).get();
+
   $("#toggleprint").click(function(event) {
     event.preventDefault();
     if ($(this).text()[0] == 'c') {
@@ -64,9 +68,12 @@ $(document).ready(function() {
           .hide("fast");
         $("#tags #alltags").removeClass("activetag");
 
-        $.post("/ajax/more_tag", {"slug":tagslug}, function(responseData) {
+        $.post("/ajax/more_tag", {"slug":tagslug, "have":have_articles},
+          function(responseData) {
             for (var i in responseData) {
-              $("#results").append(responseData[i]['html']);
+              var article = responseData[i];
+              $("#results").append(article['html']);
+              have_articles[have_articles.length] = article['slug'];
             }
           }, "json");
 
@@ -166,7 +173,7 @@ $(document).ready(function() {
   </ul>
   <ul id="results">
     {% for article in articles %}
-    <li class="{{ article.tagclasses }}"><h3><a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{{ article.title }}</a></h3>
+    <li class="{{ article.tagclasses }}"><h3 class="{{ article.slug }}"><a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{{ article.title }}</a></h3>
       {{ article.snippet }}
     </li>
     {% endfor %}

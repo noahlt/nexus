@@ -36,6 +36,10 @@ a:hover {
   background-color: gray;
 }
 
+.notreallyactivetag {
+  background-color: #305cb6;
+}
+
 </style>
 </head>
 
@@ -66,7 +70,7 @@ $(document).ready(function() {
         $("#results li")
           .not("."+tagslug)
           .hide("fast");
-        $("#tags #alltags").removeClass("activetag");
+        $("#tags #alltags").removeClass("activetag notreallyactivetag");
 
         $.post("/ajax/more_tag", {"slug":tagslug, "have":have_articles},
           function(responseData) {
@@ -94,13 +98,13 @@ $(document).ready(function() {
             })
           .show("fast");
         if (!$("#tags li").hasClass("activetag")) {
-          $("#tags #alltags").addClass("activetag");
+          $("#tags #alltags").addClass("notreallyactivetag");
         }
       }
      });
 
   $("#tags #alltags").click(function() {
-    $(this).addClass("activetag");
+    $(this).addClass("notreallyactivetag");
     $("#tags li").not("#alltags").removeClass("activetag");
     $("#results li").show("fast");
   });
@@ -151,7 +155,7 @@ $(document).ready(function() {
     {% for tag in tags %}
     <li class="t{{ tag.num }} {{ tag.slug }}"><a href="/tag/{{ tag.slug }}">{{ tag.name }}</a></li>
     {% endfor %}
-    <li class="activetag" id="alltags">(Show All)</li>
+    <li class="notreallyactivetag" id="alltags">(Show All)</li>
   </ul>
   <ul id="dates">
     <li><h3>2007-08</h3>

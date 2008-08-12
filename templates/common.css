@@ -167,13 +167,9 @@ h2 {
   border-right: 5px solid #b31111;
 }
 
-
-li.t5:hover { background-color: #b31111; }
-li.t1:hover { background-color: #005454; }
-li.t2:hover { background-color: #423584; }
-li.t3:hover { background-color: #89295a; }
-li.t4:hover { background-color: #36661f; }
-li.t0:hover { background-color: #575c00; }
+#tags li {
+  cursor: pointer;
+}
 
 #tags li.t5 { border-right: 5px solid #b31111; }
 #tags li.t1 { border-right: 5px solid #005454; }

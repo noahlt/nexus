@@ -1,8 +1,9 @@
 import Image
 from nexus import settings
 from os.path import basename, dirname, exists
+from os import makedirs, remove, devnull
 from django.forms import ValidationError
-import os
+from subprocess import call
 
 JOIN_PATH = 'cache/joins/'
 THUMBS_PATH = 'cache/thumbs/'
@@ -24,17 +25,15 @@ def __imagemagick_thumbnailer(input, output, size):
 
 def __evince_thumbnailer(input, output, size):
     """Evince backend for thumbnailing a PDF."""
-    os.system("evince-thumbnailer -s %i '%s' '%s'" % (size,input,output))
+    call(('evince-thumbnailer', '-s', str(size), input, output))
     image = Image.open(output) # resize AGAIN to produce consistent sizes
     image.thumbnail((size,size), Image.ANTIALIAS)
     image.save(output, 'PNG')
 
 try:
-    if exists('/usr/bin/evince-thumbnailer'):
-        __thumbnail_backend = __evince_thumbnailer
-    else:
-        __thumbnail_backend = __imagemagick_thumbnailer
-except:
+    call(('evince-thumbnailer', devnull, devnull))
+    __thumbnail_backend = __evince_thumbnailer
+except OSError:
     __thumbnail_backend = __imagemagick_thumbnailer
 
 def validate_pdf(in_memory_uploaded_file):
@@ -53,14 +52,16 @@ def validate_pdf(in_memory_uploaded_file):
         raise ValidationError("That is not a PDF file.")
 
 def burst_pdf(input):
-    """Creates new files for all input pages and returns their relative paths."""
+    """Creates new files for all input pages and returns their relative paths.
+    Takes an absolute path to a pdf as input."""
     output_dir = settings.MEDIA_ROOT + PDF_PATH
     if not exists(output_dir):
-        os.makedirs(output_dir)
+        makedirs(output_dir)
     base = basename(input)[0:-4]
-    os.system("pdftk '%s' burst output '%s+%%i.pdf'" % (input, output_dir + base))
+    output_format = '%s+%%i.pdf' % (output_dir + base)
+    call(('pdftk', input, 'burst', 'output', output_format))
     try: # pdftk insists on spitting this out
-        os.remove('doc_data.txt')
+        remove('doc_data.txt')
     except OSError:
         pass
     results = []
@@ -72,15 +73,6 @@ def burst_pdf(input):
         else:
             break
         i += 1
-## FIXME: breaks related fields autodeletion (custom delete()'s aren't called,
-##        so you get IOErrors when it tries to delete the missing underlying file.
-#    if i <= 2: # well, that was pointless
-#        path = '%s+%i.pdf' % (base, 1)
-#        try:
-#            os.remove(output_dir + path)
-#        except:
-#            pass
-#        return [PDF_PATH + basename(input)]
     return results
 
 # it takes only a few seconds to join hundreds of pages
@@ -92,11 +84,10 @@ def joined_pdfs(inputs):
     url = settings.MEDIA_URL + path
     if exists(output):
         return url
-    inputs = "'" + "' '".join(inputs) + "'"
     if not exists(dirname(output)):
-        os.makedirs(dirname(output))
+        makedirs(dirname(output))
     try:
-        os.system("pdftk %s cat output %s" % (inputs, output))
+        call(['pdftk'] + inputs + ['cat', 'output', output])
     except:
         return FAILED_PAGE_URL
     else:
@@ -115,7 +106,7 @@ def pdf_to_thumbnail(input, size, abort_on_error=False):
     if exists(output):
         return url
     if not exists(dirname(output)):
-        os.makedirs(dirname(output))
+        makedirs(dirname(output))
     try:
         __thumbnail_backend(input, output, size)
     except:

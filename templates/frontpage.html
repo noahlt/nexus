@@ -60,7 +60,7 @@ $(document).ready(function() {
   $("#tags li")
     .not("#alltags")
     .click(function() {
-      tagslug = $(this).attr("className").split(" ")[1];
+      tagslug = $(this).attr("className").split(" ")[1]; /* HACK */
       $(this).toggleClass("activetag");
       if ($(this).hasClass("activetag")) {
         $("#results li")
@@ -78,8 +78,20 @@ $(document).ready(function() {
           }, "json");
 
       } else {
+        var selectedtags = $("#tags li").filter(".activetag").map(function() {
+          return $(this).attr("className").split(" ")[1]; /* HACK */
+        }).get();
+
         $("#results li")
           .not("."+tagslug)
+          .filter(function(i) {
+              for (var j in selectedtags) {
+                if (!$(this).hasClass(selectedtags[j])) {
+                  return false;
+                }
+              }
+              return true;
+            })
           .show("fast");
         if (!$("#tags li").hasClass("activetag")) {
           $("#tags #alltags").addClass("activetag");

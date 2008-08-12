@@ -4,3 +4,4 @@ Dependencies:
 	python-imaging (PIL)
 	evince OR python-magic (not recommended)
 	pdftk (for combining pdfs)
+        python-json

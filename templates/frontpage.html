@@ -39,7 +39,7 @@ a:hover {
 </style>
 </head>
 
-<script type="text/javascript" src="{{ MEDIA_URL }}/jquery.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
   $("#toggleprint").click(function(event) {
@@ -63,6 +63,13 @@ $(document).ready(function() {
           .not("."+tagslug)
           .hide("fast");
         $("#tags #alltags").removeClass("activetag");
+
+        $.post("/ajax/more_tag", {"slug":tagslug}, function(responseData) {
+            for (var i in responseData) {
+              $("#results").append(responseData[i]['html']);
+            }
+          }, "json");
+
       } else {
         $("#results li")
           .not("."+tagslug)
@@ -115,7 +122,7 @@ $(document).ready(function() {
 
 <div id="printnav">
   <a class="controllink" href="#">more articles from this issue</a> | 
-  <a class="controllink" href="/archive/">see full archives</a>
+  <a class="controllink" href="/archive/">see archive of scans</a>
 </div>
 </div>
 

@@ -76,10 +76,12 @@ def burst_pdf(input):
     return results
 
 # it takes only a few seconds to join hundreds of pages
-def joined_pdfs(inputs):
+def joined_pdfs(input_models):
     """Returns url to cached union of the inputs, generating one if not available.
-    Takes an absolute path to pdf as inputs."""
-    path = JOIN_PATH + '%i.pdf' % abs(hash(tuple(inputs)))
+    Takes a list of PDF models as input."""
+    inputs = [model.pdf.path for model in input_models]
+    sums = tuple([model.checksum for model in input_models])
+    path = JOIN_PATH + '%i.pdf' % abs(hash(sums))
     output = settings.MEDIA_ROOT + path
     url = settings.MEDIA_URL + path
     if exists(output):

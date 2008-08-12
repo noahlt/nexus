@@ -85,12 +85,12 @@ class Issue(models.Model):
             return pdf_to_thumbnail(STOCK_EMPTY_ISSUE, 256, abort_on_error=True)
 
     def calculate_join_url(self):
-        return joined_pdfs([page.pdf.path for page in self.pdf_set.all()])
+        return joined_pdfs(self.pdf_set.all())
 
     def save(self):
         super(Issue, self).save()
-        self.calculate_join_url()
         self.calculate_thumbnail_url()
+        # precalculating join_url at this point will fail
 
     def __str__(self):
         return "%s" % self.date

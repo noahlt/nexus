@@ -95,12 +95,13 @@ def joined_pdfs(inputs):
             return FAILED_PAGE_URL
     return url
 
-def pdf_to_thumbnail(input, size, abort_on_error=False):
+def pdf_to_thumbnail(input, size, checksum='', abort_on_error=False):
     """Returns url to cached thumbnail, generating one if not available.
     Takes an absolute path to a pdf as input.
     Tries very hard to return something sane."""
     suffix = '@%i.png' % size
-    path = THUMBS_PATH + basename(input[0:-4] + suffix)
+    unique_id = basename(input)[0:-4] + (('=' + checksum) if checksum else '')
+    path = THUMBS_PATH + unique_id + suffix
     output = settings.MEDIA_ROOT + path
     url = settings.MEDIA_URL + path
     if exists(output):
@@ -111,8 +112,8 @@ def pdf_to_thumbnail(input, size, abort_on_error=False):
         __thumbnail_backend(input, output, size)
     except:
         if not abort_on_error:
-            return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, True)
+            return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, abort_on_error=True)
     else:
         if not exists(output) and not abort_on_error:
-            return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, True)
+            return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, abort_on_error=True)
     return url

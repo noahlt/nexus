@@ -79,7 +79,6 @@ def burst_pdf(input):
 def joined_pdfs(input_models):
     """Returns url to cached union of the inputs, generating one if not available.
     Takes a list of PDF models as input."""
-    inputs = [model.pdf.path for model in input_models]
     sums = tuple([model.checksum for model in input_models])
     path = JOIN_PATH + '%i.pdf' % abs(hash(sums))
     output = settings.MEDIA_ROOT + path
@@ -88,6 +87,7 @@ def joined_pdfs(input_models):
         return url
     if not exists(dirname(output)):
         makedirs(dirname(output))
+    inputs = [model.pdf.path for model in input_models]
     try:
         call(['pdftk'] + inputs + ['cat', 'output', output])
     except:

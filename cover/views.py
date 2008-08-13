@@ -27,14 +27,21 @@ def tagpage(request, slug):
     articles = tag.article_set.all()
     return render_to_response('tag.html', locals())
 
+def contains(test_set, required_tags):
+    for tag in required_tags:
+        if tag not in test_set:
+            return False
+    return True
+
 @require_POST
 def more_tag(request):
     tag = Tag.objects.get(slug=request.POST['slug'])
+    selected_tags = request.POST.getlist('selected')
     have_articles = request.POST.getlist('have')
     articles = tag.article_set.all()[0:10] #! FIXME arbitrary limit
     response = json.write([{'tagclasses': article.tagclasses.split(" "),
                             'slug': article.slug,
                             'html':'<li class="%s"><h3><a href="%s">%s</a></h3>%s</li>' % (article.tagclasses, article.slug, article.title, article.snippet)
                             }
-                           for article in articles if article.slug not in have_articles])
+                           for article in articles if article.slug not in have_articles and contains([tag.slug for tag in article.tags.all()], selected_tags)])
     return HttpResponse(response, mimetype="application/json")

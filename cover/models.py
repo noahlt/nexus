@@ -38,7 +38,7 @@ class Article(models.Model):
         return ' '.join(tag.slug for tag in self.tags.all())
     
     def __str__(self):
-        return self.title
+        return self.title + ' [ ' + ' '.join(str(tag) for tag in self.tags.all()) + ' ] '
 
     class Meta:
         ordering = ['title']

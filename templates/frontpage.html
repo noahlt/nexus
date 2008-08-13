@@ -72,7 +72,11 @@ $(document).ready(function() {
           .hide("fast");
         $("#tags #alltags").removeClass("activetag notreallyactivetag");
 
-        $.post("/ajax/more_tag", {"slug":tagslug, "have":have_articles},
+        var selectedtags = $("#tags li").filter(".activetag").map(function() {
+          return $(this).attr("className").split(" ")[1]; /* HACK */
+        }).get();
+
+        $.post("/ajax/more_tag", {"slug":tagslug, "have":have_articles, "selected":selectedtags},
           function(responseData) {
             for (var i in responseData) {
               var article = responseData[i];

@@ -15,8 +15,8 @@
 {% block content %}
     {% for pdf in issue.pdf_set.all %}
         {% for page in pdf.page_set.all %}
-            <a class=preview href="{{ page.pdf.url }}">
-                <img class=thumb src="{{ page.calculate_thumbnail_url }}">
+            <a class="preview" href="{{ page.pdf.url }}">
+                <img class="thumb2" src="{{ page.calculate_thumbnail_url }}">
             </a>
         {% endfor %}
     {% endfor %}

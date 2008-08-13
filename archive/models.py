@@ -11,7 +11,7 @@ class Page(models.Model):
 
     def save(self):
         super(Page, self).save()
-        self.calculate_thumbnail_url() 
+        self.calculate_thumbnail_url()
 
     def calculate_thumbnail_url(self):
         return pdf_to_thumbnail(self.pdf.path, 512, self.parent.checksum)
@@ -21,6 +21,9 @@ class Page(models.Model):
             return "%s" % basename(self.pdf.path)
         except:
             return "[corrupted file]"
+
+    class Meta:
+        ordering = ['pdf']
 
 class PDF(models.Model):
     order = models.IntegerField()
@@ -91,4 +94,4 @@ class Issue(models.Model):
         return "%s" % self.date
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['date']

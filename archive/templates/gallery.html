@@ -7,9 +7,17 @@ Click below to see what's behind these front pages.
 {% endblock %}
 
 {% block content %}
-    {% for issue in issues %}
-        <a class=page href="{{ issue.date }}">
-            <img class=thumb src="{{ issue.calculate_thumbnail_url }}">
-        </a>
+    {% for year in years reversed %}
+        <div class="yearblock">
+            <h2 class="year">{{ year.year }}</h2>
+            {% for issue in year %}
+            <div class="thumbblock">
+                <a class="page" href="{{ issue.date }}">
+                    <img class="thumb" src="{{ issue.calculate_thumbnail_url }}">
+                </a>
+                <div class="thumbtext">{{ issue.date|date:"F j" }}</div>
+            </div>
+            {% endfor %}
+        </div>
     {% endfor %}
 {% endblock %}

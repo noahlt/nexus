@@ -58,7 +58,7 @@ def burst_pdf(input):
     if not exists(output_dir):
         makedirs(output_dir)
     base = basename(input)[0:-4]
-    output_format = '%s+%%i.pdf' % (output_dir + base)
+    output_format = '%s+%%03d.pdf' % (output_dir + base)
     call(('pdftk', input, 'burst', 'output', output_format))
     try: # pdftk insists on spitting this out
         remove('doc_data.txt')
@@ -67,7 +67,7 @@ def burst_pdf(input):
     results = []
     i = 1 # go and count up what pdftk did:
     while True:
-        path = '%s+%i.pdf' % (base, i)
+        path = '%s+%03d.pdf' % (base, i)
         if exists(output_dir + path):
             results.append(PDF_PATH + path)
         else:

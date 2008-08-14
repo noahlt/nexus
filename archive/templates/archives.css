@@ -10,14 +10,39 @@
 }
 
 .content {
-	margin: 0em 1em 2em 1em;
+	margin: 0em 1em 2em 1.5em;
 }
 
 .thumb {
+	border: solid 1px;
+}
+
+.thumb2 {
+	border: solid 1px;
+	margin: 0em .5em 2em .5em;
+}
+
+.thumbblock {
 	text-decoration: none;
 	margin: 0em .5em 2em .5em;
-	underline: none;
-	border: solid 1px;
+    float: left;
+}
+
+.thumbtext {
+    text-align: center;
+}
+
+.year {
+	color: #305cb6;
+    text-align: left;
+    display: block;
+    margin-left: 0;
+	border-bottom: 1px solid #305cb6;
+}
+
+.yearblock {
+    margin-bottom: 1em;
+    display: table-row;
 }
 
 .link {

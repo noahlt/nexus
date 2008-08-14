@@ -1,9 +1,10 @@
-*.pyc
-*.pyo
-\#*#
-*~
 *.DS_Store
 *.db
+*.pyc
+*.pyo
+*~
 .hidden
+.project
 /media/cache
 /media/pdf
+\#*#

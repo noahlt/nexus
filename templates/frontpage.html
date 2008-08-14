@@ -32,6 +32,10 @@ a:hover {
   text-align: center;
 }
 
+.count {
+    font-size: small;
+}
+
 .activetag {
   background-color: gray;
 }
@@ -43,7 +47,7 @@ a:hover {
 </style>
 </head>
 
-<script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
+<script type="text/javascript" src="{{ jquery }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
   var have_articles = $("#results li h3").map(function() {
@@ -157,7 +161,9 @@ $(document).ready(function() {
   <ul id="gridtypes"><li>Articles</li><li>Blogs</li><li>Photos</li><li>Sports</li></ul>
   <ul id="tags">
     {% for tag in tags %}
-    <li class="t{{ tag.num }} {{ tag.slug }}"><a href="/tag/{{ tag.slug }}">{{ tag.name }}</a></li>
+    <li class="t{{ tag.num }} {{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
+        {{ tag.name }} <span class="count">({{ tag.article_set.count }})</span>
+    </a></li>
     {% endfor %}
     <li class="notreallyactivetag" id="alltags">(Show All)</li>
   </ul>

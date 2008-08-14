@@ -1,15 +1,17 @@
 # Create your views here.
 
+import json
+
 from cover.models import Article, Tag
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.http import require_POST
-
-import json
+from nexus import settings
 
 def frontpage(request):
-    from nexus.settings import MEDIA_URL ## FIXME
-    tags = Tag.objects.all()
+    jquery = settings.MEDIA_URL + "jquery.js"
+    tags = list(Tag.objects.all())
+    tags.sort(key=lambda tag: tag.article_set.count(), reverse=True)
     for num, tag in enumerate(tags):
         tag.num = num % 6
     articles = Article.objects.all()[0:10]
@@ -17,7 +19,7 @@ def frontpage(request):
 
 def articlepage(request, year, month, slug):
     try:
-        article = Article.objects.filter(slug=slug)[0]
+        article = Article.objects.get(slug=slug)
     except IndexError:
         raise Http404
     return HttpResponse(article.title)

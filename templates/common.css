@@ -113,7 +113,6 @@ h2 {
   margin-left:2em;
   margin-right:2em;
   padding:1em;
-  overflow: show;
 }
 
 #grid li {
@@ -169,6 +168,7 @@ h2 {
 
 #tags li {
   cursor: pointer;
+  color: #FFF;
 }
 
 #tags li.t5 { border-right: 5px solid #b31111; }
@@ -178,7 +178,7 @@ h2 {
 #tags li.t4 { border-right: 5px solid #36661f; }
 #tags li.t0 { border-right: 5px solid #575c00; }
 
-#tags a, #tags a:hover { color: #FFF; border: none; }
+#tags a, #tags a:hover { color: inherit; border: none; }
 
 #dates {
   float: right;

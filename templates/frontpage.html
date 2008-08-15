@@ -32,12 +32,18 @@ a:hover {
   text-align: center;
 }
 
-.count {
+.tagcount {
+    float: right;
     font-size: small;
 }
 
 .activetag {
-  background-color: gray;
+  background-color: #333;
+}
+
+#tags li:hover {
+  background-color: #EEE; /* FIXME make this teal later */
+  color: #222;
 }
 
 .notreallyactivetag {
@@ -71,6 +77,9 @@ $(document).ready(function() {
       tagslug = $(this).attr("className").split(" ")[1]; /* HACK */
       $(this).toggleClass("activetag");
       if ($(this).hasClass("activetag")) {
+        $(this).animate({
+          width: "+=1em",
+        }, 200);
         $("#results li")
           .not("."+tagslug)
           .hide("fast");
@@ -90,6 +99,9 @@ $(document).ready(function() {
           }, "json");
 
       } else {
+        $(this).animate({
+          width: "-=1em",
+        }, 200);
         var selectedtags = $("#tags li").filter(".activetag").map(function() {
           return $(this).attr("className").split(" ")[1]; /* HACK */
         }).get();
@@ -162,7 +174,8 @@ $(document).ready(function() {
   <ul id="tags">
     {% for tag in tags %}
     <li class="t{{ tag.num }} {{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
-        {{ tag.name }} <span class="count">({{ tag.article_set.count }})</span>
+        <div class="tagcount">({{ tag.article_set.count }})</div>
+        {{ tag.name }}
     </a></li>
     {% endfor %}
     <li class="notreallyactivetag" id="alltags">(Show All)</li>

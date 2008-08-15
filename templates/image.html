@@ -1,0 +1,9 @@
+<div class="image">
+    <img src="{{ obj.image.url }}">
+    <span class="caption">
+        {{ obj.caption }}
+    </span>
+    <span class="author">
+        {% for author in obj.authors.all %}{% if not forloop.first %}, {% endif %}{{ author }}{% endfor %}
+    </span>
+</div>

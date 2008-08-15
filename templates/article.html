@@ -5,19 +5,38 @@
 			{{ article.title }}
 		</title>
 		<style>
-			{% include "common.css" %}
 			.image {
-				display: table-row;
+                color: gray;
+                border: 1px solid #eee;
 			}
+
+            .image img {
+                max-width: 40em;
+            }
 
 			.caption {
 				float:left;
+                font-size: small;
+                position: relative;
+                margin-bottom: 1em;
 			}
 
 			.author {
 				float: right;
-				font-weight: bold;
+                font-size: x-small;
+                position: relative;
+                left: 5px;
+                margin-bottom: 1em;
 			}
+
+            body {
+                width: 50em;
+                border: 1px solid #000;
+                margin-left: auto;
+                margin-right: auto;
+                padding: 1em;
+                display: block;
+            }
 		</style>
 	</head>
 	<body>
@@ -25,7 +44,7 @@
 			The Nexus - {{ article.title }}
 		</h1>
 		<div class=content>
-			{{ article.fulltext|markdown:"image_embed" }}
+			{{ article.fulltext|textile }}
 		</div>
 	</body>
 </html>

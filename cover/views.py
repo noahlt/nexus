@@ -1,12 +1,16 @@
 # Create your views here.
-
 import json
+import re
 
 from cover.models import Article, Tag
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
+from django.template.loader import get_template
+from django.template import Context
 from django.views.decorators.http import require_POST
 from nexus import settings
+
+image_tag_re = re.compile(r'\[\[|]]')
 
 def frontpage(request):
     jquery = settings.MEDIA_URL + "jquery.js"
@@ -17,12 +21,20 @@ def frontpage(request):
     articles = Article.objects.all()[0:10]
     return render_to_response('frontpage.html', locals())
 
+def replace_images(images, hunk):
+    obj = images.get(hunk)
+    return get_template('image.html').render(Context({'obj': obj})) if obj else hunk
+
 def articlepage(request, year, month, slug):
     try:
         article = Article.objects.get(slug=slug)
     except IndexError:
         raise Http404
-    return render_to_response('article.html', locals());
+    images = dict([(obj.slug, obj) for obj in article.images.all()])
+    template = get_template('article.html')
+    html = image_tag_re.split(template.render(Context({'article': article})))
+    html = [ replace_images(images, hunk) for hunk in html ]
+    return HttpResponse(''.join(html))
 
 def tagpage(request, slug):
     tag = get_object_or_404(Tag, slug=slug)

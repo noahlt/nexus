@@ -28,11 +28,11 @@ class ImageEmbedPattern(markdown.Pattern):
         img.setAttribute('src', obj.image.url)
         caption.appendChild(doc.createTextNode(obj.caption))
         div.appendChild(img)
-        for author in obj.authors.all():
-            span = doc.createElement('span')
-            span.setAttribute('class', 'author')
-            span.appendChild(doc.createTextNode(str(author)))
-            div.appendChild(span)
+        authors = ', '.join([str(author) for author in obj.authors.all()])
+        span = doc.createElement('span')
+        span.setAttribute('class', 'author')
+        span.appendChild(doc.createTextNode(authors))
+        div.appendChild(span)
         div.appendChild(caption)
         return div
 

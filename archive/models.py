@@ -14,7 +14,7 @@ class Page(models.Model):
         self.calculate_thumbnail_url()
 
     def calculate_thumbnail_url(self):
-        return pdf_to_thumbnail(self.pdf.path, 512, self.parent.checksum)
+        return pdf_to_thumbnail(self.pdf.path, 600, self.parent.checksum)
 
     def __str__(self):
         try:
@@ -83,9 +83,9 @@ class Issue(models.Model):
         try:
             the_actual_pdf = self.pdf_set.all()[0]
             the_page = the_actual_pdf.page_set.all()[0]
-            return pdf_to_thumbnail(the_page.pdf.path, 256, the_actual_pdf.checksum)
+            return pdf_to_thumbnail(the_page.pdf.path, 320, the_actual_pdf.checksum)
         except IndexError: # someone deleted all the pages
-            return pdf_to_thumbnail(STOCK_EMPTY_ISSUE, 256, abort_on_error=True)
+            return pdf_to_thumbnail(STOCK_EMPTY_ISSUE, 320, abort_on_error=True)
 
     def calculate_join_url(self):
         return joined_pdfs(self.pdf_set.all())

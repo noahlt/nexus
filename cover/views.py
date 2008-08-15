@@ -22,7 +22,7 @@ def articlepage(request, year, month, slug):
         article = Article.objects.get(slug=slug)
     except IndexError:
         raise Http404
-    return HttpResponse(article.title)
+    return render_to_response('article.html', locals());
 
 def tagpage(request, slug):
     tag = get_object_or_404(Tag, slug=slug)

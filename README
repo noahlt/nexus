@@ -3,5 +3,6 @@ Dependencies:
 	python-pysqlite2 
 	python-imaging (PIL)
 	python-json
+	python-markdown
 	evince OR python-magic (not recommended)
 	pdftk (for combining pdfs)

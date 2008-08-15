@@ -6,5 +6,6 @@
 .hidden
 .project
 /media/cache
+/media/images
 /media/pdf
 \#*#

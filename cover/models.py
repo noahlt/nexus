@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from django.contrib import admin
 
@@ -5,7 +6,7 @@ from django.contrib import admin
 
 class Author(models.Model):
     first_name = models.CharField(max_length=30)
-    last_name  = models.CharField(max_length=40)
+    last_name = models.CharField(max_length=40)
     year = models.PositiveSmallIntegerField()
 
     def __str__(self):
@@ -21,6 +22,31 @@ class Tag(models.Model):
 class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
+class Image(models.Model):
+    slug = models.CharField(primary_key=True, max_length=20,
+        help_text="You can embed images in articles as [[slug]]")
+    caption = models.TextField()
+    image = models.ImageField(upload_to="images/")
+    authors = models.ManyToManyField(Author)
+    date = models.DateField()
+
+    def __str__(self):
+        return self.slug
+    
+class ImageAdminForm(forms.ModelForm):
+    # FIXME manual validation... since primary_key=True doesn't validate uniqueness?
+    def clean_slug(self):
+        if 'slug' not in self.changed_data:
+            return self.cleaned_data['slug']
+        try:
+            date = Image.objects.get(slug=self.cleaned_data['slug'])
+        except:
+            return self.cleaned_data['slug']
+        raise forms.ValidationError("That slug is already taken.")
+
+class ImageAdmin(admin.ModelAdmin):
+    form = ImageAdminForm
+
 class Article(models.Model):
     title = models.CharField(max_length=50)
     slug = models.SlugField(max_length=20)
@@ -30,6 +56,7 @@ class Article(models.Model):
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
     published = models.BooleanField()
+    images = models.ManyToManyField(Image)
 
     # Article tags are stored (in slug form) as the classes of the li's that
     # wrap articles, so the js doesn't have to look up article tags itself.

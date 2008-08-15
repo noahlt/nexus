@@ -1,0 +1,31 @@
+{% load markup %}
+<html>
+	<head>
+		<title>
+			{{ article.title }}
+		</title>
+		<style>
+			{% include "common.css" %}
+			.image {
+				display: table-row;
+			}
+
+			.caption {
+				float:left;
+			}
+
+			.author {
+				float: right;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>
+			The Nexus - {{ article.title }}
+		</h1>
+		<div class=content>
+			{{ article.fulltext|markdown:"image_embed" }}
+		</div>
+	</body>
+</html>

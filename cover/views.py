@@ -1,16 +1,14 @@
 # Create your views here.
 import json
-import re
 
 from cover.models import Article, Tag, Image
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
-from django.template.loader import get_template
 from django.template import Context
+from django.template.loader import get_template
 from django.views.decorators.http import require_POST
 from nexus import settings
-
-image_tag_re = re.compile(r'\[\[|]]')
+from imageutil import format_images
 
 def frontpage(request):
     jquery = settings.MEDIA_URL + "jquery.js"
@@ -28,30 +26,14 @@ def imageview(request, slug):
         raise Http404
     return render_to_response('imageview.html', locals())
 
-def replace_images(images, hunk):
-    # TODO: check and see if more flexibility is required
-    if hunk.startswith('thumb:'):
-        hunk = hunk[6:]
-        template = get_template('thumb.html')
-    else:
-        template = get_template('image.html')
-    obj = images.get(hunk)
-    if obj:
-        viewlink = '/image/' + obj.slug
-        return template.render(Context({'obj': obj, 'viewlink': viewlink}))
-    else:
-        return hunk
-
 def articlepage(request, year, month, slug):
     try:
         article = Article.objects.get(slug=slug)
     except:
         raise Http404
-    images = dict([(obj.slug, obj) for obj in article.images.all()])
-    template = get_template('article.html')
-    html = image_tag_re.split(template.render(Context({'article': article})))
-    html = [ replace_images(images, hunk) for hunk in html ]
-    return HttpResponse(''.join(html))
+    html = get_template('article.html').render(Context({'article': article}))
+    html = format_images(html, article.images.all())
+    return HttpResponse(html)
 
 def tagpage(request, slug):
     tag = get_object_or_404(Tag, slug=slug)

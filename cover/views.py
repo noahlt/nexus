@@ -3,6 +3,7 @@ import json
 
 from cover.models import Article, Tag, Image
 from django.http import HttpResponse, Http404
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context
 from django.template.loader import get_template
@@ -22,14 +23,14 @@ def frontpage(request):
 def imageview(request, slug):
     try:
         obj = Image.objects.get(slug=slug) 
-    except IndexError:
+    except ObjectDoesNotExist:
         raise Http404
     return render_to_response('imageview.html', locals())
 
 def articlepage(request, year, month, slug):
     try:
         article = Article.objects.get(slug=slug)
-    except:
+    except ObjectDoesNotExist:
         raise Http404
     html = get_template('article.html').render(Context({'article': article}))
     html = ImageFormatter(html, article.images.all()).format()

@@ -21,10 +21,7 @@ def resize(input, max_size):
         makedirs(dirname(output_file))
     if not exists(output_file) or getmtime(output_file) < getmtime(input):
         image = Image.open(input)
-        if max_size[0]*max_size[1] < 50000:
-            image.thumbnail(max_size, Image.ANTIALIAS)
-        else:
-            image.thumbnail(max_size, Image.BICUBIC)
+        image.thumbnail(max_size, Image.ANTIALIAS)
         image.save(output_file)
     return output_url
 

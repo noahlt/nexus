@@ -1,10 +1,25 @@
 <html>
 	<body>
         <h2>
-        Image created {{ image.date }} by:
+        Image by
             <!-- TODO: teach it grammar -->
             {% for author in obj.authors.all %}{% if not forloop.first %}, {% endif %}{{ author }}{% endfor %}.
         </h2>
+		<p>
+			Creation date: {{ obj.date }}
+		</p>
+		<p>
+			Referenced in:
+			<ul>
+				{% for article in obj.article_set.all %}
+				<li>
+				<a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">
+					{{ article.title }}
+				</a>
+				</li>
+				{% endfor %}
+			</ul>
+		</p>
         <p>
             {{ obj.caption }}
         </p>

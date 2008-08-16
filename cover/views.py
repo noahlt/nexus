@@ -2,7 +2,7 @@
 import json
 import re
 
-from cover.models import Article, Tag
+from cover.models import Article, Tag, Image
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.loader import get_template
@@ -21,14 +21,31 @@ def frontpage(request):
     articles = Article.objects.all()[0:10]
     return render_to_response('frontpage.html', locals())
 
+def imageview(request, slug):
+    try:
+        obj = Image.objects.get(slug=slug) 
+    except IndexError:
+        raise Http404
+    return render_to_response('imageview.html', locals())
+
 def replace_images(images, hunk):
+    # TODO: check and see if more flexibility is required
+    if hunk.startswith('thumb:'):
+        hunk = hunk[6:]
+        template = get_template('thumb.html')
+    else:
+        template = get_template('image.html')
     obj = images.get(hunk)
-    return get_template('image.html').render(Context({'obj': obj})) if obj else hunk
+    if obj:
+        viewlink = '/image/' + obj.slug
+        return template.render(Context({'obj': obj, 'viewlink': viewlink}))
+    else:
+        return hunk
 
 def articlepage(request, year, month, slug):
     try:
         article = Article.objects.get(slug=slug)
-    except IndexError:
+    except:
         raise Http404
     images = dict([(obj.slug, obj) for obj in article.images.all()])
     template = get_template('article.html')

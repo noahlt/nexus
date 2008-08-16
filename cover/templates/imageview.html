@@ -1,0 +1,13 @@
+<html>
+	<body>
+        <h2>
+        Image created {{ image.date }} by:
+            <!-- TODO: teach it grammar -->
+            {% for author in obj.authors.all %}{% if not forloop.first %}, {% endif %}{{ author }}{% endfor %}.
+        </h2>
+        <p>
+            {{ obj.caption }}
+        </p>
+        <img src="{{ obj.image.url }}">
+	</body>
+</html>

@@ -1,6 +1,7 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
+from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
 
 # Create your models here.
 
@@ -29,6 +30,17 @@ class Image(models.Model):
     image = models.ImageField(upload_to="images/")
     authors = models.ManyToManyField(Author)
     date = models.DateField()
+
+    def save(self):
+        super(Image, self).save()
+        self.thumbnail_size()
+        self.article_size()
+
+    def thumbnail_size(self):
+        return resize(self.image.path, THUMB_MAX_SIZE)
+
+    def article_size(self):
+        return resize(self.image.path, ARTICLE_MAX_SIZE)
 
     def __str__(self):
         return self.slug

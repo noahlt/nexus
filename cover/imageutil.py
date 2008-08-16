@@ -11,15 +11,6 @@ THUMB_MAX_SIZE = (150,250)
 ARTICLE_MAX_SIZE = (800,600)
 THUMBS_PATH = 'cache/image_thumbs/'
 
-image_tag_re = re.compile(r'\[\[|]]')
-image_templates = {
-    'thumb': get_template('thumb.html'),
-}
-DEFAULT_TEMPLATE = get_template('image.html')
-SCAN_LENGTH = 0
-for k,v in image_templates.items():
-    SCAN_LENGTH = 1 + max(len(k), SCAN_LENGTH)
-
 def resize(input, max_size):
     name = '@%ix%i.png' % max_size
     name = basename(input)[0:-4] + name
@@ -37,21 +28,31 @@ def resize(input, max_size):
         image.save(output_file)
     return output_url
 
-def __process_hunk(images, hunk):
-    template_type = None
-    index = hunk.find(':', 0, SCAN_LENGTH)
-    if index >= 0:
-        template_type = hunk[0:index]
-        hunk = hunk[index+1:]
-    obj = images.get(hunk)
-    if obj:
-        template = image_templates.get(template_type, DEFAULT_TEMPLATE)
-        viewlink = '/image/' + obj.slug
-        return template.render(Context({'obj': obj, 'viewlink': viewlink}))
-    else:
-        return hunk
+class ImageFormatter():
+    DEFAULT_TEMPLATE = get_template('image.html')
+    IMAGE_TAG = re.compile(r'\[\[[:\-_a-z0-9]+]]')
+    TEMPLATES = {
+        'thumb': get_template('thumb.html'),
+    }
 
-def format_images(html, img_objs):
-    hunks = image_tag_re.split(html)
-    images = dict([(obj.slug, obj) for obj in img_objs])
-    return ''.join([ __process_hunk(images, hunk) for hunk in hunks ])
+    def __init__(self, html, img_objs):
+        self.html = html
+        self.images = dict([(obj.slug, obj) for obj in img_objs])
+
+    def __process_match(self, match):
+        hunk = match.group()[2:-2]
+        template_type = None
+        index = hunk.find(':')
+        if index >= 0:
+            template_type = hunk[0:index]
+            hunk = hunk[index+1:]
+        obj = self.images.get(hunk)
+        if obj:
+            template = self.TEMPLATES.get(template_type, self.DEFAULT_TEMPLATE)
+            viewlink = '/image/' + obj.slug
+            return template.render(Context({'obj': obj, 'viewlink': viewlink}))
+        else:
+            return hunk
+
+    def format(self):
+        return self.IMAGE_TAG.sub(self.__process_match, self.html)

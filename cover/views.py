@@ -8,7 +8,7 @@ from django.template import Context
 from django.template.loader import get_template
 from django.views.decorators.http import require_POST
 from nexus import settings
-from imageutil import format_images
+from imageutil import ImageFormatter
 
 def frontpage(request):
     jquery = settings.MEDIA_URL + "jquery.js"
@@ -32,7 +32,7 @@ def articlepage(request, year, month, slug):
     except:
         raise Http404
     html = get_template('article.html').render(Context({'article': article}))
-    html = format_images(html, article.images.all())
+    html = ImageFormatter(html, article.images.all()).format()
     return HttpResponse(html)
 
 def tagpage(request, slug):

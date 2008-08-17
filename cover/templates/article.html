@@ -5,36 +5,7 @@
 			{{ article.title }}
 		</title>
 		<style>
-			.image {
-                color: gray;
-                border: 1px solid #eee;
-			}
-
-            .image img {
-                border: none;
-            }
-
-            .thumb img {
-				float: right;
-                border: none;
-				margin: 1em;
-            }
-
-			.caption {
-				float:left;
-                font-size: small;
-                position: relative;
-                margin-bottom: 1em;
-			}
-
-			.author {
-				float: right;
-                font-size: x-small;
-                position: relative;
-                left: 5px;
-                margin-bottom: 1em;
-			}
-
+			{% include "images.css" %}
             body {
                 width: 50em;
                 border: 1px solid #000;
@@ -52,5 +23,13 @@
 		<div class=content>
 			{{ article.fulltext|textile }}
 		</div>
+		<p>
+		Tags:
+		{% for tag in article.tags.all %}
+			<a href="/tag/{{ tag }}">
+			{{ tag }}
+			</a>
+		{% endfor %}
+		</p>
 	</body>
 </html>

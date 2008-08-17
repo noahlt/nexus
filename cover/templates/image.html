@@ -1,11 +1,12 @@
-<div class="image">
+<!-- Image spanning the whole width of the page, with caption and attribution. -->
+<div class="fullsize {{ classes }}">
     <a href="{{ viewlink }}">
-        <img alt="{{ obj.slug }}" src="{{ obj.article_size }}">
+        <img alt="{{ slug }}" src="{{ image }}">
     </a>
-    <span class="caption">
-        {{ obj.caption }}
-    </span>
     <span class="author">
-        {% for author in obj.authors.all %}{% if not forloop.first %}, {% endif %}{{ author }}{% endfor %}
+        {% for author in authors %}{% if not forloop.first %}, {% endif %}{{ author }}{% endfor %}
+    </span>
+    <span class="caption">
+        {{ caption }}
     </span>
 </div>

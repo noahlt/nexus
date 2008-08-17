@@ -9,6 +9,14 @@
 			Creation date: {{ obj.date }}
 		</p>
 		<p>
+		Tags:
+		{% for tag in obj.tags.all %}
+			<a href="/tag/{{ tag }}">
+			{{ tag }}
+			</a>
+		{% endfor %}
+		</p>
+		<p>
 			Referenced in:
 			<ul>
 				{% for article in obj.article_set.all %}

@@ -26,11 +26,8 @@ def resize(input, max_size):
     return output_url
 
 class ImageFormatter():
-    DEFAULT_TEMPLATE = get_template('image.html')
+    IMAGE_TEMPLATE = 'image.html'
     IMAGE_TAG = re.compile(r'\[\[[:\-_a-z0-9]+]]')
-    TEMPLATES = {
-        'thumb': get_template('thumb.html'),
-    }
 
     def __init__(self, html, img_objs):
         self.html = html
@@ -38,16 +35,22 @@ class ImageFormatter():
 
     def __process_match(self, match):
         hunk = match.group()[2:-2]
+        classes = []
         template_type = None
         index = hunk.find(':')
-        if index >= 0:
-            template_type = hunk[0:index]
+        while index >= 0:
+            classes.append(hunk[0:index])
             hunk = hunk[index+1:]
+            index = hunk.find(':')
         obj = self.images.get(hunk)
         if obj:
-            template = self.TEMPLATES.get(template_type, self.DEFAULT_TEMPLATE)
+            template = get_template(self.IMAGE_TEMPLATE)
             viewlink = '/image/' + obj.slug
-            return template.render(Context({'obj': obj, 'viewlink': viewlink}))
+            return template.render(Context({
+                'image': obj.thumbnail_size() if 'thumb' in classes else obj.article_size(),
+                'slug': obj.slug, 'authors': obj.authors.all(), 'caption': obj.caption,
+                'viewlink': viewlink, 'classes': ' '.join(classes)
+            }))
         else:
             return hunk
 

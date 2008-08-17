@@ -15,8 +15,8 @@ class Author(models.Model):
         return '%s %s' % (self.first_name, self.last_name)
 
 class Tag(models.Model):
-    name = models.CharField(max_length = 30)
-    slug = models.SlugField(max_length = 30)
+    name = models.CharField(max_length=30)
+    slug = models.SlugField(max_length=30, unique=True)
 
     def __str__(self):
         return self.name
@@ -31,6 +31,7 @@ class Image(models.Model):
         help_text="You can embed images in articles as [[slug]]")
     authors = models.ManyToManyField(Author)
     date = models.DateField()
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def save(self):
         super(Image, self).save()

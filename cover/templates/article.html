@@ -6,7 +6,7 @@
 		</title>
 		<style>
 			{% include "images.css" %}
-            body {
+            .content {
                 width: 50em;
                 border: 1px solid #000;
                 margin-left: auto;
@@ -17,19 +17,19 @@
 		</style>
 	</head>
 	<body>
+        <div class="content">
 		<h1>
 			The Nexus - {{ article.title }}
 		</h1>
-		<div class=content>
-			{{ article.fulltext|textile }}
-		</div>
+		{{ article.fulltext|textile }}
 		<p>
 		Tags:
 		{% for tag in article.tags.all %}
-			<a href="/tag/{{ tag }}">
+			<a href="/tag/{{ tag.slug }}">
 			{{ tag }}
 			</a>
 		{% endfor %}
 		</p>
+        </div>
 	</body>
 </html>

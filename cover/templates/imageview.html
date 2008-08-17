@@ -11,7 +11,7 @@
 		<p>
 		Tags:
 		{% for tag in obj.tags.all %}
-			<a href="/tag/{{ tag }}">
+			<a href="/tag/{{ tag.slug }}">
 			{{ tag }}
 			</a>
 		{% endfor %}
@@ -21,7 +21,7 @@
 			<ul>
 				{% for article in obj.article_set.all %}
 				<li>
-				<a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">
+				<a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}#{{ obj.slug }}">
 					{{ article.title }}
 				</a>
 				</li>

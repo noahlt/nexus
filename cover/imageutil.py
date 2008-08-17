@@ -8,7 +8,7 @@ from django.template.loader import get_template
 from nexus import settings
 
 THUMB_MAX_SIZE = (150,250)
-ARTICLE_MAX_SIZE = (800,600)
+ARTICLE_MAX_SIZE = (800,800)
 THUMBS_PATH = 'cache/image_thumbs/'
 
 def resize(input, max_size):

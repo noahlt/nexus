@@ -1,8 +1,6 @@
-<!-- Image spanning the whole width of the page, with caption and attribution. -->
-<div class="fullsize {{ classes }}">
-    <a href="{{ viewlink }}">
-        <img alt="{{ slug }}" src="{{ image }}">
-    </a>
+<div class="image-default {{ classes }}">
+    <!-- why oh why do browsers hate indentation so much -->
+	<div class="image-wrap"><a href="{{ viewlink }}"><img id="{{ slug }}" alt="{{ slug }}" src="{{ image }}"></a></div>
     <span class="author">
         {% for author in authors %}{% if not forloop.first %}, {% endif %}{{ author }}{% endfor %}
     </span>

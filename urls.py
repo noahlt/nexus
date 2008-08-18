@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
-from cover.views import frontpage, articlepage, tagpage, more_tag, imageview
+from cover.views import frontpage, articlepage, \
+    tagpage, more_tag, imageview, authorpage
 from archive.views import issue_gallery, page_gallery
 from nexus import settings
 
@@ -22,7 +23,8 @@ urlpatterns = patterns('',
     (r'^archive/$', issue_gallery),
     (r'^archive/(\d{4}-\d{2}-\d{2})/$', page_gallery),
     (r'^image/([-_a-z0-9]+)/$', imageview),
-    (r'^tag/(.+)$', tagpage),
+    (r'^tag/([-_a-z0-9]+)$', tagpage),
+    (r'^people/([-_a-z0-9]+)$', authorpage),
     (r'^ajax/more_tag$', more_tag),
 )
 

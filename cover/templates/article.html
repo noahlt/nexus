@@ -17,19 +17,27 @@
 		</style>
 	</head>
 	<body>
+        <a href="/">home</a>
         <div class="content">
 		<h1>
 			The Nexus - {{ article.title }}
 		</h1>
+        {% for author in article.authors.all %}
+            {% include "authorlink.html" %}
+        {% endfor %}
 		{{ article.fulltext|textile }}
 		<p>
 		Tags:
 		{% for tag in article.tags.all %}
-			<a href="/tag/{{ tag.slug }}">
-			{{ tag }}
-			</a>
+            {% include "taglink.html" %}
 		{% endfor %}
 		</p>
+        {% if article.published %}
+        <p>
+        Article published
+        <a href="/archive/{{ article.published.date }}">{{ article.published.date|date:"F m, Y" }}</a>.
+        </p>
+        {% endif %}
         </div>
 	</body>
 </html>

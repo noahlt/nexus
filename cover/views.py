@@ -1,7 +1,7 @@
 # Create your views here.
 import json
 
-from cover.models import Article, Tag, Image
+from cover.models import Article, Tag, Image, Author
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response, get_object_or_404
@@ -38,8 +38,11 @@ def articlepage(request, year, month, slug):
 
 def tagpage(request, slug):
     tag = get_object_or_404(Tag, slug=slug)
-    articles = tag.article_set.all()
     return render_to_response('tag.html', locals())
+
+def authorpage(request, slug):
+    author = get_object_or_404(Author, slug=slug)
+    return render_to_response('author.html', locals())
 
 def contains(test_set, required_tags):
     for tag in required_tags:

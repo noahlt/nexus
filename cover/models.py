@@ -3,13 +3,19 @@ from django.db import models
 from django.contrib import admin
 from django.core.exceptions import ObjectDoesNotExist
 from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
+from nexus.archive.models import Issue
 
 IMAGE_PATH = 'image_orig/'
+
+class AuthorAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('first_name', 'last_name')}
 
 class Author(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=40)
-    year = models.PositiveSmallIntegerField()
+    slug = models.SlugField(max_length=30, unique=True)
+    title = models.CharField(max_length=40, blank=True, null=True)
+    year = models.PositiveSmallIntegerField(blank=True, null=True)
 
     def __str__(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -30,7 +36,7 @@ class Image(models.Model):
     slug = models.CharField(primary_key=True, max_length=20,
         help_text="You can embed images in articles as [[slug]]")
     authors = models.ManyToManyField(Author)
-    date = models.DateField()
+    date = models.DateField(blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
 
     def save(self):
@@ -70,7 +76,7 @@ class Article(models.Model):
     date = models.DateField()
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
-    published = models.BooleanField()
+    published = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
 
     # Article tags are stored (in slug form) as the classes of the li's that
@@ -87,4 +93,3 @@ class Article(models.Model):
 
 class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
-    

@@ -2,25 +2,26 @@
 	<body>
         <h2>
         Image by
-            <!-- TODO: teach it grammar -->
-            {% for author in obj.authors.all %}{% if not forloop.first %}, {% endif %}{{ author }}{% endfor %}.
+            {% for author in obj.authors.all %}{% if not forloop.first %}, {% endif %}{% include "authorlink.html" %}{% endfor %}.
         </h2>
+        {% if obj.date %}
+            <p>
+                Creation date: {{ obj.date }}
+            </p>
+        {% endif %}
+		{% ifnotequal obj.tags.count 0 %}
+			<p>
+			Tags:
+			{% for tag in obj.tags.all %}
+                {% include "taglink.html" %}
+			{% endfor %}
+			</p>
+		{% endifnotequal %}
 		<p>
-			Creation date: {{ obj.date }}
-		</p>
-		<p>
-		Tags:
-		{% for tag in obj.tags.all %}
-			<a href="/tag/{{ tag.slug }}">
-			{{ tag }}
-			</a>
-		{% endfor %}
-		</p>
-		<p>
-			Referenced in:
+			Referenced in articles:
 			<ul>
 				{% for article in obj.article_set.all %}
-				<li>
+				<li> <!-- not the same as articlelink.html; links to image id -->
 				<a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}#{{ obj.slug }}">
 					{{ article.title }}
 				</a>

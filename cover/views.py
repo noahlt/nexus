@@ -1,5 +1,5 @@
 # Create your views here.
-import json
+import simplejson as json
 
 from cover.models import Article, Tag, Image, Author
 from django.http import HttpResponse, Http404
@@ -48,11 +48,12 @@ def authorpage(request, slug):
     author = get_object_or_404(Author, slug=slug)
     return render_to_response('author.html', locals())
 
+
+
 def load_more_articles(request):
     data = request.GET
     
     tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
-
     articles = Article.objects.exclude(slug__in=data.getlist('have_articles'))
 
     # by repeatedly applying a new filter for each tag, we get an AND filter,
@@ -62,9 +63,12 @@ def load_more_articles(request):
 
     r = [{'tagclasses': article.tagclasses.split(" "), #FIXME
           'slug': article.slug,
-          'html':'<li class="%s new-article"><h3><a href="%s">%s</a></h3>%s</li>' % \
-              (article.tagclasses, article.slug, article.title, article.snippet)
-          }
+          # need to convert to 'unicode' because django templates create
+          # strings of class django.utils.safestring.SafeUnicode
+          'html': get_template('article_snippet.html') \
+                      .render(Context({'article': article,
+                                       'hidden': True}))
+         }
          for article in articles[0:2]]
 
     return HttpResponse(json.write(r), mimetype="application/json")

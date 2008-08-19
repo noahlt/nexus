@@ -85,12 +85,7 @@
   </ul>
   <ul id="results">
     {% for article in articles %}
-    <li class="{{ article.tagclasses }}"><h3 class="{{ article.slug }}">{% include "articlelink.html" %}</h3>
-      {{ article.snippet }}
-    {% ifnotequal 0 article.images.count %}
-        <img src="{{ article.images.all.0.thumbnail_size }}">
-    {% endifnotequal %}
-    </li>
+      {% include "article_snippet.html" %}
     {% endfor %}
   </ul>
 

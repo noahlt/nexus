@@ -1,0 +1,7 @@
+    <li class="{{ article.tagclasses }} {% if hidden %}new-article{% endif %}">
+      <h3 class="{{ article.slug }}">{% include "articlelink.html" %}</h3>
+      {{ article.snippet }}
+      {% ifnotequal 0 article.images.count %}
+        <img src="{{ article.images.all.0.thumbnail_size }}">
+      {% endifnotequal %}
+    </li>

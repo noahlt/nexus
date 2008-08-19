@@ -6,8 +6,9 @@
 
 <body>
 
-<a href="/">home</a>
-
+<a href="/"><h1>
+	The Nexus
+</h1></a>
 <h1>{{ author }}{% if author.title %} ({{ author.title }}){% endif %}</h1>
 {% ifnotequal author.article_set.count 0 %}
     Articles:

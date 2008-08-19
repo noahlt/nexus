@@ -1,3 +1,9 @@
+/* disable border-bottom-as-underline here */
+a:hover {
+	text-decoration: underline;
+	border: none;
+}
+
 .image-default {
 	margin-top: 1em;
 	margin-bottom: 1em;
@@ -16,7 +22,7 @@
 
 .small {
 	border: none;
-	max-width: 325px;
+	max-width: 327px;
 	margin-top: 1em;
 	margin-left: 1em;
 	margin-right: .2em;

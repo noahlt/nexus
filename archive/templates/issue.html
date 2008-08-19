@@ -5,10 +5,10 @@
 {% endblock %}
 
 {% block navbar %}
-    <a class=link href="..">Archive Home</a>
+    <a href="..">Archive Home</a>
 	<br><br>
 	Click below to download a page or
-	<a class=link href="{{ issue.calculate_join_url }}">here</a>
+	<a href="{{ issue.calculate_join_url }}">here</a>
 	to grab the complete set.
     {% ifnotequal issue.article_set.count 0 %}
         <br><br><p>Articles viewable online:

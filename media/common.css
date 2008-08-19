@@ -61,7 +61,7 @@ h1 {
   padding-left: 12pt;
   padding-top: 18pt;
   padding-bottom: 0;
-  background-color: maroon;
+  background-color: #0090bd;
   height: 1.5em;
   margin-bottom: 0;
 }
@@ -199,15 +199,22 @@ h2 {
   text-align: right;
 }
 
-#results {
+#results,   #grid .controlnav {
   margin-left: 14%;
-  text-align: justify;
   margin-right: 14%;
   line-height: 1.5em;
   padding: 1em;
-  padding-bottom: 3em;
   background-color: white;
   color: #222;
+}
+
+#grid .controlnav {
+  padding-bottom: 3em;
+  clear:none;
+}
+
+#results {
+  text-align: justify;
 }
 
 #results li {
@@ -255,3 +262,53 @@ h2 {
   font-weight: bold;
   letter-spacing: .2em;
 }
+
+a {
+  color: #305cb6;
+  text-decoration: none;
+}
+
+a:hover {
+  border-bottom: 1px solid #305cb6;
+}
+
+#toggleprint {
+  float: right;
+}
+
+.controllink {
+  font-size: small;
+}
+
+.controllink:hover {
+  border: 0;
+  color: darkblue; /* FIXME */
+}
+
+.controlnav {
+  clear: left;
+  text-align: center;
+}
+
+.tagcount {
+    float: right;
+    font-size: small;
+}
+
+.activetag {
+  background-color: #333;
+}
+
+#tags li:hover {
+  background-color: #EEE; /* FIXME make this teal later */
+  color: #222;
+}
+
+.activetag#alltags {
+  background-color: #305cb6;
+}
+
+.new-article {
+  display: none;
+  }
+

@@ -56,7 +56,7 @@ class Article(models.Model):
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
     published = models.BooleanField()
-    images = models.ManyToManyField(Image)
+    #images = models.ManyToManyField(Image)
 
     # Article tags are stored (in slug form) as the classes of the li's that
     # wrap articles, so the js doesn't have to look up article tags itself.

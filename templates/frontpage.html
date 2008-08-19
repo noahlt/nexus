@@ -2,142 +2,11 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
 <title>Nexus</title>
-<style>
-{% include "common.css" %}
-
-a {
-  color: #305cb6;
-  text-decoration: none;
-}
-
-a:hover {
-  border-bottom: 1px solid #305cb6;
-}
-
-#toggleprint {
-  float: right;
-}
-
-.controllink {
-  font-size: small;
-}
-
-.controllink:hover {
-  border: 0;
-  color: darkblue; /* FIXME */
-}
-
-#printnav {
-  clear: left;
-  text-align: center;
-}
-
-.tagcount {
-    float: right;
-    font-size: small;
-}
-
-.activetag {
-  background-color: #333;
-}
-
-#tags li:hover {
-  background-color: #EEE; /* FIXME make this teal later */
-  color: #222;
-}
-
-.notreallyactivetag {
-  background-color: #305cb6;
-}
-
-</style>
+<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
+<script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
 </head>
 
-<script type="text/javascript" src="{{ jquery }}"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-  var have_articles = $("#results li h3").map(function() {
-      return $(this).attr("className");
-    }).get();
-
-  $("#toggleprint").click(function(event) {
-    event.preventDefault();
-    if ($(this).text()[0] == 'c') {
-      $(this).html("expand &darr;");
-      $("#print p").hide("fast");
-    } else {
-      $(this).html("collapse &uarr;");
-      $("#print p").show("fast");
-    }
-  });
-
-  $("#tags li")
-    .not("#alltags")
-    .click(function() {
-      tagslug = $(this).attr("className").split(" ")[1]; /* HACK */
-      $(this).toggleClass("activetag");
-      if ($(this).hasClass("activetag")) {
-        $(this).animate({
-          width: "+=1em",
-        }, 200);
-        $("#results li")
-          .not("."+tagslug)
-          .hide("fast");
-        $("#tags #alltags").removeClass("activetag notreallyactivetag");
-
-        var selectedtags = $("#tags li").filter(".activetag").map(function() {
-          return $(this).attr("className").split(" ")[1]; /* HACK */
-        }).get();
-
-        $.post("/ajax/more_tag", {"slug":tagslug, "have":have_articles, "selected":selectedtags},
-          function(responseData) {
-            for (var i in responseData) {
-              var article = responseData[i];
-              $("#results").append(article['html']);
-              have_articles[have_articles.length] = article['slug'];
-            }
-          }, "json");
-
-      } else {
-        $(this).animate({
-          width: "-=1em",
-        }, 200);
-        var selectedtags = $("#tags li").filter(".activetag").map(function() {
-          return $(this).attr("className").split(" ")[1]; /* HACK */
-        }).get();
-
-        $("#results li")
-          .not("."+tagslug)
-          .filter(function(i) {
-              for (var j in selectedtags) {
-                if (!$(this).hasClass(selectedtags[j])) {
-                  return false;
-                }
-              }
-              return true;
-            })
-          .show("fast");
-        if (!$("#tags li").hasClass("activetag")) {
-          $("#tags #alltags").addClass("notreallyactivetag");
-        }
-      }
-     });
-
-  $("#tags #alltags").click(function() {
-    $(this).addClass("notreallyactivetag");
-    $("#tags .activetag").not("#alltags")
-      .removeClass("activetag")
-      .animate({
-        width: "-=1em",
-      }, 200);
-    $("#results li").show("fast");
-  });
-
-  $("#tags li a").click(function(event) {
-    event.preventDefault();
-  });
-});
-</script>
 
 <body>
 <h1>The Nexus</h1>
@@ -167,7 +36,7 @@ $(document).ready(function() {
   </li>
   </ul>
 
-<div id="printnav">
+<div class="controlnav">
   <a class="controllink" href="#">more articles from this issue</a> | 
   <a class="controllink" href="/archive/">see archive of scans</a>
 </div>
@@ -177,12 +46,12 @@ $(document).ready(function() {
   <ul id="gridtypes"><li>Articles</li><li>Blogs</li><li>Photos</li><li>Sports</li></ul>
   <ul id="tags">
     {% for tag in tags %}
-    <li class="t{{ tag.num }} {{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
+    <li class="t{{ tag.num }}" id="{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
         <div class="tagcount">({{ tag.article_set.count }})</div>
         {{ tag.name }}
     </a></li>
     {% endfor %}
-    <li class="notreallyactivetag" id="alltags">(Show All)</li>
+    <li class="activetag" id="alltags">(Show All)</li>
   </ul>
   <ul id="dates">
     <li><h3>2007-08</h3>
@@ -221,7 +90,12 @@ $(document).ready(function() {
     </li>
     {% endfor %}
   </ul>
-  <div id="signed">&mdash;nt '09</div> {# don't remove this, it's actually important #}
+
+  <div class="controlnav">
+    <a class="controllink" href="#">load more articles</a>
+  </div>
+
+  <div id="signed">&mdash;nt '09</div>  {# don't remove this, it's actually important #}
 </div>
 
 <div id="footer">

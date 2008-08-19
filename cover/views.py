@@ -9,12 +9,12 @@ from django.views.decorators.http import require_POST
 from nexus import settings
 
 def frontpage(request):
-    jquery = settings.MEDIA_URL + "jquery.js"
+    MEDIA_URL = settings.MEDIA_URL
     tags = list(Tag.objects.all())
     tags.sort(key=lambda tag: tag.article_set.count(), reverse=True)
     for num, tag in enumerate(tags):
         tag.num = num % 6
-    articles = Article.objects.all()[0:10]
+    articles = Article.objects.all()[0:2]
     return render_to_response('frontpage.html', locals())
 
 def articlepage(request, year, month, slug):
@@ -35,15 +35,23 @@ def contains(test_set, required_tags):
             return False
     return True
 
-@require_POST
-def more_tag(request):
-    tag = Tag.objects.get(slug=request.POST['slug'])
-    selected_tags = request.POST.getlist('selected')
-    have_articles = request.POST.getlist('have')
-    articles = tag.article_set.all()[0:10] #! FIXME arbitrary limit
-    response = json.write([{'tagclasses': article.tagclasses.split(" "),
-                            'slug': article.slug,
-                            'html':'<li class="%s"><h3><a href="%s">%s</a></h3>%s</li>' % (article.tagclasses, article.slug, article.title, article.snippet)
-                            }
-                           for article in articles if article.slug not in have_articles and contains([tag.slug for tag in article.tags.all()], selected_tags)])
-    return HttpResponse(response, mimetype="application/json")
+def load_more_articles(request):
+    data = request.GET
+    
+    tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
+
+    articles = Article.objects.exclude(slug__in=data.getlist('have_articles'))
+
+    # by repeatedly applying a new filter for each tag, we get an AND filter,
+    # while articles.filter(tags__in=tags) would give us an OR filter.
+    for tag in tags:
+        articles = articles.filter(tags=tag)
+
+    r = [{'tagclasses': article.tagclasses.split(" "), #FIXME
+          'slug': article.slug,
+          'html':'<li class="%s new-article"><h3><a href="%s">%s</a></h3>%s</li>' % \
+              (article.tagclasses, article.slug, article.title, article.snippet)
+          }
+         for article in articles[0:2]]
+
+    return HttpResponse(json.write(r), mimetype="application/json")

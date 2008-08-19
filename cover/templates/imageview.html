@@ -1,5 +1,8 @@
 <html>
 	<body>
+	<a href="/"><h1>
+		The Nexus
+	</h1></a>
         <h2>
         Image by
             {% for author in obj.authors.all %}{% if not forloop.first %}, {% endif %}{% include "authorlink.html" %}{% endfor %}.

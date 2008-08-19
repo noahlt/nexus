@@ -5,5 +5,8 @@
 *~
 .hidden
 .project
-/media
+/media/cache
+/media/image_orig
+/media/pdf_burst
+/media/pdf_orig
 \#*#

@@ -4,7 +4,8 @@
 		<title>
 			{{ article.title }}
 		</title>
-                <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
+		<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
+		<link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css" />
 		<style>
             .content {
                 width: 50em;
@@ -14,14 +15,16 @@
                 padding: 1em;
                 display: block;
             }
+			p {
+				padding: .5em;
+			}
 		</style>
 	</head>
 	<body>
-        <a href="/">home</a>
         <div class="content">
-		<h1>
+		<a href="/" style="text-decoration:none;"><h1>
 			The Nexus
-		</h1>
+		</h1></a>
                 <h2>{{ article.title }}</h2>
         {% for author in article.authors.all %}
             {% include "authorlink.html" %}
@@ -36,7 +39,7 @@
         {% if article.printed %}
         <p>
         Article printed
-        <a href="/archive/{{ article.printed.date }}">{{ article.published.date|date:"F m, Y" }}</a>.
+        <a href="/archive/{{ article.printed.date }}">{{ article.printed.date|date:"F m, Y" }}</a>.
         </p>
         {% endif %}
         </div>

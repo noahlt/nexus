@@ -1,3 +1,9 @@
+/* disable border-bottom-as-underline here */
+a:hover {
+	text-decoration: underline;
+	border: none;
+}
+
 .preview, .page {
     color: gray;
     padding: 5px;
@@ -43,13 +49,4 @@
 .yearblock {
     margin-bottom: 1em;
     clear: both;
-}
-
-.link {
-	color: #305cb6;
-	text-decoration: none;
-}
-
-.link:hover {
-	border-bottom: 1px solid #305cb6;
 }

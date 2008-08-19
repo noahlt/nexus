@@ -1,9 +1,11 @@
 from django import forms
 from django.contrib import admin
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from os.path import basename
-from pdfutil import *
-from hashlib import md5
+from pdfutil import pdf_to_thumbnail, burst_pdf, validate_pdf, joined_pdfs
+
+PDF_PATH = 'pdf_orig/'
 
 class Page(models.Model):
     pdf = models.FileField(upload_to=PDF_PATH)
@@ -14,12 +16,12 @@ class Page(models.Model):
         self.calculate_thumbnail_url()
 
     def calculate_thumbnail_url(self):
-        return pdf_to_thumbnail(self.pdf.path, 600, self.parent.checksum)
+        return pdf_to_thumbnail(self.pdf.path, 600)
 
     def __str__(self):
         try:
             return "%s" % basename(self.pdf.path)
-        except:
+        except ValueError:
             return "[corrupted file]"
 
     class Meta:
@@ -29,12 +31,8 @@ class PDF(models.Model):
     order = models.IntegerField()
     pdf = models.FileField(upload_to=PDF_PATH)
     parent = models.ForeignKey('Issue')
-    checksum = models.CharField(max_length=32, editable=False)
 
     def save(self):
-        digest = md5()
-        digest.update(open(self.pdf.path, 'rb').read())
-        self.checksum = digest.hexdigest()
         super(PDF, self).save()
         for page in self.page_set.all():
             page.delete()
@@ -46,7 +44,7 @@ class PDF(models.Model):
     def __str__(self):
         try:
             return "%s" % basename(self.pdf.path)
-        except:
+        except ValueError:
             return "[corrupted file]"
 
     class Meta:
@@ -68,7 +66,7 @@ class IssueAdminForm(forms.ModelForm):
             return self.cleaned_data['date']
         try:
             date = Issue.objects.get(date=self.cleaned_data['date'])
-        except:
+        except ObjectDoesNotExist:
             return self.cleaned_data['date']
         raise forms.ValidationError("That date is already taken.")
 
@@ -83,9 +81,9 @@ class Issue(models.Model):
         try:
             the_actual_pdf = self.pdf_set.all()[0]
             the_page = the_actual_pdf.page_set.all()[0]
-            return pdf_to_thumbnail(the_page.pdf.path, 320, the_actual_pdf.checksum)
+            return pdf_to_thumbnail(the_page.pdf.path, 320)
         except IndexError: # someone deleted all the pages
-            return pdf_to_thumbnail(STOCK_EMPTY_ISSUE, 320, abort_on_error=True)
+            return None
 
     def calculate_join_url(self):
         return joined_pdfs(self.pdf_set.all())

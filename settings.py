@@ -70,6 +70,7 @@ ROOT_URLCONF = 'nexus.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'archive/templates').replace('\\','/'),
+    os.path.join(os.path.dirname(__file__), 'cover/templates').replace('\\','/'),
     os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
 )
 

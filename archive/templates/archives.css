@@ -42,7 +42,7 @@
 
 .yearblock {
     margin-bottom: 1em;
-    display: table-row;
+    clear: both;
 }
 
 .link {

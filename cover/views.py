@@ -1,12 +1,15 @@
 # Create your views here.
-
 import json
 
-from cover.models import Article, Tag
+from cover.models import Article, Tag, Image, Author
 from django.http import HttpResponse, Http404
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response, get_object_or_404
+from django.template import Context
+from django.template.loader import get_template
 from django.views.decorators.http import require_POST
 from nexus import settings
+from imageutil import ImageFormatter
 
 def frontpage(request):
     MEDIA_URL = settings.MEDIA_URL
@@ -17,23 +20,33 @@ def frontpage(request):
     articles = Article.objects.all()[0:2]
     return render_to_response('frontpage.html', locals())
 
+def imageview(request, slug):
+    MEDIA_URL = settings.MEDIA_URL
+    try:
+        obj = Image.objects.get(slug=slug) 
+    except ObjectDoesNotExist:
+        raise Http404
+    return render_to_response('imageview.html', locals())
+
 def articlepage(request, year, month, slug):
     try:
         article = Article.objects.get(slug=slug)
-    except IndexError:
+    except ObjectDoesNotExist:
         raise Http404
-    return render_to_response('article.html', locals());
+    html = get_template('article.html').render(Context({'article': article,
+                                                        'MEDIA_URL': settings.MEDIA_URL}))
+    html = ImageFormatter(html, article.images.all()).format()
+    return HttpResponse(html)
 
 def tagpage(request, slug):
+    MEDIA_URL = settings.MEDIA_URL
     tag = get_object_or_404(Tag, slug=slug)
-    articles = tag.article_set.all()
     return render_to_response('tag.html', locals())
 
-def contains(test_set, required_tags):
-    for tag in required_tags:
-        if tag not in test_set:
-            return False
-    return True
+def authorpage(request, slug):
+    MEDIA_URL = settings.MEDIA_URL
+    author = get_object_or_404(Author, slug=slug)
+    return render_to_response('author.html', locals())
 
 def load_more_articles(request):
     data = request.GET

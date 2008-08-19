@@ -1,16 +1,13 @@
 import Image
 from nexus import settings
-from os.path import basename, dirname, exists
+from os.path import basename, dirname, exists, getmtime
 from os import makedirs, remove, devnull
 from django.forms import ValidationError
 from subprocess import call
 
-JOIN_PATH = 'cache/joins/'
-THUMBS_PATH = 'cache/thumbs/'
-PDF_PATH = 'pdf/'
-STOCK_FAILED_PAGE = settings.MEDIA_ROOT + 'stock/FAILED_PAGE.pdf'
-STOCK_EMPTY_ISSUE = settings.MEDIA_ROOT + 'stock/EMPTY_ISSUE.pdf'
-FAILED_PAGE_URL = settings.MEDIA_URL + 'stock/EMPTY_ISSUE.pdf'
+JOIN_PATH = 'cache/pdf_joins/'
+THUMBS_PATH = 'cache/pdf_thumbs/'
+BURST_PATH = 'pdf_burst/'
 
 # This is only 2-3x slower than evince for short pdfs.
 # However, do not ***EVER*** feed it multi-page pdfs if you fear the OOM killer.
@@ -28,7 +25,7 @@ def __evince_thumbnailer(input, output, size):
     call(('evince-thumbnailer', '-s', str(size), input, output))
     image = Image.open(output) # resize AGAIN to produce consistent sizes
     image.thumbnail((size,size), Image.ANTIALIAS)
-    image.save(output, 'JPEG')
+    image.save(output, 'JPEG', quality=85)
 
 try:
     call(('evince-thumbnailer', devnull, devnull))
@@ -38,12 +35,7 @@ except OSError:
 
 def validate_pdf(in_memory_uploaded_file):
     ext_ok = in_memory_uploaded_file.name.endswith('.pdf')
-    try:
-        magic_ok = in_memory_uploaded_file.file.startswith('%PDF')
-    except Exception:
-        if not ext_ok:
-            raise ValidationError("That is not a PDF file.")
-        return
+    magic_ok = in_memory_uploaded_file.chunks().next().startswith('%PDF')
     if magic_ok and not ext_ok:
         raise ValidationError("Please rename that file so it has a .pdf extension")
     if not magic_ok and ext_ok:
@@ -54,7 +46,7 @@ def validate_pdf(in_memory_uploaded_file):
 def burst_pdf(input):
     """Creates new files for all input pages and returns their relative paths.
     Takes an absolute path to a pdf as input."""
-    output_dir = settings.MEDIA_ROOT + PDF_PATH
+    output_dir = settings.MEDIA_ROOT + BURST_PATH
     if not exists(output_dir):
         makedirs(output_dir)
     base = basename(input)[0:-4]
@@ -69,7 +61,7 @@ def burst_pdf(input):
     while True:
         path = '%s+%03d.pdf' % (base, i)
         if exists(output_dir + path):
-            results.append(PDF_PATH + path)
+            results.append(BURST_PATH + path)
         else:
             break
         i += 1
@@ -79,43 +71,40 @@ def burst_pdf(input):
 def joined_pdfs(input_models):
     """Returns url to cached union of the inputs, generating one if not available.
     Takes a list of PDF models as input."""
-    sums = tuple([model.checksum for model in input_models])
-    path = JOIN_PATH + '%i.pdf' % abs(hash(sums))
+    maxtime = 0
+    for model in input_models:
+        time = getmtime(model.pdf.path)
+        if time > maxtime:
+            maxtime = time
+    path = JOIN_PATH + '%s.pdf' % maxtime
     output = settings.MEDIA_ROOT + path
     url = settings.MEDIA_URL + path
-    if exists(output):
+    if exists(output) and getmtime(output) > maxtime:
         return url
     if not exists(dirname(output)):
         makedirs(dirname(output))
     inputs = [model.pdf.path for model in input_models]
     try:
         call(['pdftk'] + inputs + ['cat', 'output', output])
-    except:
-        return FAILED_PAGE_URL
-    else:
-        if not exists(output):
-            return FAILED_PAGE_URL
+    except EnvironmentError:
+        pass
     return url
 
-def pdf_to_thumbnail(input, size, checksum='', abort_on_error=False):
+def pdf_to_thumbnail(input, size):
     """Returns url to cached thumbnail, generating one if not available.
     Takes an absolute path to a pdf as input.
     Tries very hard to return something sane."""
     suffix = '@%i.jpg' % size
-    unique_id = basename(input)[0:-4] + (('=' + checksum) if checksum else '')
-    path = THUMBS_PATH + unique_id + suffix
+    name = basename(input)[0:-4]
+    path = THUMBS_PATH + name + suffix
     output = settings.MEDIA_ROOT + path
     url = settings.MEDIA_URL + path
-    if exists(output):
+    if exists(output) and getmtime(output) > getmtime(input):
         return url
     if not exists(dirname(output)):
         makedirs(dirname(output))
     try:
         __thumbnail_backend(input, output, size)
-    except:
-        if not abort_on_error:
-            return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, abort_on_error=True)
-    else:
-        if not exists(output) and not abort_on_error:
-            return pdf_to_thumbnail(STOCK_FAILED_PAGE, size, abort_on_error=True)
+    except EnvironmentError:
+        pass
     return url

@@ -1,0 +1,35 @@
+<html>
+
+<head>
+<title>Nexus: Articles tagged '{{ tag.name }}'</title>
+</head>
+
+<body>
+
+<a href="/">home</a>
+
+{% ifnotequal tag.article_set.count 0 %}
+	<h2>Articles tagged '{{ tag.name }}'</h2>
+	<ul>
+	  {% for article in tag.article_set.all %}
+	  <li><h3>{% include "articlelink.html" %}</h3>
+		{{ article.snippet }}
+	  </li>
+	  {% endfor %}
+	</ul>
+{% endifnotequal %}
+
+{% ifnotequal tag.image_set.count 0 %}
+	<h2>Images tagged '{{ tag.name }}'</h2>
+	<ul>
+	  {% for image in tag.image_set.all %}
+	  <li><h3>{% include "imagelink.html" %}</h3>
+		{{ article.snippet }}
+	  </li>
+	  {% endfor %}
+	</ul>
+{% endifnotequal %}
+
+</body>
+
+</html>

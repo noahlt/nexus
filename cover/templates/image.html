@@ -1,0 +1,18 @@
+{% spaceless %}
+<div class="image-default {{ classes }}">
+	<div class="image-wrap">
+		<a href="{{ viewlink }}">
+			<img id="{{ slug }}" alt="{{ slug }}" src="{{ image }}">
+		</a>
+	</div>
+    <span class="author">
+        {% for author in authors %}
+			{% if not forloop.first %}, {% endif %}
+			{% include "authorlink.html" %}
+		{% endfor %}
+    </span>
+    <span class="caption">
+        {{ caption }}
+    </span>
+</div>
+{% endspaceless %}

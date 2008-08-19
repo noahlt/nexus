@@ -1,20 +1,28 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
+from django.core.exceptions import ObjectDoesNotExist
+from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
+from nexus.archive.models import Issue
 
-# Create your models here.
+IMAGE_PATH = 'image_orig/'
+
+class AuthorAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('first_name', 'last_name')}
 
 class Author(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=40)
-    year = models.PositiveSmallIntegerField()
+    slug = models.SlugField(max_length=30, unique=True)
+    title = models.CharField(max_length=40, blank=True, null=True)
+    year = models.PositiveSmallIntegerField(blank=True, null=True)
 
     def __str__(self):
         return '%s %s' % (self.first_name, self.last_name)
 
 class Tag(models.Model):
-    name = models.CharField(max_length = 30)
-    slug = models.SlugField(max_length = 30)
+    name = models.CharField(max_length=30)
+    slug = models.SlugField(max_length=30, unique=True)
 
     def __str__(self):
         return self.name
@@ -23,12 +31,24 @@ class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 class Image(models.Model):
+    image = models.ImageField(upload_to='image_orig/')
+    caption = models.TextField()
     slug = models.CharField(primary_key=True, max_length=20,
         help_text="You can embed images in articles as [[slug]]")
-    caption = models.TextField()
-    image = models.ImageField(upload_to="images/")
     authors = models.ManyToManyField(Author)
-    date = models.DateField()
+    date = models.DateField(blank=True, null=True)
+    tags = models.ManyToManyField(Tag, blank=True)
+
+    def save(self):
+        super(Image, self).save()
+        self.thumbnail_size()
+        self.article_size()
+
+    def thumbnail_size(self):
+        return resize(self.image.path, THUMB_MAX_SIZE)
+
+    def article_size(self):
+        return resize(self.image.path, ARTICLE_MAX_SIZE)
 
     def __str__(self):
         return self.slug
@@ -40,11 +60,12 @@ class ImageAdminForm(forms.ModelForm):
             return self.cleaned_data['slug']
         try:
             date = Image.objects.get(slug=self.cleaned_data['slug'])
-        except:
+        except ObjectDoesNotExist:
             return self.cleaned_data['slug']
         raise forms.ValidationError("That slug is already taken.")
 
 class ImageAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('caption',)}
     form = ImageAdminForm
 
 class Article(models.Model):
@@ -56,7 +77,8 @@ class Article(models.Model):
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
     published = models.BooleanField()
-    #images = models.ManyToManyField(Image)
+    printed = models.ForeignKey(Issue, blank=True, null=True)
+    images = models.ManyToManyField(Image, blank=True)
 
     # Article tags are stored (in slug form) as the classes of the li's that
     # wrap articles, so the js doesn't have to look up article tags itself.
@@ -72,4 +94,3 @@ class Article(models.Model):
 
 class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
-    

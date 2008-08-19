@@ -1,0 +1,37 @@
+<html>
+	<body>
+        <h2>
+        Image by
+            {% for author in obj.authors.all %}{% if not forloop.first %}, {% endif %}{% include "authorlink.html" %}{% endfor %}.
+        </h2>
+        {% if obj.date %}
+            <p>
+                Creation date: {{ obj.date }}
+            </p>
+        {% endif %}
+		{% ifnotequal obj.tags.count 0 %}
+			<p>
+			Tags:
+			{% for tag in obj.tags.all %}
+                {% include "taglink.html" %}
+			{% endfor %}
+			</p>
+		{% endifnotequal %}
+		<p>
+			Referenced in articles:
+			<ul>
+				{% for article in obj.article_set.all %}
+				<li> <!-- not the same as articlelink.html; links to image id -->
+				<a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}#{{ obj.slug }}">
+					{{ article.title }}
+				</a>
+				</li>
+				{% endfor %}
+			</ul>
+		</p>
+        <p>
+            {{ obj.caption }}
+        </p>
+        <img src="{{ obj.image.url }}">
+	</body>
+</html>

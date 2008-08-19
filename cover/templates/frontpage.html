@@ -38,7 +38,7 @@
 
 <div class="controlnav">
   <a class="controllink" href="#">more articles from this issue</a> | 
-  <a class="controllink" href="/archive/">see archive of scans</a>
+  <a class="controllink" href="/archive/">see complete issue archive</a>
 </div>
 </div>
 
@@ -56,37 +56,40 @@
   <ul id="dates">
     <li><h3>2007-08</h3>
       <ul>
-	<li>August</li>
-	<li>September</li>
-	<li>November</li>
-	<li>December</li>
-	<li>January</li>
-	<li>February</li>
-	<li>March</li>
-	<li>April</li>
-	<li>May</li>
-	<li>June</li>
+  <li>August</li>
+  <li>September</li>
+  <li>November</li>
+  <li>December</li>
+  <li>January</li>
+  <li>February</li>
+  <li>March</li>
+  <li>April</li>
+  <li>May</li>
+  <li>June</li>
       </ul>
     </li>
     <li><h3>2008-09</h3>
       <ul>
-	<li>August</li>
-	<li>September</li>
-	<li>November</li>
-	<li>December</li>
-	<li>January</li>
-	<li>February</li>
-	<li>March</li>
-	<li>April</li>
-	<li>May</li>
-	<li>June</li>
+  <li>August</li>
+  <li>September</li>
+  <li>November</li>
+  <li>December</li>
+  <li>January</li>
+  <li>February</li>
+  <li>March</li>
+  <li>April</li>
+  <li>May</li>
+  <li>June</li>
       </ul>
     </li>
   </ul>
   <ul id="results">
     {% for article in articles %}
-    <li class="{{ article.tagclasses }}"><h3 class="{{ article.slug }}"><a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{{ article.title }}</a></h3>
+    <li class="{{ article.tagclasses }}"><h3 class="{{ article.slug }}">{% include "articlelink.html" %}</h3>
       {{ article.snippet }}
+    {% ifnotequal 0 article.images.count %}
+        <img src="{{ article.images.all.0.thumbnail_size }}">
+    {% endifnotequal %}
     </li>
     {% endfor %}
   </ul>
@@ -109,3 +112,4 @@
 
 
 </body> </html>
+

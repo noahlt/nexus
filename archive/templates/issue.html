@@ -10,6 +10,13 @@
 	Click below to download a page or
 	<a class=link href="{{ issue.calculate_join_url }}">here</a>
 	to grab the complete set.
+    {% ifnotequal issue.article_set.count 0 %}
+        <br><br><p>Articles viewable online:
+        {% for article in issue.article_set.all %}
+			{% include "articlelink.html" %}
+        {% endfor %}
+        </p>
+    {% endifnotequal %}
 {% endblock %}
 
 {% block content %}

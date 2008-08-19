@@ -1,0 +1,44 @@
+{% load markup %}
+<html>
+	<head>
+		<title>
+			{{ article.title }}
+		</title>
+                <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
+		<style>
+            .content {
+                width: 50em;
+                border: 1px solid #000;
+                margin-left: auto;
+                margin-right: auto;
+                padding: 1em;
+                display: block;
+            }
+		</style>
+	</head>
+	<body>
+        <a href="/">home</a>
+        <div class="content">
+		<h1>
+			The Nexus
+		</h1>
+                <h2>{{ article.title }}</h2>
+        {% for author in article.authors.all %}
+            {% include "authorlink.html" %}
+        {% endfor %}
+		{{ article.fulltext|textile }}
+		<p>
+		Tags:
+		{% for tag in article.tags.all %}
+            {% include "taglink.html" %}
+		{% endfor %}
+		</p>
+        {% if article.printed %}
+        <p>
+        Article printed
+        <a href="/archive/{{ article.printed.date }}">{{ article.published.date|date:"F m, Y" }}</a>.
+        </p>
+        {% endif %}
+        </div>
+	</body>
+</html>

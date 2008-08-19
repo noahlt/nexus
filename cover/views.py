@@ -63,8 +63,6 @@ def load_more_articles(request):
 
     r = [{'tagclasses': article.tagclasses.split(" "), #FIXME
           'slug': article.slug,
-          # need to convert to 'unicode' because django templates create
-          # strings of class django.utils.safestring.SafeUnicode
           'html': get_template('article_snippet.html') \
                       .render(Context({'article': article,
                                        'hidden': True}))

@@ -12,11 +12,14 @@ from imageutil import ImageFormatter
 
 def frontpage(request):
     MEDIA_URL = settings.MEDIA_URL
+    num_to_load = 2
     tags = list(Tag.objects.all())
     tags.sort(key=lambda tag: tag.article_set.count(), reverse=True)
     for num, tag in enumerate(tags):
         tag.num = num % 6
-    articles = Article.objects.all()[0:2]
+    total = Article.objects.count()
+    remaining = total - num_to_load
+    articles = Article.objects.all()[0:num_to_load]
     return render_to_response('frontpage.html', locals())
 
 def imageview(request, slug):
@@ -32,8 +35,9 @@ def articlepage(request, year, month, slug):
         article = Article.objects.get(slug=slug)
     except ObjectDoesNotExist:
         raise Http404
-    html = get_template('article.html').render(Context({'article': article,
-                                                        'MEDIA_URL': settings.MEDIA_URL}))
+    html = get_template('article.html').render(Context(
+        {'article': article, 'MEDIA_URL': settings.MEDIA_URL}
+    ))
     html = ImageFormatter(html, article.images.all()).format()
     return HttpResponse(html)
 
@@ -47,25 +51,25 @@ def authorpage(request, slug):
     author = get_object_or_404(Author, slug=slug)
     return render_to_response('author.html', locals())
 
-
-
 def load_more_articles(request):
+    num_to_load = 2
     data = request.GET
-    
     tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
-    articles = Article.objects.exclude(slug__in=data.getlist('have_articles'))
+    articles = Article.objects.all();
 
     # by repeatedly applying a new filter for each tag, we get an AND filter,
     # while articles.filter(tags__in=tags) would give us an OR filter.
     for tag in tags:
         articles = articles.filter(tags=tag)
-
-    r = [{'tagclasses': article.tagclasses.split(" "), #FIXME
+    total = articles.count()
+    articles = articles.exclude(slug__in=data.getlist('have_articles'))
+    stats = {'total': total, 'remaining': max(0, articles.count() - num_to_load)}
+    article_data = [{'tagclasses': article.tagclasses.split(' '),
           'slug': article.slug,
           'html': get_template('article_snippet.html') \
                       .render(Context({'article': article,
                                        'hidden': True}))
-         }
-         for article in articles[0:2]]
+    } for article in articles[0:num_to_load]]
 
+    r = {'stats': stats, 'articles': article_data}
     return HttpResponse(json.write(r), mimetype="application/json")

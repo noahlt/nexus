@@ -14,20 +14,36 @@ $(document).ready(function() {
         }
         });
 
+    function update_stats(stats) {
+		document.getElementById('remaining').innerHTML = stats['remaining'];
+		document.getElementById('total').innerHTML = stats['total'];
+		document.getElementById('remainwrapper').style.display =
+			stats['remaining'] > 0 ? '' : 'none';
+    }
+
     function get_articles(selectedtags) {
         $.get("/ajax/more_articles",
-              {"tagslugs":  selectedtags, "have_articles": have_articles},
-              function (responseData) {
-                  for (var i in responseData) {
-                      var article = responseData[i];
-                      $("#results").append(article['html']);
-                      have_articles[have_articles.length] = article['slug'];
-                  }
-                  $(".new-article")
+            {"tagslugs": selectedtags, "have_articles": have_articles},
+            function (responseData) {
+				update_stats(responseData['stats']);
+                for (var i in responseData['articles']) {
+                    var article = responseData['articles'][i];
+                    $("#results").append(article['html']);
+                    have_articles[have_articles.length] = article['slug'];
+                }
+                $(".new-article")
                       .show("fast")
                       .removeClass("new-article");
               },
               "json");
+    }
+
+    function get_stats(selectedtags) {
+        $.get("/ajax/more_articles",
+            {"tagslugs": selectedtags, "have_articles": have_articles},
+            function (responseData) {
+				update_stats(responseData['stats']);
+			}, "json");
     }
 
     // this selector may have to be changed to be more specific
@@ -59,6 +75,7 @@ $(document).ready(function() {
                 get_articles(selectedtags);
 
             } else {
+                get_stats(selectedtags);
                 $(this).animate({width: "-=1em", }, 200);
                 $("#results li")
                     .not("."+tagslug)
@@ -76,7 +93,7 @@ $(document).ready(function() {
                 }
             }
             });
-    
+
     $("#tags #alltags").click(function() {
         $(this).addClass("activetag");
         $("#tags .activetag").not("#alltags")
@@ -84,9 +101,8 @@ $(document).ready(function() {
             .animate({width: "-=1em",}, 200);
         $("#results li").show("fast");
         });
-    
+
     $("#tags li a").click(function(event) {
             event.preventDefault();
         });
-
     });

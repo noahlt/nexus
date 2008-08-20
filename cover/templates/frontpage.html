@@ -90,8 +90,8 @@
     {% endfor %}
   </ul>
 
-  <div class="controlnav">
-    <a class="controllink" href="#">load more articles</a>
+  <div class="controlnav" id="remainwrapper">
+    <a class="controllink" href="#">load more articles (<span id="remaining">{{ remaining }}</span> remaining of <span id="total">{{ total }}</span>)</a>
   </div>
 
   <div id="signed">&mdash;nt '09</div>  {# don't remove this, it's actually important #}

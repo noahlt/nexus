@@ -7,6 +7,7 @@ Click below to see what's behind these front pages.
 {% endblock %}
 
 {% block content %}
+{% spaceless %}
     {% for year in years reversed %}
         <div class="yearblock">
             <h2 class="year">{{ year.year }}</h2>
@@ -20,4 +21,5 @@ Click below to see what's behind these front pages.
             {% endfor %}
         </div>
     {% endfor %}
+{% endspaceless %}
 {% endblock %}

@@ -7,7 +7,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context
 from django.template.loader import get_template
-from django.views.decorators.http import require_POST
 from nexus import settings
 from imageutil import ImageFormatter
 

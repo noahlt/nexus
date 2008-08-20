@@ -51,6 +51,17 @@ def authorpage(request, slug):
     author = get_object_or_404(Author, slug=slug)
     return render_to_response('author.html', locals())
 
+def stat_articles(request):
+    data = request.GET
+    tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
+    articles = Article.objects.all();
+    for tag in tags:
+        articles = articles.filter(tags=tag)
+    total = articles.count()
+    articles = articles.exclude(slug__in=data.getlist('have_articles'))
+    stats = {'total': total, 'remaining': max(0, articles.count())}
+    return HttpResponse(json.write(stats), mimetype="application/json")
+
 def load_more_articles(request):
     num_to_load = 2
     data = request.GET

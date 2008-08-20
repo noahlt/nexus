@@ -39,11 +39,9 @@ $(document).ready(function() {
     }
 
     function get_stats(selectedtags) {
-        $.get("/ajax/more_articles",
+        $.get("/ajax/stat_articles",
             {"tagslugs": selectedtags, "have_articles": have_articles},
-            function (responseData) {
-				update_stats(responseData['stats']);
-			}, "json");
+			update_stats, "json");
     }
 
     // this selector may have to be changed to be more specific

@@ -60,12 +60,13 @@ class PDFInline(admin.TabularInline):
     form = PDFAdminForm
 
 class IssueAdminForm(forms.ModelForm):
-    # XXX manual validation since unique=True doesn't work with inlined forms
+    # XXX manual validation find why unique=True doesn't work
+    # this case may be complicated by the inlined field
     def clean_date(self):
         if 'date' not in self.changed_data:
             return self.cleaned_data['date']
         try:
-            date = Issue.objects.get(date=self.cleaned_data['date'])
+            Issue.objects.get(date=self.cleaned_data['date'])
         except ObjectDoesNotExist:
             return self.cleaned_data['date']
         raise forms.ValidationError("That date is already taken.")

@@ -1,14 +1,55 @@
-from django import forms
 from django.db import models
-from django.contrib import admin
+from django import forms
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import admin
 from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
 from nexus.archive.models import Issue
 
 IMAGE_PATH = 'image_orig/'
 
-class AuthorAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('first_name', 'last_name')}
+class ImageAdminForm(forms.ModelForm):
+    # XXX manual validation find why unique=True doesn't work
+    def clean_slug(self):
+        if 'slug' not in self.changed_data:
+            return self.cleaned_data['slug']
+        try:
+            Image.objects.get(slug=self.cleaned_data['slug'])
+        except ObjectDoesNotExist:
+            return self.cleaned_data['slug']
+        raise forms.ValidationError("That slug is already taken.")
+
+class TagAdminForm(forms.ModelForm):
+    # XXX manual validation find why unique=True doesn't work
+    def clean_slug(self):
+        if 'slug' not in self.changed_data:
+            return self.cleaned_data['slug']
+        try:
+            Tag.objects.get(slug=self.cleaned_data['slug'])
+        except ObjectDoesNotExist:
+            return self.cleaned_data['slug']
+        raise forms.ValidationError("That slug is already taken.")
+
+class AuthorAdminForm(forms.ModelForm):
+    # XXX manual validation find why unique=True doesn't work
+    def clean_slug(self):
+        if 'slug' not in self.changed_data:
+            return self.cleaned_data['slug']
+        try:
+            Author.objects.get(slug=self.cleaned_data['slug'])
+        except ObjectDoesNotExist:
+            return self.cleaned_data['slug']
+        raise forms.ValidationError("That slug is already taken.")
+
+class ArticleAdminForm(forms.ModelForm):
+    # XXX manual validation find why unique=True doesn't work
+    def clean_slug(self):
+        if 'slug' not in self.changed_data:
+            return self.cleaned_data['slug']
+        try:
+            Article.objects.get(slug=self.cleaned_data['slug'])
+        except ObjectDoesNotExist:
+            return self.cleaned_data['slug']
+        raise forms.ValidationError("That slug is already taken.")
 
 class Author(models.Model):
     first_name = models.CharField(max_length=30)
@@ -23,6 +64,10 @@ class Author(models.Model):
     class Meta:
         ordering = ['last_name']
 
+class AuthorAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('first_name', 'last_name')}
+    form = AuthorAdminForm
+
 class Tag(models.Model):
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=30, unique=True)
@@ -32,11 +77,12 @@ class Tag(models.Model):
 
 class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+    form = TagAdminForm
 
 class Image(models.Model):
     image = models.ImageField(upload_to='image_orig/')
     caption = models.TextField()
-    slug = models.CharField(primary_key=True, max_length=20,
+    slug = models.CharField(primary_key=True, max_length=20, unique=True,
         help_text="You can embed images in articles as [[slug]]")
     authors = models.ManyToManyField(Author)
     date = models.DateField(blank=True, null=True)
@@ -56,24 +102,13 @@ class Image(models.Model):
     def __str__(self):
         return self.slug
     
-class ImageAdminForm(forms.ModelForm):
-    # FIXME manual validation... since primary_key=True doesn't validate uniqueness?
-    def clean_slug(self):
-        if 'slug' not in self.changed_data:
-            return self.cleaned_data['slug']
-        try:
-            date = Image.objects.get(slug=self.cleaned_data['slug'])
-        except ObjectDoesNotExist:
-            return self.cleaned_data['slug']
-        raise forms.ValidationError("That slug is already taken.")
-
 class ImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('caption',)}
     form = ImageAdminForm
 
 class Article(models.Model):
     title = models.CharField(max_length=50)
-    slug = models.SlugField(max_length=20)
+    slug = models.SlugField(max_length=20, unique=True)
     snippet = models.CharField(max_length=600)
     fulltext = models.TextField()
     date = models.DateField()
@@ -97,3 +132,4 @@ class Article(models.Model):
 
 class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
+    form = ArticleAdminForm

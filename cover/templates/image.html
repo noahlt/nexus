@@ -1,10 +1,10 @@
 {% spaceless %}
 <div class="image-default {{ classes }}">
-	<div class="image-wrap">
-		<a href="{{ viewlink }}">
-			<img id="{{ slug }}" alt="{{ slug }}" src="{{ image }}">
-		</a>
-	</div>
+    <a href="{{ viewlink }}">
+        <div class="image-wrap">
+                <img id="{{ slug }}" alt="{{ slug }}" src="{{ image }}">
+        </div>
+    </a>
     <span class="author">
         {% for author in authors %}
 			{% if not forloop.first %}, {% endif %}

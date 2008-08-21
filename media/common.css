@@ -73,11 +73,18 @@ h2 {
   letter-spacing: 1pt;
   text-align: center;
   padding-top: 0.5em;
-  border-bottom: 2px solid black;
   margin-left: 10%;
   margin-right: 10%;
   margin-bottom: .5em;
-  
+}
+
+h3 {
+  font-size: large;
+  font-weight: bold;
+  letter-spacing: 1pt;
+  text-align: left;
+  padding-top: 0.5em;
+  margin-bottom: .5em;
 }
 
 #navbar {
@@ -200,7 +207,7 @@ h2 {
   text-align: right;
 }
 
-#results,   #grid .controlnav {
+#results, #grid .controlnav {
   margin-left: 14%;
   margin-right: 14%;
   line-height: 1.5em;
@@ -242,6 +249,7 @@ h2 {
 
 #footer a:hover {
   border-bottom: 1em solid #305cb6;
+  text-decoration: none;
 }
   
 #footer div {
@@ -254,7 +262,6 @@ h2 {
 #footer p {
   margin-left: 14%;
   margin-right: 14%;
-  border-top: 2em solid white;
   padding-top: 4em;
   font-size: x-small;
 }

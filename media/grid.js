@@ -73,7 +73,6 @@ $(document).ready(function() {
                 get_articles(selectedtags);
 
             } else {
-                get_stats(selectedtags);
                 $(this).animate({width: "-=1em", }, 200);
                 $("#results li")
                     .not("."+tagslug)
@@ -89,6 +88,7 @@ $(document).ready(function() {
                 if (!$("#tags li").hasClass("activetag")) {
                     $("#tags #alltags").addClass("activetag");
                 }
+                get_stats(selectedtags);
             }
             });
 

@@ -20,11 +20,11 @@ a:hover {
 }
 
 .thumb {
-	border: solid 1px;
+	border: solid 1px gray;
 }
 
 .thumb2 {
-	border: solid 1px;
+	border: solid 1px gray;
 	margin: 0em .5em 2em .5em;
 }
 

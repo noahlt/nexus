@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+	<head>
+		<title>
+			{% block title %}The Nexus{% endblock %}
+		</title>
+		<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
+		<link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css" />
+		<style>
+            .wrapper {
+				background: white;
+				color: black;
+            }
+
+			.content {
+				padding: 1em;
+				padding-top: 0;
+				margin: 0;
+			}
+
+			body {
+				background: #222;
+			}
+
+			p {
+				padding-top: 1em;
+			}
+		</style>
+	</head>
+	<body>
+		<center>
+		<div class="wrapper" style="text-align:left">
+		<a href="/" style="text-decoration:none;"><h1>
+			{% block header %}
+			The Nexus
+			{% endblock %}
+		</h1></a>
+        <div class="content">
+		<h2>{% block subtitle %}{% endblock %}</h2>
+		{% block content %}{% endblock %}
+        </div></div>
+		</center>
+		{% include "footer.html" %}
+	</body>
+</html>

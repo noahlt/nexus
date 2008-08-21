@@ -1,11 +1,14 @@
-<html>
-	<body>
-	<a href="/"><h1>
-		The Nexus
-	</h1></a>
+{% extends "basic-full.html" %}
+
+{% block content %}
         <h2>
         Image by
-            {% for author in obj.authors.all %}{% if not forloop.first %}, {% endif %}{% include "authorlink.html" %}{% endfor %}.
+        {% spaceless %}
+            {% for author in obj.authors.all %}
+                {% if not forloop.first %}, {% endif %}
+                {% include "authorlink.html" %}
+            {% endfor %}
+        {% endspaceless %}
         </h2>
         {% if obj.date %}
             <p>
@@ -20,21 +23,25 @@
 			{% endfor %}
 			</p>
 		{% endifnotequal %}
-		<p>
-			Referenced in articles:
-			<ul>
-				{% for article in obj.article_set.all %}
-				<li> <!-- not the same as articlelink.html; links to image id -->
-				<a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}#{{ obj.slug }}">
-					{{ article.title }}
-				</a>
-				</li>
-				{% endfor %}
-			</ul>
-		</p>
+		{% ifnotequal obj.article_set.count 0 %}
+            <p>
+                <h3>Referenced in article{% ifnotequal obj.article_set.count 1 %}s{% endifnotequal %}:</h3>
+                <ul style="line-height: 1.5em; margin-left: 1em">
+                    {% for article in obj.article_set.all %}
+                    <li> <!-- not the same as articlelink.html; links to image id -->
+                    <a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}#{{ obj.slug }}">
+                        {{ article.title }}
+                    </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </p>
+		{% endifnotequal %}
         <p>
             {{ obj.caption }}
         </p>
-        <img src="{{ obj.image.url }}">
-	</body>
-</html>
+        <br>
+        <a href="{{ obj.image.url }}">
+        <img style="max-width:100%" src="{{ obj.image.url }}">
+        </a>
+{% endblock %}

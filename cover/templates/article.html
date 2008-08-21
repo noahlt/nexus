@@ -1,47 +1,30 @@
+{% extends "basic.html" %}
 {% load markup %}
-<html>
-	<head>
-		<title>
-			{{ article.title }}
-		</title>
-		<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
-		<link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css" />
-		<style>
-            .content {
-                width: 50em;
-                border: 1px solid #000;
-                margin-left: auto;
-                margin-right: auto;
-                padding: 1em;
-                display: block;
-            }
-			p {
-				padding: .5em;
-			}
-		</style>
-	</head>
-	<body>
-        <div class="content">
-		<a href="/" style="text-decoration:none;"><h1>
-			The Nexus
-		</h1></a>
-                <h2>{{ article.title }}</h2>
-        {% for author in article.authors.all %}
-            {% include "authorlink.html" %}
-        {% endfor %}
-		{{ article.fulltext|textile }}
-		<p>
+
+{% block title %}
+{{ article.title }}
+{% endblock %}
+
+{% block content %}
+	<h2>{{ article.title }}</h2>
+	<center>
+		{% for author in article.authors.all %}
+			{% include "authorlink.html" %}
+		{% endfor %}
+	</center>
+	{{ article.fulltext|textile }}
+	<p>
 		Tags:
 		{% for tag in article.tags.all %}
-            {% include "taglink.html" %}
+			{% include "taglink.html" %}
 		{% endfor %}
+	</p>
+	{% if article.printed %}
+		<p>
+			Article printed
+			<a href="/archive/{{ article.printed.date }}">
+				{{ article.printed.date|date:"F m, Y" }}.
+			</a>
 		</p>
-        {% if article.printed %}
-        <p>
-        Article printed
-        <a href="/archive/{{ article.printed.date }}">{{ article.printed.date|date:"F m, Y" }}</a>.
-        </p>
-        {% endif %}
-        </div>
-	</body>
-</html>
+	{% endif %}
+{% endblock %}

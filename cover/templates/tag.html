@@ -1,36 +1,27 @@
-<html>
+{% extends "basic.html" %}
 
-<head>
-<title>Nexus: Articles tagged '{{ tag.name }}'</title>
-</head>
+{% block title %}
+	Nexus: Articles tagged '{{ tag.name }}'
+{% endblock %}
 
-<body>
-<a href="/"><h1>
-	The Nexus
-</h1></a>
+{% block content %}
+	{% ifnotequal tag.article_set.count 0 %}
+		<h2>Articles tagged '{{ tag.name }}'</h2>
+		<ul id="results" style="margin:0">
+			{% for article in tag.article_set.all %}
+				<li><h3>{% include "articlelink.html" %}</h3>
+				{{ article.snippet }}
+				</li>
+			{% endfor %}
+		</ul>
+	{% endifnotequal %}
 
-{% ifnotequal tag.article_set.count 0 %}
-	<h2>Articles tagged '{{ tag.name }}'</h2>
-	<ul>
-	  {% for article in tag.article_set.all %}
-	  <li><h3>{% include "articlelink.html" %}</h3>
-		{{ article.snippet }}
-	  </li>
-	  {% endfor %}
-	</ul>
-{% endifnotequal %}
-
-{% ifnotequal tag.image_set.count 0 %}
-	<h2>Images tagged '{{ tag.name }}'</h2>
-	<ul>
-	  {% for image in tag.image_set.all %}
-	  <li><h3>{% include "imagelink.html" %}</h3>
-		{{ article.snippet }}
-	  </li>
-	  {% endfor %}
-	</ul>
-{% endifnotequal %}
-
-</body>
-
-</html>
+	{% ifnotequal tag.image_set.count 0 %}
+		<h2>Images tagged '{{ tag.name }}'</h2>
+		<center>
+			{% for image in tag.image_set.all %}
+				{% include "imagelink.html" %}
+			{% endfor %}
+		</center>
+	{% endifnotequal %}
+{% endblock %}

@@ -1,34 +1,26 @@
-<html>
+{% extends "basic.html" %}
 
-<head>
-<title>Nexus: '{{ author }}'</title>
-</head>
+{% block title %}
+	Nexus: {{ author }}
+{% endblock %}
 
-<body>
-
-<a href="/"><h1>
-	The Nexus
-</h1></a>
-<h1>{{ author }}{% if author.title %} ({{ author.title }}){% endif %}</h1>
-{% ifnotequal author.article_set.count 0 %}
-    Articles:
-    <ul>
-      {% for article in author.article_set.all %}
-      <li><h3>{% include "articlelink.html" %}</h3>
-        {{ article.snippet }}
-      </li>
-      {% endfor %}
-    </ul>
-{% endifnotequal %}
-{% ifnotequal author.image_set.count 0 %}
-    Images:
-    <ul>
-      {% for image in author.image_set.all %}
-      <li>{% include "imagelink.html" %}</li>
-      {% endfor %}
-    </ul>
-{% endifnotequal %}
-
-</body>
-
-</html>
+{% block content %}
+	<h2>{{ author }}{% if author.title %} ({{ author.title }}){% endif %}</h2>
+	{% ifnotequal author.article_set.count 0 %}
+		<ul id="results" style="margin:0">
+			{% for article in author.article_set.all %}
+				<li class="{{ article.tagclasses }} {% if hidden %}new-article{% endif %}">
+					<h3 class="{{ article.slug }}">{% include "articlelink.html" %}</h3>
+					{{ article.snippet }}
+				</li>
+			{% endfor %}
+		</ul>
+	{% endifnotequal %}
+	{% ifnotequal author.image_set.count 0 %}
+		<center>
+			{% for image in author.image_set.all %}
+				{% include "imagelink.html" %}
+			{% endfor %}
+		</center>
+	{% endifnotequal %}
+{% endblock %}

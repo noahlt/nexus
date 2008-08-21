@@ -7,7 +7,6 @@
     </a>
     <span class="author">
         {% for author in authors %}
-			{% if not forloop.first %}, {% endif %}
 			{% include "authorlink.html" %}
 		{% endfor %}
     </span>

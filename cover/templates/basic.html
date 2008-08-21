@@ -18,8 +18,14 @@
 
 			.content {
 				padding: 1em;
+				overflow: hidden;
 				padding-top: 0;
 				margin: 0;
+			}
+
+			#extra {
+				padding: 0 1em 1em 1em;
+				background: #eee;
 			}
 
 			body {
@@ -42,7 +48,11 @@
         <div class="content">
 		<h2>{% block subtitle %}{% endblock %}</h2>
 		{% block content %}{% endblock %}
-        </div></div>
+		</div>
+		<div id="extra">
+			{% block extra %}{% endblock %}
+		</div>
+        </div>
 		</center>
 		{% include "footer.html" %}
 	</body>

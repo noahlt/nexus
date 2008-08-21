@@ -5,28 +5,28 @@
         Image by
         {% spaceless %}
             {% for author in obj.authors.all %}
-                {% if not forloop.first %}, {% endif %}
                 {% include "authorlink.html" %}
             {% endfor %}
         {% endspaceless %}
         </h2>
         {% if obj.date %}
-            <p>
-                Creation date: {{ obj.date }}
-            </p>
+			<h3>Created:</h3>
+			<span class="info">
+				{{ obj.date }}
+			</span>
         {% endif %}
 		{% ifnotequal obj.tags.count 0 %}
-			<p>
-			Tags:
+			<h3>Tags:</h3>
+			<span class="info">
 			{% for tag in obj.tags.all %}
                 {% include "taglink.html" %}
 			{% endfor %}
-			</p>
+			</span>
 		{% endifnotequal %}
 		{% ifnotequal obj.article_set.count 0 %}
             <p>
                 <h3>Referenced in article{% ifnotequal obj.article_set.count 1 %}s{% endifnotequal %}:</h3>
-                <ul style="line-height: 1.5em; margin-left: 1em">
+				<ul class="info">
                     {% for article in obj.article_set.all %}
                     <li> <!-- not the same as articlelink.html; links to image id -->
                     <a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}#{{ obj.slug }}">
@@ -41,7 +41,5 @@
             {{ obj.caption }}
         </p>
         <br>
-        <a href="{{ obj.image.url }}">
         <img style="max-width:100%" src="{{ obj.image.url }}">
-        </a>
 {% endblock %}

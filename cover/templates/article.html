@@ -13,6 +13,8 @@
 		{% endfor %}
 	</center>
 	{{ article.fulltext|textile }}
+{% endblock %}
+{% block extra %}
 	<p>
 		Tags:
 		{% for tag in article.tags.all %}

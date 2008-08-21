@@ -12,7 +12,7 @@ from imageutil import ImageFormatter
 
 def frontpage(request):
     MEDIA_URL = settings.MEDIA_URL
-    num_to_load = 2
+    num_to_load = 5
     tags = list(Tag.objects.all())
     tags.sort(key=lambda tag: tag.article_set.count(), reverse=True)
     for num, tag in enumerate(tags):
@@ -63,7 +63,7 @@ def stat_articles(request):
     return HttpResponse(json.write(stats), mimetype="application/json")
 
 def load_more_articles(request):
-    num_to_load = 2
+    num_to_load = 5
     data = request.GET
     tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
     articles = Article.objects.all();

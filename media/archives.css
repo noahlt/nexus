@@ -17,6 +17,7 @@ a:hover {
 
 .content {
 	margin: 0em 1em 2em 1.5em;
+	overflow: hidden;
 }
 
 .thumb {

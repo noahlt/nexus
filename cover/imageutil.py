@@ -7,7 +7,7 @@ from django.template import Context
 from django.template.loader import get_template
 from nexus import settings
 
-THUMB_MAX_SIZE = (150,250)
+THUMB_MAX_SIZE = (150,150)
 ARTICLE_MAX_SIZE = (800,800)
 THUMBS_PATH = 'cache/image_thumbs/'
 

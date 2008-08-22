@@ -23,11 +23,16 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 	outline: 0;
 }
 
+#dates ::-moz-selection { background-color: transparent; color: inherit }
+#tags ::-moz-selection { background-color: transparent; color: inherit }
+#dates ::selection { background-color: transparent; color: inherit }
+#tags ::selection { background-color: transparent; color: inherit }
+
 body {
-	line-height: 1;
 	color: #FFF;
 	background: #000;
-	font-family: helvetica, sans-serif;
+	font-size: 11pt;
+	font-family: Arial;
 }
 
 ol, ul {
@@ -55,6 +60,7 @@ blockquote, q {
 }
 
 h1 {
+  font-family: helvetica;
   font-size: 40pt;
   font-weight: bold;
   letter-spacing: 0.8pt;
@@ -68,17 +74,17 @@ h1 {
 }
 
 h2 {
+  font-family: helvetica;
   font-size: x-large;
   font-weight: bold;
   letter-spacing: 1pt;
   text-align: center;
   padding-top: 0.5em;
-  margin-left: 10%;
-  margin-right: 10%;
   margin-bottom: .5em;
 }
 
 h3 {
+  font-family: helvetica;
   font-size: large;
   font-weight: bold;
   letter-spacing: 1pt;
@@ -290,7 +296,7 @@ a:hover {
 
 .controllink:hover {
   border: 0;
-  color: darkblue; /* FIXME */
+  color: blue; /* FIXME */
 }
 
 .controlnav {

@@ -2,7 +2,7 @@
 {% load markup %}
 
 {% block title %}
-{{ article.title }}
+	{{ article.title }}
 {% endblock %}
 
 {% block content %}
@@ -12,8 +12,10 @@
 			{% include "authorlink.html" %}
 		{% endfor %}
 	</center>
+	<br style="font-size: 5pt">
 	{{ article.fulltext|textile }}
 {% endblock %}
+
 {% block extra %}
 	<p>
 		Tags:

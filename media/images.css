@@ -6,19 +6,19 @@ a:hover {
 
 .image-default {
 	margin-bottom: 1em;
-	margin-top: 1.5em;
 	float: left;
 	clear: both;
-    width: 800px;
+    width: 790px;
 }
 
 .image-wrap {
 	border: 1px solid #eee;
+	background-color: #eee;
 }
 
 .image-default img {
 	border: none;
-	max-width: 798px;
+	max-width: 788px;
 }
 
 .small {
@@ -43,7 +43,6 @@ a:hover {
 	margin-left: 1em;
 	margin-right: .2em;
 	max-width: 150px;
-    width: auto;
 }
 
 .thumb .image-wrap {
@@ -59,7 +58,7 @@ a:hover {
 	color: #555;
 	float: right;
 	clear: left;
-	font-size: x-small;
+	font-size: 8pt;
 	font-style: italic;
 	margin-top: .2em;
 	margin-left: 1em;
@@ -69,7 +68,7 @@ a:hover {
 	color: #555;
 	float: left;
 	clear: right;
-	font-size: small;
+	font-size: 10pt;
 	margin-top: .2em;
 	margin-right: 1em;
 }

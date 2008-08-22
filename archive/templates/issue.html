@@ -11,10 +11,14 @@
 	<a href="{{ issue.calculate_join_url }}">here</a>
 	to grab the complete set.
     {% ifnotequal issue.article_set.count 0 %}
-        <br><br><p>Articles viewable online:
+	<p><h3>Articles viewable online:</h3>
+		<ul class="info">
         {% for article in issue.article_set.all %}
+		<li>
 			{% include "articlelink.html" %}
+		</li>
         {% endfor %}
+		</ul>
         </p>
     {% endifnotequal %}
 {% endblock %}

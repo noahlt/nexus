@@ -2,24 +2,32 @@
 import simplejson as json
 
 from cover.models import Article, Tag, Image, Author
-from django.http import HttpResponse, Http404
+from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context
 from django.template.loader import get_template
-from nexus import settings
 from imageutil import ImageFormatter
+from models import Issue
+from nexus import settings
 
 def frontpage(request):
     MEDIA_URL = settings.MEDIA_URL
     num_to_load = 5
-    tags = list(Tag.objects.all())
+    tags = [ tag for tag in Tag.objects.all() if tag.article_set.count() > 0 ]
     tags.sort(key=lambda tag: tag.article_set.count(), reverse=True)
     for num, tag in enumerate(tags):
         tag.num = num % 6
     total = Article.objects.count()
     remaining = total - num_to_load
     articles = Article.objects.all()[0:num_to_load]
+    try:
+        current_issue = Issue.objects.get(date=date.today())
+        showprint = True
+    except ObjectDoesNotExist:
+        current_issue = Issue.objects.all().reverse()[0]
+        showprint = False
     return render_to_response('frontpage.html', locals())
 
 def imageview(request, slug):

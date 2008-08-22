@@ -6,8 +6,8 @@ $(document).ready(function() {
     $("#toggleprint").click(function(event) {
         event.preventDefault();
         if ($(this).text()[0] == 'c') {
+            $("#print").hide("fast");
             $(this).html("expand &darr;");
-            $("#print p").hide("fast");
         } else {
             $(this).html("collapse &uarr;");
             $("#print p").show("fast");
@@ -65,7 +65,7 @@ $(document).ready(function() {
                     }).get();
 
             if ($(this).hasClass("activetag")) {
-                $(this).animate({width: "+=1em", }, 200);
+                $(this).animate({width: "+=14px", }, 200);
                 $("#results li")
                     .not("."+tagslug)
                     .hide("fast");
@@ -73,7 +73,7 @@ $(document).ready(function() {
                 get_articles(selectedtags);
 
             } else {
-                $(this).animate({width: "-=1em", }, 200);
+                $(this).animate({width: "-=14px", }, 200);
                 $("#results li")
                     .not("."+tagslug)
                     .filter(function(i) {
@@ -96,7 +96,7 @@ $(document).ready(function() {
         $(this).addClass("activetag");
         $("#tags .activetag").not("#alltags")
             .removeClass("activetag")
-            .animate({width: "-=1em",}, 200);
+            .animate({width: "-=14px",}, 200);
         $("#results li").show("fast");
         });
 

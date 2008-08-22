@@ -28,11 +28,7 @@
                 <h3>Referenced in article{% ifnotequal obj.article_set.count 1 %}s{% endifnotequal %}:</h3>
 				<ul class="info">
                     {% for article in obj.article_set.all %}
-                    <li> <!-- not the same as articlelink.html; links to image id -->
-                    <a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}#{{ obj.slug }}">
-                        {{ article.title }}
-                    </a>
-                    </li>
+						{% include "articlelink.html" %}
                     {% endfor %}
                 </ul>
             </p>

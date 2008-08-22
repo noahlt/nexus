@@ -18,6 +18,11 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 	vertical-align: baseline;
 }
 
+.info {
+	line-height: 1.5em;
+	margin-left: 1em;
+}
+
 /* remember to define focus styles! */
 :focus {
 	outline: 0;
@@ -75,7 +80,7 @@ h1 {
 
 h2 {
   font-family: helvetica;
-  font-size: x-large;
+  font-size: 18pt;
   font-weight: bold;
   letter-spacing: 1pt;
   text-align: center;
@@ -85,12 +90,12 @@ h2 {
 
 h3 {
   font-family: helvetica;
-  font-size: large;
+  font-size: 14pt;
   font-weight: bold;
   letter-spacing: 1pt;
   text-align: left;
-  padding-top: 0.5em;
-  margin-bottom: .5em;
+  padding-top: .5em;
+  padding-bottom: .5em;
 }
 
 #navbar {
@@ -102,10 +107,8 @@ h3 {
 }
 
 #print {
-  margin-top: -1.5em;
-  margin-left: 1em;
-  margin-right: 1em;
-  margin-bottom: 0;
+  margin: 0em;
+  padding-bottom: 1em;
   background-color: #F0F0F0;
   color: black;
   line-height: 1.5em;
@@ -137,7 +140,7 @@ h3 {
 
 #grid li {
   border:1px solid #BBB;
-  font-size: large;
+  font-size: 14pt;
   padding: 0.5em;
 }
 
@@ -159,7 +162,7 @@ h3 {
 #dates h3 {
   padding: .2em;
   border-bottom: 1px solid #BBB;
-  font-size: small;
+  font-size: 10pt;
   text-align: center;
 }
 
@@ -172,6 +175,10 @@ h3 {
   text-align: center;
 }
 
+#gridtypes span {
+  color: white;
+}
+
 #tags, #dates {
   background-color: #222;
   width: 15%;
@@ -180,10 +187,6 @@ h3 {
 #tags {
   float: left;
   margin-left: -2em;
-}
-
-#tags li.t5 {
-  border-right: 5px solid #b31111;
 }
 
 #tags li {
@@ -242,8 +245,8 @@ h3 {
   color: #BBB;
   text-align: center;
   padding-bottom: 2em;
-  font-size: x-small;
-  letter-spacing: 0.5em;
+  font-size: 8pt;
+  letter-spacing: 4pt;
   padding-left: 1em;
   padding-right: 1em;
 }
@@ -269,7 +272,7 @@ h3 {
   margin-left: 14%;
   margin-right: 14%;
   padding-top: 4em;
-  font-size: x-small;
+  font-size: 8pt;
 }
 
 #results h3 {
@@ -291,7 +294,7 @@ a:hover {
 }
 
 .controllink {
-  font-size: small;
+  font-size: 10pt;
 }
 
 .controllink:hover {
@@ -306,7 +309,7 @@ a:hover {
 
 .tagcount {
     float: right;
-    font-size: small;
+    font-size: 10pt;
 }
 
 .activetag {

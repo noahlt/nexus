@@ -1,0 +1,63 @@
+Embedding images in articles:
+
+	Rationale:
+
+		The "fulltext" of the article is converted to html following the Textile
+		markup-language. Textile offers a method of embedding images but it is
+		cumbersome and not easily integrated with the database. Therefore we
+		offer image embedding through a custom syntax.
+
+	Syntax:
+
+		Images can be embedded by inserting the following anywhere in the
+		fulltext of the article:
+
+			[[image-slug]]
+
+		This will render to something like:
+
+			########################
+			#                      #
+			#                      #
+			#      IMAGE HERE      #
+			#                      #
+			#                      #
+			########################
+			                 Authors
+			Caption here.
+
+		Options for the images (see bottom for list) can be specified as:
+
+			[[option1:option2:image-slug]]
+
+		Note that the image must be associated with the article (selected
+		in the article's "images" field) to be eligible for auto-embedding.
+
+	Examples:
+
+		[[solar-eclipse]]
+		[[left:small:nexus-logo]]
+		[[thumb:track]]
+		[[fill-black:center:dark-diagram]]
+
+		... Buffalo buffalo buffalo buffalo.
+		[[buffalo-image]]
+		Buffalo buffalo buffalo buffalo...
+
+	By default the image takes up the whole page width and has its caption
+	and attribution included below it.
+
+	Change the position and size of the image:
+
+		small  -  limits image width to 1/3 the page; text wraps around
+		thumb  -  shows thumbnail with no caption or attribution
+		left   -  float image at left, only affects small/thumb images
+
+		Taller images fit better with the small option.
+		Logos/non-photos work well with the thumb option.
+	
+	Use the following if the image isn't wide enough to fill the box:
+
+		stretch     -  stretch image to fill box, preserving aspect ratio
+		center      -  center image in box (left-aligned by default)
+		fill-black  -  fill empty space in box with black (white by default)

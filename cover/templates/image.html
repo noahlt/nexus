@@ -1,8 +1,9 @@
+</p> <!-- XXX keep div out of p -->
 {% spaceless %}
 <div class="image-default {{ classes }}">
     <a href="{{ viewlink }}">
         <div class="image-wrap">
-                <img id="{{ slug }}" alt="{{ slug }}" src="{{ image }}">
+			<img id="{{ slug }}" alt="{{ slug }}" src="{{ image }}">
         </div>
     </a>
     <span class="author">
@@ -15,3 +16,4 @@
     </span>
 </div>
 {% endspaceless %}
+<p> <!-- XXX keep div out of p -->

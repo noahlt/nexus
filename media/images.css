@@ -13,7 +13,6 @@ a:hover {
 
 .image-wrap {
 	border: 1px solid #eee;
-	background-color: #eee;
 }
 
 .image-default img {
@@ -85,4 +84,16 @@ a:hover {
 	float: left;
 	margin-left: .2em;
 	margin-right: 1.5em;
+}
+
+.fill-black .image-wrap {
+	background-color: #000;
+}
+
+.stretch .image-wrap img {
+	width: 100%;
+}
+
+.center .image-wrap {
+	text-align: center;
 }

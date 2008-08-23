@@ -107,7 +107,7 @@ class ImageAdmin(admin.ModelAdmin):
     form = ImageAdminForm
 
 class Article(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=20, unique=True)
     snippet = models.CharField(max_length=600)
     fulltext = models.TextField()

@@ -36,8 +36,9 @@ Embedding images in articles:
 	Examples:
 
 		[[solar-eclipse]]
-		[[left:small:nexus-logo]]
 		[[thumb:track]]
+		[[left:small:nexus-logo]]
+		[[medium:left:noattr:nexus-logo]]
 		[[fill-black:center:dark-diagram]]
 
 		... Buffalo buffalo buffalo buffalo.
@@ -47,17 +48,23 @@ Embedding images in articles:
 	By default the image takes up the whole page width and has its caption
 	and attribution included below it.
 
-	Change the position and size of the image:
+	Adjust the position and size of the image:
 
 		small  -  limits image width to 1/3 the page; text wraps around
+		medium -  limits image width to 2/3 the page; text wraps around
 		thumb  -  shows thumbnail with no caption or attribution
 		left   -  float image at left, only affects small/thumb images
 
-		Taller images fit better with the small option.
-		Logos/non-photos work well with the thumb option.
+	Override display settings:
+
+		nocaption     -  hide caption
+		noattr        -  hide attribution
+		showcaption   -  show caption
+		showattr      -  show attribution
 	
-	Use the following if the image isn't wide enough to fill the box:
+	If the image does not fill its box entirely:
 
 		stretch     -  stretch image to fill box, preserving aspect ratio
 		center      -  center image in box (left-aligned by default)
 		fill-black  -  fill empty space in box with black (white by default)
+

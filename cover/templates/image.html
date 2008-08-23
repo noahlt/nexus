@@ -8,6 +8,7 @@
     </a>
     <span class="author">
         {% for author in authors %}
+			{% if not author.is_a_person %}Photo courtesy of {% endif %}
 			{% include "authorlink.html" %}
 		{% endfor %}
     </span>

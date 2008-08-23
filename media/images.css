@@ -34,6 +34,20 @@ a:hover {
 	border: none;
 }
 
+.medium {
+	border: none;
+	max-width: 502px;
+	margin-top: 1em;
+	margin-left: 1em;
+	margin-right: .2em;
+	float: right;
+}
+
+.medium img {
+	max-width: 500px;
+	border: none;
+}
+
 .thumb {
 	float: right;
 	border: none;
@@ -78,6 +92,22 @@ a:hover {
 
 .thumb .caption {
 	display: none;
+}
+
+.nocaption .caption {
+	display: none;
+}
+
+.noattr .author {
+	display: none;
+}
+
+.showcaption .caption {
+	display: inherit;
+}
+
+.showattr .author {
+	display: inherit;
 }
 
 .left {

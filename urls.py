@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     (r'^ajax/stat_articles$', stat_articles),
     (r'^image/([-_a-z0-9]+)/$', imageview),
     (r'^tag/([-_a-z0-9]+)$', tagpage),
-    (r'^people/([-_a-z0-9]+)$', authorpage),
+    (r'^author/([-_a-z0-9]+)$', authorpage),
 )
 
     # Do not use in production!

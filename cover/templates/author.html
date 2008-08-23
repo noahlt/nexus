@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-	<h2>{{ author }}{% if author.title %} ({{ author.title }}){% endif %}</h2>
+<h2>{{ author }}{% if author.title %} ({% if not author.active %}former {% endif %}{{ author.title }}){% endif %}</h2>
 	{% ifnotequal author.article_set.count 0 %}
 		<ul id="results" style="margin:0">
 			{% for article in author.article_set.all %}
@@ -24,3 +24,10 @@
 		</center>
 	{% endifnotequal %}
 {% endblock %}
+
+{% block extra %}
+	{% if author.year %}
+		Class of {{ author.year }}
+	{% endif %}
+{% endblock %}
+

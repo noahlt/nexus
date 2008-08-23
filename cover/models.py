@@ -51,22 +51,45 @@ class ArticleAdminForm(forms.ModelForm):
             return self.cleaned_data['slug']
         raise forms.ValidationError("That slug is already taken.")
 
-class Author(models.Model):
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=40)
-    slug = models.SlugField(max_length=30, unique=True)
-    title = models.CharField(max_length=40, blank=True, null=True)
-    year = models.PositiveSmallIntegerField(blank=True, null=True)
+class Title(models.Model):
+    title = models.CharField(max_length=30, help_text="Staff Writer, etc.")
 
     def __str__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return "%s" % self.title
+
+class TitleAdmin(admin.ModelAdmin):
+    def active_authors(obj):
+        return ', '.join([str(x) for x in obj.author_set.all() if x.active])
+    list_display = ('title', active_authors)
+
+class Author(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=40, blank=True, null=True)
+    slug = models.SlugField(max_length=30, unique=True)
+    title = models.ForeignKey(Title, blank=True, null=True)
+    year = models.PositiveSmallIntegerField(blank=True, null=True,
+        help_text="Year of graduation, if applicable.")
+    is_a_person = models.BooleanField(default=True,
+        help_text="If not a person enter first name only.")
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.first_name + (' ' + self.last_name if self.last_name else '')
 
     class Meta:
-        ordering = ['last_name']
+        ordering = ('last_name',)
 
 class AuthorAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('first_name', 'last_name')}
     form = AuthorAdminForm
+    def name(obj):
+        return str(obj)
+    def num_articles(obj):
+        return str(obj.article_set.count())
+    def num_images(obj):
+        return str(obj.image_set.count())
+    list_display = (name, 'year', 'title', num_articles, num_images, 'active')
+    list_filter = ('year', 'active')
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
@@ -78,11 +101,16 @@ class Tag(models.Model):
 class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     form = TagAdminForm
+    def num_articles(obj):
+        return str(obj.article_set.count())
+    def num_images(obj):
+        return str(obj.image_set.count())
+    list_display = ('name', num_articles, num_images)
 
 class Image(models.Model):
     image = models.ImageField(upload_to='image_orig/')
     caption = models.TextField()
-    slug = models.CharField(primary_key=True, max_length=20, unique=True,
+    slug = models.CharField(max_length=20, unique=True,
         help_text="You can embed images in articles as [[slug]]")
     authors = models.ManyToManyField(Author)
     date = models.DateField(blank=True, null=True)
@@ -105,6 +133,12 @@ class Image(models.Model):
 class ImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('caption',)}
     form = ImageAdminForm
+    def tags(obj):
+        return ', '.join([tag.name for tag in obj.tags.all()])
+    def article_list(obj):
+        return ', '.join([str(i) for i in obj.article_set.all()])
+    list_filter = ('date', 'tags')
+    list_display = ('slug', tags, article_list)
 
 class Article(models.Model):
     title = models.CharField(max_length=100)
@@ -125,7 +159,7 @@ class Article(models.Model):
         return ' '.join(tag.slug for tag in self.tags.all())
     
     def __str__(self):
-        return self.title + ' [ ' + ' '.join(str(tag) for tag in self.tags.all()) + ' ] '
+        return "%s" % self.title
 
     class Meta:
         ordering = ['title']
@@ -133,3 +167,10 @@ class Article(models.Model):
 class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     form = ArticleAdminForm
+    def tags(obj):
+        return ', '.join([tag.name for tag in obj.tags.all()])
+    def image_list(obj):
+        return ', '.join([str(i) for i in obj.images.all()])
+    list_display = ('title', tags, image_list)
+    list_filter = ('date', 'tags')
+    search_fields = ('title',)

@@ -121,4 +121,15 @@ $(document).ready(function() {
     $("#tags li a").click(function(event) {
             event.preventDefault();
         });
-    });
+
+	document.onkeypress = function(e) {
+		var e = window.event || e
+		var keyunicode = e.charCode || e.keyCode
+		if (keyunicode == 8 && !$("#alltags").hasClass("activetag")) {
+			$("#alltags").click();
+			return false;
+		}
+		return true;
+	}
+
+});

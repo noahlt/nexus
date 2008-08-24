@@ -24,9 +24,9 @@
 	</p>
 	{% if article.printed %}
 		<p>
-			Article printed
+			Article published
 			<a href="/archive/{{ article.printed.date }}">
-				{{ article.printed.date|date:"F m, Y" }}.
+				{{ article.printed.date|date:"F d, Y" }}.
 			</a>
 		</p>
 	{% endif %}

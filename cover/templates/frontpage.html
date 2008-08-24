@@ -12,31 +12,17 @@
 <h1>The Nexus</h1>
 </a>
 
-{% if showprint %}
-    <div id="print">
-      <a id="toggleprint" class="controllink" href="#">collapse &uarr;</a>
-      <h2>From the Print Edition</h2>
-      <ul>
-	  {% for article in current_issue.article_set.all|slice:"0:4" %}
-		<li style="overflow: hidden" class="{{ article.tagclasses }} {% if hidden %}new-article{% endif %}">
-		  <h3 class="{{ article.slug }}">{% include "articlelink.html" %}</h3>
-		  {{ article.snippet }}
-		</li>
-	  {% endfor %}
-      </ul>
-    </div>
-{% endif %}
-
 <div id="grid">
   <ul id="gridtypes">
-    <li><a href="/archive/{{ current_issue.date }}"><span>current articles</span></a></li>
-    <li><a href="/archive"><span>issue archive</span></a></li>
+    <li><a href="/archive/{{ current_issue.date }}"><span>Current Issue</span></a></li>
+    <li><a href="/archive"><span>Issue Archive</span></a></li>
   </ul>
   <ul id="tags">
     <li class="activetag" id="alltags">(Show All)</li>
     {% for tag in tags %}
-    <li class="t{{ tag.num }}" id="{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
-        <div class="tagcount">({{ tag.article_set.count }})</div><span>
+    <li class="t{{ tag.num }}{% if tag.new %} currenttag{% endif %}" id="{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
+        <div class="tagcount">({{ tag.article_set.count }})</div>
+        <span >
         {{ tag.name }}
         </span>
     </a></li>

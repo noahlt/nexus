@@ -119,30 +119,13 @@ h3 {
   padding-bottom: .5em;
 }
 
-#print {
-  margin: 0em;
-  padding-bottom: 1em;
-  background-color: #F0F0F0;
-  color: black;
-  line-height: 1.5em;
+#navbar {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  text-align: right;
 }
-
-#print h3 {
-  float: left;
-  clear: right;
-  letter-spacing: 2px;
-  font-weight: bold;
-  padding-right: 1em;
-  border-right: 1em solid black;
-  margin-right: 1em;
-  line-height: 1em;
-  margin-top: 0.25em;
-  }
-
-#print ul {
-  margin: 1em;
-}
-
 
 #grid {
   background-color:#333;
@@ -298,6 +281,10 @@ a {
   text-decoration: none;
 }
 
+.new a {
+  border-bottom: 1px dotted #305cb6;
+}
+
 a:hover {
   border-bottom: 1px solid #305cb6;
 }
@@ -323,6 +310,10 @@ a:hover {
 .tagcount {
     float: right;
     font-size: 10pt;
+}
+
+.currenttag {
+  background-color: #000;
 }
 
 .activetag {

@@ -189,19 +189,17 @@ class Article(models.Model):
         return "%s" % self.title
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['-date', '-printed']
 
 class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     form = ArticleAdminForm
     def tags(obj):
         return ', '.join([tag.name for tag in obj.tags.all()])
-    def image_list(obj):
-        return ', '.join([str(i) for i in obj.images.all()])
     def author(obj):
         return ', '.join([str(i) for i in obj.authors.all()])
-    list_display = ('title', author, tags, image_list)
-    list_filter = ('date', 'tags')
+    list_display = ('title', author, tags, 'printed')
+    list_filter = ('date', 'printed', 'date', 'tags')
     search_fields = ('title',)
 
 class InfoPage(models.Model):

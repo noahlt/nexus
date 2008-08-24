@@ -18,17 +18,24 @@ def frontpage(request):
     num_to_load = 5
     tags = [ tag for tag in Tag.objects.all() if tag.article_set.count() > 0 ]
     tags.sort(key=lambda tag: tag.article_set.count(), reverse=True)
-    for num, tag in enumerate(tags):
-        tag.num = num % 6
     total = Article.objects.count()
     remaining = total - num_to_load
     articles = Article.objects.all()[0:num_to_load]
     try:
         current_issue = Issue.objects.get(date=date.today())
+        newtags = set()
+        for article in current_issue.article_set.all():
+            for tag in article.tags.all():
+                newtags.add(tag)
+        for tag in tags:
+            tag.new = tag in newtags
+        tags.sort(key=lambda tag: tag.new and 1 or 0, reverse=True)
         showprint = True
     except ObjectDoesNotExist:
         current_issue = Issue.objects.all().reverse()[0]
         showprint = False
+    for num, tag in enumerate(tags):
+        tag.num = num % 6
     return render_to_response('frontpage.html', locals())
 
 def imageview(request, slug):

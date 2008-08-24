@@ -174,7 +174,7 @@ class Article(models.Model):
         return "%s" % self.title
 
     class Meta:
-        ordering = ['title']
+        ordering = ['-date']
 
 class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}

@@ -153,8 +153,8 @@ h3 {
 
 #grid li {
   border:1px solid #BBB;
-  font-size: 14pt;
-  padding: 0.5em;
+  font-size: 12pt;
+  padding: 0.3em;
 }
 
 #dates li {
@@ -326,7 +326,11 @@ a:hover {
 }
 
 .activetag {
-  background-color: #333;
+  background-color: green;
+}
+
+.possibility {
+  background-color: #666;
 }
 
 #tags li:hover {
@@ -334,10 +338,15 @@ a:hover {
   color: #222;
 }
 
-.activetag#alltags {
+#alltags {
   background-color: #305cb6;
+  width: 195px;
+}
+
+.activetag#alltags {
+  background-color: green;
 }
 
 .new-article {
   display: none;
-  }
+}

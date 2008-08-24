@@ -90,9 +90,19 @@ def stat_articles(request):
     articles = Article.objects.all();
     for tag in tags:
         articles = articles.filter(tags=tag)
+    alltags = set()
+
+    # FIXME very inefficient lookup
+    for article in articles.all():
+        for tag in article.tags.all():
+            alltags.add(tag)
     total = articles.count()
     articles = articles.exclude(slug__in=data.getlist('have_articles'))
-    stats = {'total': total, 'remaining': max(0, articles.count())}
+    extra_tag_data = [ tag.slug for tag in alltags ]
+    stats = {
+        'stats': {'total': total, 'remaining': max(0, articles.count())},
+        'tags': extra_tag_data
+    }
     return HttpResponse(json.write(stats), mimetype="application/json")
 
 def load_more_articles(request):
@@ -105,6 +115,10 @@ def load_more_articles(request):
     # while articles.filter(tags__in=tags) would give us an OR filter.
     for tag in tags:
         articles = articles.filter(tags=tag)
+    alltags = set()
+    for article in articles.all():
+        for tag in article.tags.all():
+            alltags.add(tag)
     total = articles.count()
     articles = articles.exclude(slug__in=data.getlist('have_articles'))
     stats = {'total': total, 'remaining': max(0, articles.count() - num_to_load)}
@@ -114,6 +128,7 @@ def load_more_articles(request):
                       .render(Context({'article': article,
                                        'hidden': True}))
     } for article in articles[0:num_to_load]]
+    extra_tag_data = [ tag.slug for tag in alltags ]
 
-    r = {'stats': stats, 'articles': article_data}
+    r = {'stats': stats, 'articles': article_data, 'tags': extra_tag_data}
     return HttpResponse(json.write(r), mimetype="application/json")

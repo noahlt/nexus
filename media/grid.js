@@ -6,11 +6,11 @@ $(document).ready(function() {
     $("#toggleprint").click(function(event) {
         event.preventDefault();
         if ($(this).text()[0] == 'c') {
-            $("#print").hide("fast");
+            $("#print").hide();
             $(this).html("expand &darr;");
         } else {
             $(this).html("collapse &uarr;");
-            $("#print p").show("fast");
+            $("#print p").show();
         }
         });
 
@@ -21,27 +21,44 @@ $(document).ready(function() {
 			stats['remaining'] > 0 ? '' : 'none';
     }
 
+    function update_tags(subtags) {
+        $("#tags li").not("#alltags").map(
+            function() {
+                for (var i in subtags)
+                    if ($(this).attr("id") == subtags[i]) {
+                        $(this).show();
+                        return;
+                    }
+                $(this).hide();
+            }
+        )
+    }
+
     function get_articles(selectedtags) {
         $.get("/ajax/more_articles",
             {"tagslugs": selectedtags, "have_articles": have_articles},
             function (responseData) {
 				update_stats(responseData['stats']);
+                update_tags(responseData['tags'])
                 for (var i in responseData['articles']) {
                     var article = responseData['articles'][i];
                     $("#results").append(article['html']);
                     have_articles[have_articles.length] = article['slug'];
                 }
                 $(".new-article")
-                      .show("fast")
+                      .show()
                       .removeClass("new-article");
               },
               "json");
     }
 
-    function get_stats(selectedtags) {
+    function update_ui(selectedtags) {
         $.get("/ajax/stat_articles",
             {"tagslugs": selectedtags, "have_articles": have_articles},
-			update_stats, "json");
+			function(responseData) {
+                update_stats(responseData['stats']);
+                update_tags(responseData['tags']);
+            }, "json");
     }
 
     // this selector may have to be changed to be more specific
@@ -68,7 +85,7 @@ $(document).ready(function() {
                 $(this).animate({width: "+=14px", }, 200);
                 $("#results li")
                     .not("."+tagslug)
-                    .hide("fast");
+                    .hide();
                 $("#tags #alltags").removeClass("activetag");
                 get_articles(selectedtags);
 
@@ -84,20 +101,21 @@ $(document).ready(function() {
                             }
                             return true;
                         })
-                    .show("fast");
+                    .show();
                 if (!$("#tags li").hasClass("activetag")) {
                     $("#tags #alltags").addClass("activetag");
                 }
-                get_stats(selectedtags);
+                update_ui(selectedtags);
             }
             });
 
     $("#tags #alltags").click(function() {
         $(this).addClass("activetag");
+        $("#tags li").show();
         $("#tags .activetag").not("#alltags")
             .removeClass("activetag")
             .animate({width: "-=14px",}, 200);
-        $("#results li").show("fast");
+        $("#results li").show();
         });
 
     $("#tags li a").click(function(event) {

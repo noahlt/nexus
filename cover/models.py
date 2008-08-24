@@ -29,6 +29,17 @@ class TagAdminForm(forms.ModelForm):
             return self.cleaned_data['slug']
         raise forms.ValidationError("That slug is already taken.")
 
+class TitleAdminForm(forms.ModelForm):
+    # XXX manual validation find why unique=True doesn't work
+    def clean_slug(self):
+        if 'slug' not in self.changed_data:
+            return self.cleaned_data['slug']
+        try:
+            Title.objects.get(slug=self.cleaned_data['slug'])
+        except ObjectDoesNotExist:
+            return self.cleaned_data['slug']
+        raise forms.ValidationError("That slug is already taken.")
+
 class AuthorAdminForm(forms.ModelForm):
     # XXX manual validation find why unique=True doesn't work
     def clean_slug(self):
@@ -52,35 +63,34 @@ class ArticleAdminForm(forms.ModelForm):
         raise forms.ValidationError("That slug is already taken.")
 
 class Title(models.Model):
-    title = models.CharField(max_length=30, help_text="Staff Writer, etc.")
+    title = models.CharField(max_length=30, help_text="Staff Writer, AP, etc.")
 
     def __str__(self):
         return "%s" % self.title
 
 class TitleAdmin(admin.ModelAdmin):
     def active_authors(obj):
-        return ', '.join([str(x) for x in obj.author_set.all() if x.active])
+        return ', '.join([str(x) for x in obj.author_set.all() if not x.retired])
+    form = TitleAdminForm
     list_display = ('title', active_authors)
 
 class Author(models.Model):
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=40, blank=True, null=True)
+    name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=30, unique=True)
     title = models.ForeignKey(Title, blank=True, null=True)
     year = models.PositiveSmallIntegerField(blank=True, null=True,
         help_text="Year of graduation, if applicable.")
-    is_a_person = models.BooleanField(default=True,
-        help_text="If not a person enter first name only.")
-    active = models.BooleanField(default=True)
+    not_staff = models.BooleanField(help_text="Adds 'courtesy of' to photo attribution.")
+    retired = models.BooleanField(help_text="Adds 'former' to title.")
 
     def __str__(self):
-        return self.first_name + (' ' + self.last_name if self.last_name else '')
+        return self.name
 
     class Meta:
-        ordering = ('last_name',)
+        ordering = ('not_staff', 'retired', 'name',)
 
 class AuthorAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('first_name', 'last_name')}
+    prepopulated_fields = {'slug': ('name',)}
     form = AuthorAdminForm
     def name(obj):
         return str(obj)
@@ -88,8 +98,8 @@ class AuthorAdmin(admin.ModelAdmin):
         return str(obj.article_set.count())
     def num_images(obj):
         return str(obj.image_set.count())
-    list_display = (name, 'year', 'title', num_articles, num_images, 'active')
-    list_filter = ('year', 'active')
+    list_display = (name, 'year', 'title', num_articles, num_images)
+    list_filter = ('year', 'retired', 'not_staff')
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
@@ -137,8 +147,10 @@ class ImageAdmin(admin.ModelAdmin):
         return ', '.join([tag.name for tag in obj.tags.all()])
     def article_list(obj):
         return ', '.join([str(i) for i in obj.article_set.all()])
+    def author(obj):
+        return ', '.join([str(i) for i in obj.authors.all()])
     list_filter = ('date', 'tags')
-    list_display = ('slug', tags, article_list)
+    list_display = ('slug', author, tags, article_list)
 
 class Article(models.Model):
     title = models.CharField(max_length=100)
@@ -171,6 +183,8 @@ class ArticleAdmin(admin.ModelAdmin):
         return ', '.join([tag.name for tag in obj.tags.all()])
     def image_list(obj):
         return ', '.join([str(i) for i in obj.images.all()])
-    list_display = ('title', tags, image_list)
+    def author(obj):
+        return ', '.join([str(i) for i in obj.authors.all()])
+    list_display = ('title', author, tags, image_list)
     list_filter = ('date', 'tags')
     search_fields = ('title',)

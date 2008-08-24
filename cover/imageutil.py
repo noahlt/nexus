@@ -8,7 +8,7 @@ from django.template.loader import get_template
 from nexus import settings
 
 THUMB_MAX_SIZE = (150,150)
-ARTICLE_MAX_SIZE = (800,800)
+ARTICLE_MAX_SIZE = (788,788)
 THUMBS_PATH = 'cache/image_thumbs/'
 
 def resize(input, max_size):
@@ -46,7 +46,12 @@ class ImageFormatter():
         if obj:
             template = get_template(self.IMAGE_TEMPLATE)
             viewlink = '/image/' + obj.slug
+            any_not_staff = False
+            for author in obj.authors.all():
+                if author.not_staff:
+                    any_not_staff = True
             return template.render(Context({
+                'any_not_staff': any_not_staff,
                 'image': obj.thumbnail_size() if 'thumb' in classes else obj.article_size(),
                 'slug': obj.slug, 'authors': obj.authors.all(), 'caption': obj.caption,
                 'viewlink': viewlink, 'classes': ' '.join(classes)

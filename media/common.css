@@ -175,11 +175,6 @@ h3 {
   color: white;
 }
 
-#tags, #dates {
-  background-color: #222;
-  width: 194px;
-}
-
 #tags {
   float: left;
   margin-left: -2em;
@@ -334,10 +329,19 @@ a:hover {
   width: 195px;
 }
 
+#tags, #dates {
+  background-color: #222;
+  width: 194px;
+}
+
 .activetag#alltags {
   background-color: green;
 }
 
 .new-article {
   display: none;
+}
+
+.useless {
+    background-color: gray;
 }

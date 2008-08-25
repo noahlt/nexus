@@ -20,8 +20,7 @@
   <ul id="tags">
     <li class="activetag" id="alltags">(Show All)</li>
     {% for tag in tags %}
-    <li class="t{{ tag.num }}{% if tag.new %} currenttag{% endif %}" id="{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
-        <div class="tagcount">({{ tag.article_set.count }})</div>
+    <li class="{% if tag.new %} currenttag{% endif %}" id="{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
         <span >
         {{ tag.name }}
         </span>

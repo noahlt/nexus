@@ -34,8 +34,6 @@ def frontpage(request):
     except ObjectDoesNotExist:
         current_issue = Issue.objects.all().reverse()[0]
         showprint = False
-    for num, tag in enumerate(tags):
-        tag.num = num % 6
     return render_to_response('frontpage.html', locals())
 
 def imageview(request, slug):
@@ -91,21 +89,28 @@ def authorpage(request, slug):
     authors = [ x for x in author.subauthors.all() if x.nexus_staff ]
     return render_to_response('author.html', locals())
 
+def tag_data_for(articles, selected_tags):
+    # FIXME very inefficient lookup
+    alltags = {}
+    for article in articles.all():
+        for tag in article.tags.all():
+            if tag in alltags:
+                alltags[tag] += 1
+            else:
+                alltags[tag] = 1
+    total = articles.count()
+    return [ (tag.slug, tag in selected_tags or alltags[tag] != total) for tag in alltags.keys() ]
+
+
 def stat_articles(request):
     data = request.GET
     tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
     articles = Article.objects.all();
     for tag in tags:
         articles = articles.filter(tags=tag)
-    alltags = set()
-
-    # FIXME very inefficient lookup
-    for article in articles.all():
-        for tag in article.tags.all():
-            alltags.add(tag)
     total = articles.count()
+    extra_tag_data = tag_data_for(articles, tags)
     articles = articles.exclude(slug__in=data.getlist('have_articles'))
-    extra_tag_data = [ tag.slug for tag in alltags ]
     stats = {
         'stats': {'total': total, 'remaining': max(0, articles.count())},
         'tags': extra_tag_data
@@ -122,11 +127,8 @@ def load_more_articles(request):
     # while articles.filter(tags__in=tags) would give us an OR filter.
     for tag in tags:
         articles = articles.filter(tags=tag)
-    alltags = set()
-    for article in articles.all():
-        for tag in article.tags.all():
-            alltags.add(tag)
     total = articles.count()
+    extra_tag_data = tag_data_for(articles, tags)
     articles = articles.exclude(slug__in=data.getlist('have_articles'))
     stats = {'total': total, 'remaining': max(0, articles.count() - num_to_load)}
     article_data = [{'tagclasses': article.tagclasses.split(' '),
@@ -135,7 +137,5 @@ def load_more_articles(request):
                       .render(Context({'article': article,
                                        'hidden': True}))
     } for article in articles[0:num_to_load]]
-    extra_tag_data = [ tag.slug for tag in alltags ]
-
     r = {'stats': stats, 'articles': article_data, 'tags': extra_tag_data}
     return HttpResponse(json.write(r), mimetype="application/json")

@@ -21,11 +21,15 @@ $(document).ready(function() {
 			stats['remaining'] > 0 ? '' : 'none';
     }
 
-    function update_tags(subtags) {
+    function update_tags(taginfo) {
         $("#tags li").not("#alltags").map(
             function() {
-                for (var i in subtags)
-                    if ($(this).attr("id") == subtags[i]) {
+                for (var i in taginfo)
+                    if ($(this).attr("id") == taginfo[i][0]) {
+                        if (!taginfo[i][1])
+                            $(this).addClass("useless");
+                        else
+                            $(this).removeClass("useless");
                         $(this).show();
                         return;
                     }
@@ -82,7 +86,7 @@ $(document).ready(function() {
                     }).get();
 
             if ($(this).hasClass("activetag")) {
-                $(this).animate({width: "+=14px", }, 200);
+                $(this).width(195);
                 $("#results li")
                     .not("."+tagslug)
                     .hide();
@@ -90,7 +94,7 @@ $(document).ready(function() {
                 get_articles(selectedtags);
 
             } else {
-                $(this).animate({width: "-=14px", }, 200);
+                $(this).width(183);
                 $("#results li")
                     .not("."+tagslug)
                     .filter(function(i) {
@@ -111,10 +115,10 @@ $(document).ready(function() {
 
     $("#tags #alltags").click(function() {
         $(this).addClass("activetag");
-        $("#tags li").show();
+        $("#tags li").removeClass("useless").show();
         $("#tags .activetag").not("#alltags")
             .removeClass("activetag")
-            .animate({width: "-=14px",}, 200);
+            .width(183);
         $("#results li").show();
         });
 

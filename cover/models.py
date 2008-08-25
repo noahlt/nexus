@@ -29,17 +29,6 @@ class TagAdminForm(forms.ModelForm):
             return self.cleaned_data['slug']
         raise forms.ValidationError("That slug is already taken.")
 
-class TitleAdminForm(forms.ModelForm):
-    # XXX manual validation find why unique=True doesn't work
-    def clean_slug(self):
-        if 'slug' not in self.changed_data:
-            return self.cleaned_data['slug']
-        try:
-            Title.objects.get(slug=self.cleaned_data['slug'])
-        except ObjectDoesNotExist:
-            return self.cleaned_data['slug']
-        raise forms.ValidationError("That slug is already taken.")
-
 class AuthorAdminForm(forms.ModelForm):
     # XXX manual validation find why unique=True doesn't work
     def clean_slug(self):
@@ -71,7 +60,6 @@ class Title(models.Model):
 class TitleAdmin(admin.ModelAdmin):
     def active_authors(obj):
         return ', '.join([str(x) for x in obj.author_set.all() if not x.retired])
-    form = TitleAdminForm
     list_display = ('title', active_authors)
 
 class Author(models.Model):
@@ -120,7 +108,7 @@ class TagAdmin(admin.ModelAdmin):
 class Image(models.Model):
     image = models.ImageField(upload_to='image_orig/')
     caption = models.TextField()
-    slug = models.CharField(max_length=20, unique=True,
+    slug = models.SlugField(max_length=20, unique=True,
         help_text="You can embed images in articles as [[slug]]")
     authors = models.ManyToManyField(Author)
     date = models.DateField(blank=True, null=True)

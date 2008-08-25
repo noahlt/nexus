@@ -1,7 +1,15 @@
+a {
+	font-weight: bold;
+}
+
 /* disable border-bottom-as-underline here */
-a:hover {
+.content a:hover {
 	text-decoration: underline;
 	border: none;
+}
+
+h1 {
+	background-color: gray;
 }
 
 .preview, .page {
@@ -11,8 +19,18 @@ a:hover {
 	outline: none;
 }
 
+.articlefloat li {
+	float: left;
+	min-width: 20em;
+	padding-right: 3em;
+}
+
 .navbar {
-    margin: 2em;
+	background-color: #ddd;
+	color: black;
+	margin: 0;
+	padding: 1em;
+	margin-bottom: 2em;
 }
 
 .content {

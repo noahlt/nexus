@@ -3,17 +3,6 @@ $(document).ready(function() {
         return $(this).attr("className");
         }).get();
 
-    $("#toggleprint").click(function(event) {
-        event.preventDefault();
-        if ($(this).text()[0] == 'c') {
-            $("#print").hide();
-            $(this).html("expand &darr;");
-        } else {
-            $(this).html("collapse &uarr;");
-            $("#print p").show();
-        }
-        });
-
     function update_stats(stats) {
 		document.getElementById('remaining').innerHTML = stats['remaining'];
 		document.getElementById('total').innerHTML = stats['total'];
@@ -135,5 +124,4 @@ $(document).ready(function() {
 		}
 		return true;
 	}
-
 });

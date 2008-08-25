@@ -21,6 +21,13 @@ sup {
     font-size: 7pt;
     font-family: sans;
 }
+.beta {
+	font-size: 15pt;
+	color: #8dd8ed;
+	position: relative;
+	top: 15pt;
+	left: 5pt;
+}
 
 .info {
 	line-height: 1.5em;
@@ -91,7 +98,7 @@ h1 {
   font-weight: bold;
   letter-spacing: 0.8pt;
   padding-left: 12pt;
-  padding-top: 18pt;
+  padding-top: 12pt;
   padding-bottom: 0;
   background-color: #0090bd;
   color: white;

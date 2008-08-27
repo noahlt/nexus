@@ -5,7 +5,17 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{ author }}{% if author.title %} ({% if author.retired %}former {% endif %}{{ author.title }}){% endif %}</h2>
+<h2>{{ author }}
+	<span class="subtitle">
+		{% if author.title %}
+			<br>
+			{% if author.retired %}
+				former
+			{% endif %}
+			{{ author.title }}
+		{% endif %}
+	</span>
+</h2>
 	{% ifnotequal author.article_set.count 0 %}
 		<ul id="results" style="margin:0">
 			{% for article in author.article_set.all %}

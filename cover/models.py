@@ -80,14 +80,13 @@ class Author(models.Model):
 class AuthorAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     form = AuthorAdminForm
-    def name(obj):
-        return str(obj)
     def num_articles(obj):
         return str(obj.article_set.count())
     def num_images(obj):
         return str(obj.image_set.count())
-    list_display = (name, 'year', 'title', num_articles, num_images)
-    list_filter = ('year', 'retired', 'not_staff')
+    list_display = ('name', 'year', 'title', num_articles, num_images)
+    list_filter = ('title', 'year', 'retired', 'not_staff')
+    search_fields = ('name',)
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)

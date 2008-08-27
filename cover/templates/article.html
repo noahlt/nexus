@@ -6,12 +6,12 @@
 {% endblock %}
 
 {% block content %}
-	<h2>{{ article.title }}</h2>
-	<center>
-		{% for author in article.authors.all %}
-			{% include "authorlink.html" %}
-		{% endfor %}
-	</center>
+	<h2>{{ article.title }}
+		<br>
+		<span class="subauthor">
+			{% include "authorlinks.html" %}
+		</span>
+	</h2>
 	<br style="font-size: 5pt">
 	{{ article.fulltext|textile }}
 {% endblock %}

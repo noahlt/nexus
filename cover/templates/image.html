@@ -8,9 +8,7 @@
     </a>
     <span class="author">
         {% if any_not_staff %}Photo courtesy of {% endif %}
-        {% for author in authors %}
-            {% include "authorlink.html" %}
-		{% endfor %}
+		{% include "authorlinks.html" %}
     </span>
     <span class="caption">
         {{ caption }}

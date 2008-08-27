@@ -1,0 +1,20 @@
+{% extends "basic.html" %}
+{% load markup %}
+
+{% block title %}
+	{{ article.title }}
+{% endblock %}
+
+{% block content %}
+	<h2>{{ info.title }}</h2>
+	<br style="font-size: 5pt">
+	{{ info.fulltext|textile }}
+    {% for title in titles %}
+        <h3>{{ title }}</h3>
+        {% for author in title.author_set.all %}
+        <ul style="padding-left: 1em">
+            <li>{{ author }}</li>
+        </ul>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}

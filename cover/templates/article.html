@@ -9,7 +9,9 @@
 	<h2>{{ article.title }}
 		<br>
 		<span class="subauthor">
+			{% with article.authors.all as authors %}
 			{% include "authorlinks.html" %}
+			{% endwith %}
 		</span>
 	</h2>
 	<br style="font-size: 5pt">
@@ -18,10 +20,7 @@
 
 {% block extra %}
 	<p>
-		Tags:
-		{% for tag in article.tags.all %}
-			{% include "taglink.html" %}
-		{% endfor %}
+	Tags: {% with article.tags.all as tags %}{% include "taglinks.html" %}{% endwith %}
 	</p>
 	{% if article.printed %}
 		<p>

@@ -44,8 +44,7 @@ def articlepage(request, year, month, slug):
     except ObjectDoesNotExist:
         raise Http404
     html = get_template('article.html').render(Context(
-        {'article': article, 'authors': article.authors.all(),
-         'MEDIA_URL': settings.MEDIA_URL}
+        {'article': article, 'MEDIA_URL': settings.MEDIA_URL}
     ))
     html = ImageFormatter(html, article.images.all()).format()
     return HttpResponse(html)

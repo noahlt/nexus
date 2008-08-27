@@ -2,12 +2,7 @@
 
 {% block content %}
         <h2>
-        Image by
-        {% spaceless %}
-            {% for author in obj.authors.all %}
-                {% include "authorlink.html" %}
-            {% endfor %}
-        {% endspaceless %}
+        Image by {% include "authorlinks.html" %}
         </h2>
         {% if obj.date %}
 			<h3>Created:</h3>
@@ -18,9 +13,9 @@
 		{% ifnotequal obj.tags.count 0 %}
 			<h3>Tags:</h3>
 			<span class="info">
-			{% for tag in obj.tags.all %}
-                {% include "taglink.html" %}
-			{% endfor %}
+				{% with obj.tags.all as tags %}
+				{% include "taglinks.html" %}
+				{% endwith %}
 			</span>
 		{% endifnotequal %}
 		{% ifnotequal obj.article_set.count 0 %}

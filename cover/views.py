@@ -1,10 +1,10 @@
 # Create your views here.
 import simplejson as json
 
-from cover.models import Article, Tag, Image, Author
+from cover.models import Article, Tag, Image, Author, SpecialPage, Title
 from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context
 from django.template.loader import get_template
@@ -32,17 +32,27 @@ def frontpage(request):
 
 def imageview(request, slug):
     MEDIA_URL = settings.MEDIA_URL
-    try:
-        obj = Image.objects.get(slug=slug) 
-    except ObjectDoesNotExist:
-        raise Http404
+    obj = get_object_or_404(Image, slug=slug)
     return render_to_response('imageview.html', locals())
 
+def staff_auto_infopage(request):
+    MEDIA_URL = settings.MEDIA_URL
+    info = get_object_or_404(SpecialPage, slug='staff')
+    pool = Author.objects.filter(retired=False).filter(not_staff=False).all()
+    titles = {}
+    for title in Title.objects.all():
+        set = pool.filter(title=title)
+        if set.count() > 0:
+            titles[title] = set.all()
+    return render_to_response('staff.html', locals())
+
+def infopage(request, slug):
+    MEDIA_URL = settings.MEDIA_URL
+    info = get_object_or_404(SpecialPage, slug=slug)
+    return render_to_response('info.html', locals())
+
 def articlepage(request, year, month, slug):
-    try:
-        article = Article.objects.get(slug=slug)
-    except ObjectDoesNotExist:
-        raise Http404
+    article = get_object_or_404(Article, slug=slug)
     html = get_template('article.html').render(Context(
         {'article': article, 'MEDIA_URL': settings.MEDIA_URL}
     ))

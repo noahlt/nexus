@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from cover.views import frontpage, articlepage, \
+from cover.views import frontpage, articlepage, infopage, staff_auto_infopage, \
     tagpage, load_more_articles, imageview, authorpage, stat_articles
 from archive.views import issue_gallery, page_gallery
 from nexus import settings
@@ -27,6 +27,8 @@ urlpatterns = patterns('',
     (r'^image/([-_a-z0-9]+)/$', imageview),
     (r'^tag/([-_a-z0-9]+)$', tagpage),
     (r'^author/([-_a-z0-9]+)$', authorpage),
+    (r'^info/staff$', staff_auto_infopage),
+    (r'^info/([-_a-z0-9]+)$', infopage),
 )
 
     # Do not use in production!

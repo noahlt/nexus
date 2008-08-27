@@ -7,6 +7,17 @@ from nexus.archive.models import Issue
 
 IMAGE_PATH = 'image_orig/'
 
+class SpecialPageAdminForm(forms.ModelForm):
+    # XXX manual validation find why unique=True doesn't work
+    def clean_slug(self):
+        if 'slug' not in self.changed_data:
+            return self.cleaned_data['slug']
+        try:
+            SpecialPage.objects.get(slug=self.cleaned_data['slug'])
+        except ObjectDoesNotExist:
+            return self.cleaned_data['slug']
+        raise forms.ValidationError("That slug is already taken.")
+
 class ImageAdminForm(forms.ModelForm):
     # XXX manual validation find why unique=True doesn't work
     def clean_slug(self):
@@ -68,8 +79,8 @@ class Author(models.Model):
     title = models.ForeignKey(Title, blank=True, null=True)
     year = models.PositiveSmallIntegerField(blank=True, null=True,
         help_text="Year of graduation, if applicable.")
-    not_staff = models.BooleanField(help_text="Adds 'courtesy of' to photo attribution.")
-    retired = models.BooleanField(help_text="Adds 'former' to title.")
+    not_staff = models.BooleanField(help_text="Adds 'courtesy of' to photo attribution; hides author from staff list.")
+    retired = models.BooleanField(help_text="Adds 'former' to title; hides author from staff list.")
 
     def __str__(self):
         return self.name
@@ -176,3 +187,15 @@ class ArticleAdmin(admin.ModelAdmin):
     list_display = ('title', author, tags, image_list)
     list_filter = ('date', 'tags')
     search_fields = ('title',)
+
+class SpecialPage(models.Model):
+    title = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=20, unique=True,
+        help_text="page will be linked as /info/slug")
+    fulltext = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return "%s as /info/%s" % (self.title, self.slug)
+
+class SpecialPageAdmin(admin.ModelAdmin):
+    form = SpecialPageAdminForm

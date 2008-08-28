@@ -1,8 +1,6 @@
 <div id="footer">
   <div><p>&copy; {% now "Y" %} the nexus, westview</p></div>
-  <a href="/info/mission">mission</a>
-  <a href="/info/staff">staff</a>
-  <a href="/info/join-the-nexus">join the nexus</a>
-  <a href="/info/advertising">advertising</a>
-  <a href="/info/about">about</a>
+  {% for i in FOOTER %}
+      <a href="/info/{{ i.slug }}">{{ i.link_name }}</a>
+  {% endfor %}
 </div>

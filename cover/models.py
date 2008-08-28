@@ -7,13 +7,13 @@ from nexus.archive.models import Issue
 
 IMAGE_PATH = 'image_orig/'
 
-class SpecialPageAdminForm(forms.ModelForm):
+class InfoPageAdminForm(forms.ModelForm):
     # XXX manual validation find why unique=True doesn't work
     def clean_slug(self):
         if 'slug' not in self.changed_data:
             return self.cleaned_data['slug']
         try:
-            SpecialPage.objects.get(slug=self.cleaned_data['slug'])
+            InfoPage.objects.get(slug=self.cleaned_data['slug'])
         except ObjectDoesNotExist:
             return self.cleaned_data['slug']
         raise forms.ValidationError("That slug is already taken.")
@@ -63,7 +63,7 @@ class ArticleAdminForm(forms.ModelForm):
         raise forms.ValidationError("That slug is already taken.")
 
 class Title(models.Model):
-    title = models.CharField(max_length=30, help_text="Staff Writer, AP, etc.")
+    title = models.CharField(max_length=30, help_text="Staff Writer, Photographer, etc.")
 
     def __str__(self):
         return "%s" % self.title
@@ -79,14 +79,16 @@ class Author(models.Model):
     title = models.ForeignKey(Title, blank=True, null=True)
     year = models.PositiveSmallIntegerField(blank=True, null=True,
         help_text="Year of graduation, if applicable.")
-    not_staff = models.BooleanField(help_text="Adds 'courtesy of' to photo attribution; hides author from staff list.")
     retired = models.BooleanField(help_text="Adds 'former' to title; hides author from staff list.")
+    nexus_staff = models.BooleanField(help_text="Allows author to show up in staff list if not retired.")
+    subauthors = models.ManyToManyField('self', blank=True, null=True,
+        help_text="Applicable if the 'author' is really a group of people.")
 
     def __str__(self):
         return self.name
 
     class Meta:
-        ordering = ('not_staff', 'retired', 'name',)
+        ordering = ('retired', 'name',)
 
 class AuthorAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
@@ -95,9 +97,24 @@ class AuthorAdmin(admin.ModelAdmin):
         return str(obj.article_set.count())
     def num_images(obj):
         return str(obj.image_set.count())
-    list_display = ('name', 'year', 'title', num_articles, num_images)
-    list_filter = ('title', 'year', 'retired', 'not_staff')
+    def groups(obj):
+        try:
+            return ', '.join([group.name for group in obj.subauthors.all()])
+        except:
+            return None
+    list_display = ('name', 'year', 'title', groups, num_articles, num_images)
+    list_filter = ('title', 'year', 'retired')
     search_fields = ('name',)
+# TODO uncomment this when regressions have been fixed
+#    fieldsets = (
+#        (None, {
+#            'fields': ('name', 'slug', 'title', 'year', 'retired', 'nexus_staff')
+#        }),
+#        ('Advanced options', {
+#            'classes': ('collapse',),
+#            'fields': ('subauthors',)
+#        }),
+#    )
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
@@ -187,14 +204,21 @@ class ArticleAdmin(admin.ModelAdmin):
     list_filter = ('date', 'tags')
     search_fields = ('title',)
 
-class SpecialPage(models.Model):
+class InfoPage(models.Model):
     title = models.CharField(max_length=100)
+    link_name = models.CharField(max_length=20)
     slug = models.SlugField(max_length=20, unique=True,
-        help_text="page will be linked as /info/slug")
+        help_text="Note: choosing 'staff' will create a page auto-filled by current staff.")
+    order = models.IntegerField(default=0)
     fulltext = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return "%s as /info/%s" % (self.title, self.slug)
+        return "%s -> %s" % (self.link_name, self.title)
 
-class SpecialPageAdmin(admin.ModelAdmin):
-    form = SpecialPageAdminForm
+    class Meta:
+        ordering = ['order']
+
+class InfoPageAdmin(admin.ModelAdmin):
+    form = InfoPageAdminForm
+    prepopulated_fields = {'slug': ('link_name',)}
+    list_display = ('title', 'link_name', 'order')

@@ -1,7 +1,7 @@
 # Create your views here.
 import simplejson as json
 
-from cover.models import Article, Tag, Image, Author, SpecialPage, Title
+from cover.models import Article, Tag, Image, Author, InfoPage, Title
 from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
@@ -14,6 +14,7 @@ from nexus import settings
 
 def frontpage(request):
     MEDIA_URL = settings.MEDIA_URL
+    FOOTER = InfoPage.objects.all();
     num_to_load = 5
     tags = [ tag for tag in Tag.objects.all() if tag.article_set.count() > 0 ]
     tags.sort(key=lambda tag: tag.article_set.count(), reverse=True)
@@ -32,41 +33,55 @@ def frontpage(request):
 
 def imageview(request, slug):
     MEDIA_URL = settings.MEDIA_URL
+    FOOTER = InfoPage.objects.all();
     obj = get_object_or_404(Image, slug=slug)
     return render_to_response('imageview.html', locals())
 
 def staff_auto_infopage(request):
     MEDIA_URL = settings.MEDIA_URL
-    info = get_object_or_404(SpecialPage, slug='staff')
-    pool = Author.objects.filter(retired=False).filter(not_staff=False).all()
-    titles = {}
+    FOOTER = InfoPage.objects.all();
+    info = get_object_or_404(InfoPage, slug='staff')
+    pool = Author.objects.filter(retired=False).filter(nexus_staff=True).all()
+    titles = []
+    groups = []
     for title in Title.objects.all():
-        set = pool.filter(title=title)
-        if set.count() > 0:
-            titles[title] = set.all()
+        authors_for_title = [ [author, []] for author in pool.filter(title=title) ]
+        if authors_for_title:
+            titles.append((title, authors_for_title))
+            for author in authors_for_title:
+                for group in author[0].subauthors.all():
+                    if group.nexus_staff:
+                        if group not in groups:
+                            groups.append(group)
+                        author[1].append(groups.index(group) + 1)
     return render_to_response('staff.html', locals())
 
 def infopage(request, slug):
     MEDIA_URL = settings.MEDIA_URL
-    info = get_object_or_404(SpecialPage, slug=slug)
+    FOOTER = InfoPage.objects.all();
+    info = get_object_or_404(InfoPage, slug=slug)
     return render_to_response('info.html', locals())
 
 def articlepage(request, year, month, slug):
     article = get_object_or_404(Article, slug=slug)
     html = get_template('article.html').render(Context(
-        {'article': article, 'MEDIA_URL': settings.MEDIA_URL}
+        {'article': article, 'MEDIA_URL': settings.MEDIA_URL,
+         'FOOTER': InfoPage.objects.all()}
     ))
     html = ImageFormatter(html, article.images.all()).format()
     return HttpResponse(html)
 
 def tagpage(request, slug):
+    FOOTER = InfoPage.objects.all();
     MEDIA_URL = settings.MEDIA_URL
     tag = get_object_or_404(Tag, slug=slug)
     return render_to_response('tag.html', locals())
 
 def authorpage(request, slug):
+    FOOTER = InfoPage.objects.all();
     MEDIA_URL = settings.MEDIA_URL
     author = get_object_or_404(Author, slug=slug)
+    authors = [ x for x in author.subauthors.all() if x.nexus_staff ]
     return render_to_response('author.html', locals())
 
 def stat_articles(request):

@@ -48,7 +48,7 @@ class ImageFormatter():
             viewlink = '/image/' + obj.slug
             any_not_staff = False
             for author in obj.authors.all():
-                if author.not_staff:
+                if not author.nexus_staff:
                     any_not_staff = True
             return template.render(Context({
                 'any_not_staff': any_not_staff,

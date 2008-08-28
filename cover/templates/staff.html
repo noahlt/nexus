@@ -1,20 +1,35 @@
-{% extends "basic.html" %}
+{% extends "info.html" %}
 {% load markup %}
 
-{% block title %}
-	{{ article.title }}
+{% block style %}
+#extra {
+	display: normal;
+}
 {% endblock %}
 
 {% block content %}
-	<h2>{{ info.title }}</h2>
-	<br style="font-size: 5pt">
-	{{ info.fulltext|textile }}
+    {{ block.super }}
     {% for title in titles %}
-        <h3>{{ title }}</h3>
-        {% for author in title.author_set.all %}
+        <h3>{{ title.0 }}</h3>
+        {% for author in title.1 %}
         <ul style="padding-left: 1em">
-            <li>{{ author }}</li>
+            <a href="/author/{{ author.0.slug }}">
+            <li>{{ author.0 }}
+            <sup>{% for n in author.1 %}<a href='#note{{ n }}'>{{ n }}</a>{% endfor %}
+            </sup>
+            </li>
+            </a>
         </ul>
         {% endfor %}
     {% endfor %}
+{% endblock %}
+
+{% block extra %}
+<ul>
+    {% for group in groups %}
+    <li id="note{{ forloop.counter }}">
+    [{{ forloop.counter }}] <a href="/author/{{ group.slug }}">{{ group }}</a>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

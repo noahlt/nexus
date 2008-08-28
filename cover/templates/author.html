@@ -16,7 +16,7 @@
 		{% endif %}
 	</span>
 </h2>
-	{% ifnotequal author.article_set.count 0 %}
+	{% if author.article_set.all %}
 		<ul id="results" style="margin:0">
 			{% for article in author.article_set.all %}
 				<li class="{{ article.tagclasses }} {% if hidden %}new-article{% endif %}">
@@ -25,19 +25,22 @@
 				</li>
 			{% endfor %}
 		</ul>
-	{% endifnotequal %}
-	{% ifnotequal author.image_set.count 0 %}
+	{% endif %}
+	{% if author.image_set.all %}
 		<center>
 			{% for image in author.image_set.all %}
 				{% include "imagelink.html" %}
 			{% endfor %}
 		</center>
-	{% endifnotequal %}
+	{% endif %}
 {% endblock %}
 
 {% block extra %}
 	{% if author.year %}
 		Class of {{ author.year }}
 	{% endif %}
+	{% if authors %}
+        {% if author.year %}<br>{% endif %}
+        {% include "authorlinks.html" %}
+	{% endif %}
 {% endblock %}
-

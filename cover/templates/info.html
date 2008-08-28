@@ -1,8 +1,14 @@
 {% extends "basic.html" %}
 {% load markup %}
 
+{% block style %}
+#extra {
+	display: none;
+}
+{% endblock %}
+
 {% block title %}
-	{{ article.title }}
+	{{ info.title }}
 {% endblock %}
 
 {% block content %}

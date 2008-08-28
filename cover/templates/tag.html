@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-	{% ifnotequal tag.article_set.count 0 %}
+	{% if tag.article_set.all %}
 		<h2>Articles tagged '{{ tag.name }}'</h2>
 		<ul id="results" style="margin:0">
 			{% for article in tag.article_set.all %}
@@ -14,14 +14,13 @@
 				</li>
 			{% endfor %}
 		</ul>
-	{% endifnotequal %}
-
-	{% ifnotequal tag.image_set.count 0 %}
+	{% endif %}
+	{% if tag.image_set.all %}
 		<h2>Images tagged '{{ tag.name }}'</h2>
 		<center>
 			{% for image in tag.image_set.all %}
 				{% include "imagelink.html" %}
 			{% endfor %}
 		</center>
-	{% endifnotequal %}
+	{% endif %}
 {% endblock %}

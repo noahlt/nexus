@@ -28,7 +28,7 @@ class Page(models.Model):
         ordering = ['pdf']
 
 class PDF(models.Model):
-    order = models.IntegerField()
+    order = models.IntegerField(default=0)
     pdf = models.FileField(upload_to=PDF_PATH)
     parent = models.ForeignKey('Issue')
 

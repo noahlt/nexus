@@ -10,15 +10,15 @@
 				{{ obj.date }}
 			</span>
         {% endif %}
-		{% ifnotequal obj.tags.count 0 %}
+		{% if obj.tags.all %}
 			<h3>Tags:</h3>
 			<span class="info">
 				{% with obj.tags.all as tags %}
 				{% include "taglinks.html" %}
 				{% endwith %}
 			</span>
-		{% endifnotequal %}
-		{% ifnotequal obj.article_set.count 0 %}
+		{% endif %}
+		{% if obj.article_set.all %}
             <p>
                 <h3>Referenced in article{% ifnotequal obj.article_set.count 1 %}s{% endifnotequal %}:</h3>
 				<ul class="info">
@@ -27,7 +27,7 @@
                     {% endfor %}
                 </ul>
             </p>
-		{% endifnotequal %}
+		{% endif %}
         <p>
             {{ obj.caption }}
         </p>

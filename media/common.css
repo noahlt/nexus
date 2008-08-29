@@ -21,6 +21,7 @@ sup {
     font-size: 7pt;
     font-family: sans;
 }
+
 .beta {
 	font-size: 15pt;
 	color: #8dd8ed;
@@ -184,7 +185,7 @@ h3 {
 
 #tags {
   float: left;
-  margin-left: -2em;
+  margin-left: -24pt;
 }
 
 #tags li {
@@ -350,5 +351,18 @@ a:hover {
 }
 
 .useless {
-    background-color: gray;
+	border: 0;
+}
+
+#tags li.useless:hover {
+	cursor: default;
+}
+
+#tags li.useless {
+	border: 1px solid #333;
+	color: gray;
+}
+
+.useless a:hover {
+	cursor: default;
 }

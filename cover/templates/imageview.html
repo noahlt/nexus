@@ -2,7 +2,9 @@
 
 {% block content %}
         <h2>
+		{% with obj.authors.all as authors %}
         Image by {% include "authorlinks.html" %}
+		{% endwith %}
         </h2>
         {% if obj.date %}
 			<h3>Created:</h3>

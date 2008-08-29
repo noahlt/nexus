@@ -19,10 +19,9 @@ $(document).ready(function() {
                             $(this).addClass("useless");
                         else
                             $(this).removeClass("useless");
-                        $(this).show();
                         return;
                     }
-                $(this).hide();
+                $(this).addClass("useless");
             }
         )
     }
@@ -67,6 +66,8 @@ $(document).ready(function() {
     $("#tags li")
         .not("#alltags")
         .click(function() {
+			if ($(this).hasClass("useless"))
+				return;
             tagslug = $(this).attr("id");
             $(this).toggleClass("activetag");
             var selectedtags = $("#tags li").filter(".activetag")
@@ -75,7 +76,7 @@ $(document).ready(function() {
                     }).get();
 
             if ($(this).hasClass("activetag")) {
-                $(this).width(195);
+				$(this).width($(this).width() + 13);
                 $("#results li")
                     .not("."+tagslug)
                     .hide();
@@ -83,7 +84,7 @@ $(document).ready(function() {
                 get_articles(selectedtags);
 
             } else {
-                $(this).width(183);
+                $(this).width($(this).width() - 13);
                 $("#results li")
                     .not("."+tagslug)
                     .filter(function(i) {
@@ -104,10 +105,10 @@ $(document).ready(function() {
 
     $("#tags #alltags").click(function() {
         $(this).addClass("activetag");
-        $("#tags li").removeClass("useless").show();
+        $("#tags li").removeClass("useless")
         $("#tags .activetag").not("#alltags")
             .removeClass("activetag")
-            .width(183);
+			.width($(this).width() - 13);
         $("#results li").show();
         });
 

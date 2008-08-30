@@ -5,6 +5,14 @@
 <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
+<!--[if lt IE 8]>
+<style>
+#tags {
+  float: left;
+  margin-left: -12pt;
+}
+<![endif]-->
+</style>
 </head>
 
 <body>
@@ -64,7 +72,7 @@
   </ul>
 
   <div class="controlnav" id="remainwrapper">
-    <a class="controllink" href="#">load more articles (<span id="remaining">{{ remaining }}</span> remaining of <span id="total">{{ total }}</span>)</a>
+    <a class="controllink" id="remainder" href="#">load more articles (<span id="remaining">{{ remaining }}</span> remaining of <span id="total">{{ total }}</span>)</a>
   </div>
 
   <div id="signed">&mdash;nt '09</div>  {# don't remove this, it's actually important #}

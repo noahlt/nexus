@@ -17,6 +17,10 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 	vertical-align: baseline;
 }
 
+#tags a {
+	color: white;
+}
+
 sup {
     font-size: 7pt;
     font-family: sans;
@@ -248,6 +252,7 @@ h3 {
   letter-spacing: 4pt;
   padding-left: 1em;
   padding-right: 1em;
+  clear: both;
 }
 
 #footer a {
@@ -360,6 +365,10 @@ a:hover {
 
 #tags li.useless {
 	border: 1px solid #333;
+	color: gray;
+}
+
+#tags .useless a {
 	color: gray;
 }
 

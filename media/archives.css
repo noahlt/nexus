@@ -21,8 +21,13 @@ h1 {
 
 .articlefloat li {
 	float: left;
+	display: block;
 	min-width: 20em;
 	padding-right: 3em;
+}
+
+.info {
+	padding-bottom: 1em;
 }
 
 .navbar {

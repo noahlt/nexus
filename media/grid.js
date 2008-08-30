@@ -2,11 +2,12 @@ $(document).ready(function() {
     var have_articles = $("#results li h3").map(function() {
         return $(this).attr("className");
         }).get();
+	var ie = jQuery.browser.msie; // :(
 
     function update_stats(stats) {
         document.getElementById('remaining').innerHTML = stats['remaining'];
         document.getElementById('total').innerHTML = stats['total'];
-        document.getElementById('remainwrapper').style.display =
+        document.getElementById('remainder').style.display =
             stats['remaining'] > 0 ? '' : 'none';
     }
 
@@ -68,8 +69,11 @@ $(document).ready(function() {
         .click(function() {
             if ($(this).hasClass("useless")) {
                 $("#tags .activetag").not("#alltags")
-                    .removeClass("activetag")
-                    .width($(this).width()); // XXX assumes .useless is normal size
+                    .removeClass("activetag").map(
+						function(x) {
+							if (!ie) $(this).width($(this).width() - 13);
+						}
+					);
                 $("#results li").show();
             }
             tagslug = $(this).attr("id");
@@ -81,14 +85,14 @@ $(document).ready(function() {
                     }).get();
 
             if ($(this).hasClass("activetag")) {
-                $(this).width($(this).width() + 13);
+                if (!ie) $(this).width($(this).width() + 13);
                 $("#tags #alltags").removeClass("activetag");
                 get_articles(selectedtags);
                 $("#results li")
                     .not("."+tagslug)
                     .hide();
             } else {
-                $(this).width($(this).width() - 13);
+                if (!ie) $(this).width($(this).width() - 13);
                 $("#results li")
                     .not("."+tagslug)
                     .filter(function(i) {
@@ -111,8 +115,11 @@ $(document).ready(function() {
         $(this).addClass("activetag");
         $("#tags li").removeClass("useless")
         $("#tags .activetag").not("#alltags")
-            .removeClass("activetag")
-            .width($(this).width() - 13); // XXX assumes alltags is expanded
+            .removeClass("activetag").map(
+				function(x) {
+					if (!ie) $(this).width($(this).width() - 13);
+				}
+			);
         $("#results li").show();
         });
 

@@ -4,10 +4,10 @@ $(document).ready(function() {
         }).get();
 
     function update_stats(stats) {
-		document.getElementById('remaining').innerHTML = stats['remaining'];
-		document.getElementById('total').innerHTML = stats['total'];
-		document.getElementById('remainwrapper').style.display =
-			stats['remaining'] > 0 ? '' : 'none';
+        document.getElementById('remaining').innerHTML = stats['remaining'];
+        document.getElementById('total').innerHTML = stats['total'];
+        document.getElementById('remainwrapper').style.display =
+            stats['remaining'] > 0 ? '' : 'none';
     }
 
     function update_tags(taginfo) {
@@ -30,7 +30,7 @@ $(document).ready(function() {
         $.get("/ajax/more_articles",
             {"tagslugs": selectedtags, "have_articles": have_articles},
             function (responseData) {
-				update_stats(responseData['stats']);
+                update_stats(responseData['stats']);
                 update_tags(responseData['tags'])
                 for (var i in responseData['articles']) {
                     var article = responseData['articles'][i];
@@ -47,7 +47,7 @@ $(document).ready(function() {
     function update_ui(selectedtags) {
         $.get("/ajax/stat_articles",
             {"tagslugs": selectedtags, "have_articles": have_articles},
-			function(responseData) {
+            function(responseData) {
                 update_stats(responseData['stats']);
                 update_tags(responseData['tags']);
             }, "json");
@@ -66,9 +66,14 @@ $(document).ready(function() {
     $("#tags li")
         .not("#alltags")
         .click(function() {
-			if ($(this).hasClass("useless"))
-				return;
+            if ($(this).hasClass("useless")) {
+                $("#tags .activetag").not("#alltags")
+                    .removeClass("activetag")
+                    .width($(this).width()); // XXX assumes .useless is normal size
+                $("#results li").show();
+            }
             tagslug = $(this).attr("id");
+            $(this).removeClass("useless");
             $(this).toggleClass("activetag");
             var selectedtags = $("#tags li").filter(".activetag")
                 .map(function() {
@@ -76,13 +81,12 @@ $(document).ready(function() {
                     }).get();
 
             if ($(this).hasClass("activetag")) {
-				$(this).width($(this).width() + 13);
+                $(this).width($(this).width() + 13);
+                $("#tags #alltags").removeClass("activetag");
+                get_articles(selectedtags);
                 $("#results li")
                     .not("."+tagslug)
                     .hide();
-                $("#tags #alltags").removeClass("activetag");
-                get_articles(selectedtags);
-
             } else {
                 $(this).width($(this).width() - 13);
                 $("#results li")
@@ -108,7 +112,7 @@ $(document).ready(function() {
         $("#tags li").removeClass("useless")
         $("#tags .activetag").not("#alltags")
             .removeClass("activetag")
-			.width($(this).width() - 13);
+            .width($(this).width() - 13); // XXX assumes alltags is expanded
         $("#results li").show();
         });
 
@@ -116,13 +120,13 @@ $(document).ready(function() {
             event.preventDefault();
         });
 
-	document.onkeypress = function(e) {
-		var e = window.event || e
-		var keyunicode = e.charCode || e.keyCode
-		if (keyunicode == 8 && !$("#alltags").hasClass("activetag")) {
-			$("#alltags").click();
-			return false;
-		}
-		return true;
-	}
+    document.onkeypress = function(e) {
+        var e = window.event || e
+        var keyunicode = e.charCode || e.keyCode
+        if (keyunicode == 8 && !$("#alltags").hasClass("activetag")) {
+            $("#alltags").click();
+            return false;
+        }
+        return true;
+    }
 });

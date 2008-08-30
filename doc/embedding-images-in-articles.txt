@@ -65,6 +65,7 @@ Embedding images in articles:
 	If the image does not fill its box entirely:
 
 		stretch     -  stretch image to fill box, preserving aspect ratio
-		center      -  center image in box (left-aligned by default)
 		fill-black  -  fill empty space in box with black (white by default)
+		align-right -  align image right in box (centered by default)
+		align-left  -  align image left in box (centered by default)
 

@@ -109,6 +109,7 @@ h1 {
   color: white;
   height: 1.5em;
   margin-bottom: 0;
+  cursor: pointer;
 }
 
 h2 {
@@ -153,6 +154,7 @@ h3 {
 }
 
 #dates li {
+  background-color: #222;
   padding: 0;
 }
 
@@ -194,6 +196,7 @@ h3 {
 
 #tags li {
   cursor: pointer;
+  background-color: #222;
   color: #FFF;
 }
 
@@ -324,26 +327,17 @@ a:hover {
   background-color: #000;
 }
 
-.activetag {
-  background-color: green;
-}
-
-.possibility {
-  background-color: #666;
-}
-
 #tags li:hover {
   background-color: #EEE; /* FIXME make this teal later */
   color: #222;
 }
 
 #alltags {
-  background-color: #305cb6;
+  background-color: #305cb6 !important;
   width: 195px;
 }
 
 #tags, #dates {
-  background-color: #222;
   width: 194px;
 }
 
@@ -374,4 +368,27 @@ a:hover {
 
 .useless a:hover {
 	cursor: default;
+}
+
+/*
+ * FIXME: (but don't break IE compatibility either)
+ */
+
+.activetag {
+  background-color: green !important;
+  color: white !important;
+}
+
+.activetag:hover {
+  background-color: #EEE !important;
+  color: black !important;
+}
+
+li#alltags {
+	color: white !important;
+}
+
+li#alltags:hover {
+	background-color: #EEE !important;
+	color: black !important;
 }

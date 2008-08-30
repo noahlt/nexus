@@ -11,17 +11,19 @@ a:hover {
 }
 
 .image-wrap {
+	text-align: center;
 	border: 1px solid #eee;
 }
 
 .image-default img {
 	border: none;
 	max-width: 788px;
+	width: expression(this.width > 788 ? 788 : true );
 }
 
 .small {
 	border: none;
-	max-width: 327px;
+	width: 327px;
 	margin-top: 1em;
 	margin-left: 1em;
 	margin-right: .2em;
@@ -30,12 +32,13 @@ a:hover {
 
 .small img {
 	max-width: 325px;
+	width: expression(this.width > 325 ? 325 : true );
 	border: none;
 }
 
 .medium {
 	border: none;
-	max-width: 502px;
+	width: 502px;
 	margin-top: 1em;
 	margin-left: 1em;
 	margin-right: .2em;
@@ -44,6 +47,7 @@ a:hover {
 
 .medium img {
 	max-width: 500px;
+	width: expression(this.width > 500 ? 500 : true );
 	border: none;
 }
 
@@ -54,7 +58,7 @@ a:hover {
 	margin-bottom: 1em;
 	margin-left: 1em;
 	margin-right: .2em;
-	max-width: 150px;
+	width: 150px;
 }
 
 .thumb .image-wrap {
@@ -64,6 +68,7 @@ a:hover {
 .thumb img {
 	border: none;
 	max-width: 150px;
+	width: expression(this.width > 150 ? 150 : true );
 }
 
 .author {
@@ -79,9 +84,9 @@ a:hover {
 .caption {
 	color: #555;
 	float: left;
+	width: 100%;
 	clear: right;
 	font-size: 10pt;
-	margin-top: .2em;
 	margin-right: 1em;
 }
 
@@ -123,6 +128,10 @@ a:hover {
 	width: 100%;
 }
 
-.center .image-wrap {
-	text-align: center;
+.align-right .image-wrap {
+	text-align: right;
+}
+
+.align-left .image-wrap {
+	text-align: left;
 }

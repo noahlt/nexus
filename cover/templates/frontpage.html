@@ -1,5 +1,6 @@
 {% load webdesign %}
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
 <html> <head>
 <title>Nexus</title>
 <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
@@ -8,7 +9,6 @@
 <!--[if lt IE 8]>
 <style>
 #tags {
-  float: left;
   margin-left: -12pt;
 }
 <![endif]-->
@@ -66,13 +66,16 @@
     </li>
   </ul>
   <ul id="results">
+	<!--[if lt IE 8]>
+	<li id="IE6_PLACEHOLDER" style="display: inline !important; padding: 0 !important;"></li>
+	<![endif]-->
     {% for article in articles %}
       {% include "article_snippet.html" %}
     {% endfor %}
   </ul>
 
-  <div class="controlnav" id="remainwrapper">
-    <a class="controllink" id="remainder" href="#">load more articles (<span id="remaining">{{ remaining }}</span> remaining of <span id="total">{{ total }}</span>)</a>
+  <div class="controlnav" id="remainder">
+    <a class="controllink" href="#">load more articles (<span id="remaining">{{ remaining }}</span> remaining of <span id="total">{{ total }}</span>)</a>
   </div>
 
   <div id="signed">&mdash;nt '09</div>  {# don't remove this, it's actually important #}

@@ -13,7 +13,7 @@ $(document).ready(function() {
     function update_tags(taginfo) {
         $("#tags li").not("#alltags").map(
             function() {
-                for (var i in taginfo)
+                for (var i in taginfo) {
                     if ($(this).attr("id") == taginfo[i][0]) {
                         if (!taginfo[i][1])
                             $(this).addClass("useless");
@@ -21,9 +21,10 @@ $(document).ready(function() {
                             $(this).removeClass("useless");
                         return;
                     }
+				}
                 $(this).addClass("useless");
             }
-        )
+        );
     }
 
     function get_articles(selectedtags) {
@@ -31,7 +32,7 @@ $(document).ready(function() {
             {"tagslugs": selectedtags, "have_articles": have_articles},
             function (responseData) {
                 update_stats(responseData['stats']);
-                update_tags(responseData['tags'])
+                update_tags(responseData['tags']);
                 for (var i in responseData['articles']) {
                     var article = responseData['articles'][i];
                     $("#results").append(article['html']);
@@ -110,7 +111,7 @@ $(document).ready(function() {
 
     $("#tags #alltags").click(function() {
         $(this).addClass("activetag");
-        $("#tags li").removeClass("useless")
+        $("#tags li").removeClass("useless");
         $("#tags .activetag").not("#alltags")
             .removeClass("activetag")
 			.width($(this).width() - 13); // XXX
@@ -121,13 +122,13 @@ $(document).ready(function() {
             event.preventDefault();
         });
 
-    document.onkeypress = function(e) {
-        var e = window.event || e
-        var keyunicode = e.charCode || e.keyCode
+    document.onkeypress = function(x) {
+        var e = window.event || x;
+        var keyunicode = e.charCode || e.keyCode;
         if (keyunicode == 8 && !$("#alltags").hasClass("activetag")) {
             $("#alltags").click();
             return false;
         }
         return true;
-    }
+    };
 });

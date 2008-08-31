@@ -145,6 +145,7 @@ h3 {
   margin-left:2em;
   margin-right:2em;
   padding:1em;
+  border: 0;
 }
 
 #grid li {
@@ -199,13 +200,6 @@ h3 {
   background-color: #222;
   color: #FFF;
 }
-
-#tags li.t5 { border-right: 5px solid #b31111; }
-#tags li.t1 { border-right: 5px solid #005454; }
-#tags li.t2 { border-right: 5px solid #423584; }
-#tags li.t3 { border-right: 5px solid #89295a; }
-#tags li.t4 { border-right: 5px solid #36661f; }
-#tags li.t0 { border-right: 5px solid #575c00; }
 
 #tags a, #tags a:hover { color: inherit; border: none; }
 
@@ -327,22 +321,13 @@ a:hover {
   background-color: #000;
 }
 
-#tags li:hover {
-  background-color: #EEE; /* FIXME make this teal later */
-  color: #222;
-}
-
-#alltags {
-  background-color: #305cb6 !important;
+li#alltags {
+  background-color: #305cb6;
   width: 195px;
 }
 
 #tags, #dates {
   width: 194px;
-}
-
-.activetag#alltags {
-  background-color: green;
 }
 
 .new-article {
@@ -374,21 +359,26 @@ a:hover {
  * FIXME: (but don't break IE compatibility either)
  */
 
-.activetag {
-  background-color: green !important;
-  color: white !important;
+#tags li.activetag {
+  background-color: green;
+  color: white;
 }
 
 .activetag:hover {
-  background-color: #EEE !important;
-  color: black !important;
+  background-color: #EEE;
+  color: black;
 }
 
 li#alltags {
-	color: white !important;
+	color: white;
 }
 
 li#alltags:hover {
-	background-color: #EEE !important;
-	color: black !important;
+	background-color: #EEE;
+	color: black;
+}
+
+#tags li:hover {
+  background-color: #EEE; /* FIXME make this teal later */
+  color: #222;
 }

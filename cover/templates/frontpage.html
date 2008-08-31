@@ -4,6 +4,7 @@
 <html> <head>
 <title>Nexus</title>
 <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}tags.css" type="text/css" />
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
 <!--[if lt IE 8]>
@@ -15,7 +16,7 @@
 </style>
 </head>
 
-<body>
+<body style="background:#000 !important"> <!-- wtf safari -->
 <a href="/">
 <h1>The Nexus<span class="beta">beta</span></h1>
 </a>
@@ -28,7 +29,7 @@
   <ul id="tags">
     <li class="activetag" id="alltags">(Show All)</li>
     {% for tag in tags %}
-    <li class="{% if tag.new %} currenttag{% endif %}" id="{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
+    <li id="{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
         <span >
         {{ tag.name }}
         </span>

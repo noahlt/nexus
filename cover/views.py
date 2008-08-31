@@ -2,8 +2,6 @@
 import simplejson as json
 
 from cover.models import Article, Tag, Image, Author, InfoPage, Title
-from datetime import date
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context
@@ -21,19 +19,7 @@ def frontpage(request):
     total = Article.objects.count()
     remaining = total - num_to_load
     articles = Article.objects.all()[0:num_to_load]
-    try:
-        current_issue = Issue.objects.get(date=date.today())
-        newtags = set()
-        for article in current_issue.article_set.all():
-            for tag in article.tags.all():
-                newtags.add(tag)
-        for tag in tags:
-            tag.new = tag in newtags
-        tags.sort(key=lambda tag: tag.new and 1 or 0, reverse=True)
-        showprint = True
-    except ObjectDoesNotExist:
-        current_issue = Issue.objects.all().reverse()[0]
-        showprint = False
+    current_issue = Issue.objects.all().reverse()[0]
     return render_to_response('frontpage.html', locals())
 
 def imageview(request, slug):

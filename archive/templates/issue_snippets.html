@@ -1,0 +1,13 @@
+<div class="issue_snippets">
+	<ul class="info" id="articlefloat">
+	{% for article in issue.article_set.all %}
+	<li class="controllink">
+		{% include "articlelink.html" %}
+		<div class="{{ article.slug }} hidden-snippet">
+		{{ article.snippet }} <a class="readmore" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">Read&nbsp;More...</a>
+		</div>
+	</li>
+	{% endfor %}
+	</ul>
+	<br style="clear:left">
+</div>

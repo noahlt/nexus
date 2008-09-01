@@ -4,23 +4,19 @@
 	{{ block.super }} - {{ issue.date|date:"F d, Y" }}
 {% endblock %}
 
+{% block include %}
+<script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}print.js"></script>
+{% endblock %}
+
 {% block navbar %}
+	<a href="/archive">Archive Home</a>
+	<br><br>
 	See bottom of page to download originals or
 	<a href="{{ issue.calculate_join_url }}">here</a>
 	to grab the complete set.
-    {% ifnotequal issue.article_set.count 0 %}
-	<h3>Articles viewable online:</h3>
-		<div>
-			<ul class="info articlefloat">
-			{% for article in issue.article_set.all %}
-			<li>
-				{% include "articlelink.html" %}
-			</li>
-			{% endfor %}
-			</ul>
-			<br style="clear:left">
-		</div>
-    {% endifnotequal %}
+	<h3>From this issue:</h3>
+	{% include "issue_snippets.html" %}
 {% endblock %}
 
 {% block content %}

@@ -7,9 +7,10 @@
     </title>
 	<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
 	<link rel="stylesheet" href="{{ MEDIA_URL }}archives.css" type="text/css" />
+	{% block include %}{% endblock %}
 </head>
 <body>
-	<a href="/archive" style="text-decoration:none;"><h1>
+	<a href="/" style="text-decoration:none;"><h1>
         {% block header %}The Nexus Archives{% endblock %}
 	</h1></a>
     <div class=navbar>

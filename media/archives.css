@@ -28,7 +28,6 @@ body {
 	color: gray;
 	border: 0;
 	font-size: 10pt;
-	float: left;
 }
 
 .preview, .page {
@@ -42,7 +41,6 @@ body {
 	float: left;
 	display: block;
 	min-width: 30em;
-	width: expression("30em");
 	padding-right: 3em;
 }
 

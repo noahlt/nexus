@@ -18,7 +18,6 @@ a:hover {
 .image-default img {
 	border: none;
 	max-width: 788px;
-	width: expression(this.width > 788 ? 788 : true );
 }
 
 .small {
@@ -32,7 +31,6 @@ a:hover {
 
 .small img {
 	max-width: 325px;
-	width: expression(this.width > 325 ? 325 : true );
 	border: none;
 }
 
@@ -47,7 +45,6 @@ a:hover {
 
 .medium img {
 	max-width: 500px;
-	width: expression(this.width > 500 ? 500 : true );
 	border: none;
 }
 
@@ -68,7 +65,6 @@ a:hover {
 .thumb img {
 	border: none;
 	max-width: 150px;
-	width: expression(this.width > 150 ? 150 : true );
 }
 
 .author {

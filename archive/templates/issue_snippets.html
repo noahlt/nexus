@@ -4,7 +4,7 @@
 	<li class="controllink">
 		{% include "articlelink.html" %}
 		<div class="{{ article.slug }} hidden-snippet">
-		{{ article.snippet }} <a class="readmore" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">Read&nbsp;More...</a>
+		{{ article.snippet }} <a class="readmore" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}"><br>Read&nbsp;More...</a>
 		</div>
 	</li>
 	{% endfor %}

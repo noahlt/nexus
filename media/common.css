@@ -63,8 +63,6 @@ sup {
 
 #dates ::-moz-selection { background-color: transparent; color: inherit }
 #tags ::-moz-selection { background-color: transparent; color: inherit }
-#dates ::selection { background-color: transparent; color: inherit }
-#tags ::selection { background-color: transparent; color: inherit }
 
 body {
 	color: #FFF;
@@ -354,10 +352,6 @@ li#alltags {
 .useless a:hover {
 	cursor: default;
 }
-
-/*
- * FIXME: (but don't break IE compatibility either)
- */
 
 #tags li.activetag {
   background-color: green;

@@ -1,0 +1,23 @@
+#articlefloat li {
+	width: expression("30em");
+}
+
+#tags {
+  margin-left: -12pt;
+}
+
+.image-default img {
+	width: expression(this.width > 788 ? 788 : true );
+}
+
+.small img {
+	width: expression(this.width > 325 ? 325 : true );
+}
+
+.medium img {
+	width: expression(this.width > 500 ? 500 : true );
+}
+
+.thumb img {
+	width: expression(this.width > 150 ? 150 : true );
+}

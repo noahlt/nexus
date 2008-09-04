@@ -131,3 +131,7 @@ a:hover {
 .align-left .image-wrap {
 	text-align: left;
 }
+
+.noborder .image-wrap {
+	border: none;
+}

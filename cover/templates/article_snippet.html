@@ -1,5 +1,5 @@
 <li style="overflow: hidden" class="{{ article.tagclasses }} {% if hidden %}new-article{% endif %}">
-  <h3 class="{{ article.slug }}"><span class="{% ifequal current_issue article.printed %}new{% else %}old{% endifequal %}">{% include "articlelink.html" %}</span></h3>
+  <h3 class="{{ article.slug }}">{% include "articlelink.html" %}</h3>
   {% if article.images.all %}
 	<a href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}"><img style="float:right;padding-left:1em;margin-top:-1em" src="{{ article.images.all.0.thumbnail_size }}"></a>
   {% endif %}

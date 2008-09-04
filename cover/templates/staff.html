@@ -15,8 +15,7 @@
         <ul style="padding-left: 1em">
             <a href="/author/{{ author.0.slug }}">
             <li>{{ author.0 }}
-            <sup>{% for n in author.1 %}<a href='#note{{ n }}'>{{ n }}</a>{% endfor %}
-            </sup>
+			{% for n in author.1 %}<a href='#note{{ n }}'><sup>{{ n }}</sup></a>{% endfor %}
             </li>
             </a>
         </ul>

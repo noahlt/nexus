@@ -61,6 +61,7 @@ Embedding images in articles:
 		noattr        -  hide attribution
 		showcaption   -  show caption
 		showattr      -  show attribution
+		noborder      -  no image border
 	
 	If the image does not fill its box entirely:
 

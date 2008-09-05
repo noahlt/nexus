@@ -17,6 +17,11 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 	vertical-align: baseline;
 }
 
+.imgsnippet {
+  max-height: 300px;
+  display: block;
+}
+
 #tags a {
 	color: white;
 }
@@ -27,10 +32,11 @@ sup {
 }
 
 .beta {
-	font-size: 15pt;
-	color: #8dd8ed;
+	font-size: 12pt;
+	text-transform: uppercase;
+	letter-spacing: 0;
 	position: relative;
-	top: 15pt;
+	top: 12pt;
 	left: 5pt;
 }
 
@@ -219,8 +225,8 @@ h3 {
 }
 
 #results, #grid .controlnav {
-  margin-left: 180px;
-  margin-right: 180px;
+  margin-left: 170px;
+  margin-right: 170px;
   line-height: 1.5em;
   padding: 1em;
   background-color: white;
@@ -321,11 +327,11 @@ a:hover {
 
 li#alltags {
   background-color: #305cb6;
-  width: 195px;
+  width: 185px;
 }
 
 #tags, #dates {
-  width: 194px;
+  width: 184px;
 }
 
 .new-article {

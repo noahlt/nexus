@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib import admin
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from os.path import basename
 from pdfutil import pdf_to_thumbnail, burst_pdf, validate_pdf, joined_pdfs
@@ -59,21 +58,8 @@ class PDFInline(admin.TabularInline):
     model = PDF
     form = PDFAdminForm
 
-class IssueAdminForm(forms.ModelForm):
-    # XXX manual validation find why unique=True doesn't work
-    # this case may be complicated by the inlined field
-    def clean_date(self):
-        if 'date' not in self.changed_data:
-            return self.cleaned_data['date']
-        try:
-            Issue.objects.get(date=self.cleaned_data['date'])
-        except ObjectDoesNotExist:
-            return self.cleaned_data['date']
-        raise forms.ValidationError("That date is already taken.")
-
 class IssueAdmin(admin.ModelAdmin):
     inlines = [PDFInline]
-    form = IssueAdminForm
 
 class Issue(models.Model):
     date = models.DateField(unique=True)

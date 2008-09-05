@@ -1,66 +1,9 @@
 from django.db import models
-from django import forms
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import admin
 from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
 from nexus.archive.models import Issue
 
 IMAGE_PATH = 'image_orig/'
-
-class InfoPageAdminForm(forms.ModelForm):
-    # XXX manual validation find why unique=True doesn't work
-    def clean_slug(self):
-        if 'slug' not in self.changed_data:
-            return self.cleaned_data['slug']
-        try:
-            InfoPage.objects.get(slug=self.cleaned_data['slug'])
-        except ObjectDoesNotExist:
-            return self.cleaned_data['slug']
-        raise forms.ValidationError("That slug is already taken.")
-
-class ImageAdminForm(forms.ModelForm):
-    # XXX manual validation find why unique=True doesn't work
-    def clean_slug(self):
-        if 'slug' not in self.changed_data:
-            return self.cleaned_data['slug']
-        try:
-            Image.objects.get(slug=self.cleaned_data['slug'])
-        except ObjectDoesNotExist:
-            return self.cleaned_data['slug']
-        raise forms.ValidationError("That slug is already taken.")
-
-class TagAdminForm(forms.ModelForm):
-    # XXX manual validation find why unique=True doesn't work
-    def clean_slug(self):
-        if 'slug' not in self.changed_data:
-            return self.cleaned_data['slug']
-        try:
-            Tag.objects.get(slug=self.cleaned_data['slug'])
-        except ObjectDoesNotExist:
-            return self.cleaned_data['slug']
-        raise forms.ValidationError("That slug is already taken.")
-
-class AuthorAdminForm(forms.ModelForm):
-    # XXX manual validation find why unique=True doesn't work
-    def clean_slug(self):
-        if 'slug' not in self.changed_data:
-            return self.cleaned_data['slug']
-        try:
-            Author.objects.get(slug=self.cleaned_data['slug'])
-        except ObjectDoesNotExist:
-            return self.cleaned_data['slug']
-        raise forms.ValidationError("That slug is already taken.")
-
-class ArticleAdminForm(forms.ModelForm):
-    # XXX manual validation find why unique=True doesn't work
-    def clean_slug(self):
-        if 'slug' not in self.changed_data:
-            return self.cleaned_data['slug']
-        try:
-            Article.objects.get(slug=self.cleaned_data['slug'])
-        except ObjectDoesNotExist:
-            return self.cleaned_data['slug']
-        raise forms.ValidationError("That slug is already taken.")
 
 class Title(models.Model):
     title = models.CharField(max_length=30, help_text="Staff Writer, Photographer, etc.")
@@ -92,7 +35,6 @@ class Author(models.Model):
 
 class AuthorAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    form = AuthorAdminForm
     def num_articles(obj):
         return str(obj.article_set.count())
     def num_images(obj):
@@ -105,16 +47,15 @@ class AuthorAdmin(admin.ModelAdmin):
     list_display = ('name', 'year', 'title', groups, num_articles, num_images)
     list_filter = ('title', 'year', 'retired')
     search_fields = ('name',)
-# TODO uncomment this when regressions have been fixed
-#    fieldsets = (
-#        (None, {
-#            'fields': ('name', 'slug', 'title', 'year', 'retired', 'nexus_staff')
-#        }),
-#        ('Advanced options', {
-#            'classes': ('collapse',),
-#            'fields': ('subauthors',)
-#        }),
-#    )
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'slug', 'title', 'year', 'retired', 'nexus_staff')
+        }),
+        ('Group relations', {
+            'classes': ('collapse',),
+            'fields': ('subauthors',)
+        }),
+    )
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
@@ -125,7 +66,6 @@ class Tag(models.Model):
 
 class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    form = TagAdminForm
     def num_articles(obj):
         return str(obj.article_set.count())
     def num_images(obj):
@@ -134,7 +74,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class Image(models.Model):
     image = models.ImageField(upload_to='image_orig/')
-    caption = models.TextField()
+    caption = models.TextField(blank=True, null=True)
     slug = models.SlugField(max_length=20, unique=True,
         help_text="You can embed images in articles as [[slug]]")
     authors = models.ManyToManyField(Author)
@@ -157,7 +97,6 @@ class Image(models.Model):
     
 class ImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('caption',)}
-    form = ImageAdminForm
     def tags(obj):
         return ', '.join([tag.name for tag in obj.tags.all()])
     def article_list(obj):
@@ -170,12 +109,13 @@ class ImageAdmin(admin.ModelAdmin):
 class Article(models.Model):
     title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=20, unique=True)
-    snippet = models.CharField(max_length=600)
+    snippet = models.CharField(max_length=600, blank=True, null=True)
     fulltext = models.TextField()
     date = models.DateField()
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
     published = models.BooleanField()
+    image_centric = models.BooleanField()
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
 
@@ -193,7 +133,6 @@ class Article(models.Model):
 
 class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
-    form = ArticleAdminForm
     def tags(obj):
         return ', '.join([tag.name for tag in obj.tags.all()])
     def author(obj):
@@ -207,7 +146,7 @@ class InfoPage(models.Model):
     link_name = models.CharField(max_length=20)
     slug = models.SlugField(max_length=20, unique=True,
         help_text="Note: choosing 'staff' will create a page auto-filled by current staff.")
-    order = models.IntegerField(default=0)
+    order = models.IntegerField(default=0, help_text="Order of display in footer. Set to -1 to hide from footer.")
     fulltext = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -217,6 +156,5 @@ class InfoPage(models.Model):
         ordering = ['order']
 
 class InfoPageAdmin(admin.ModelAdmin):
-    form = InfoPageAdminForm
     prepopulated_fields = {'slug': ('link_name',)}
     list_display = ('title', 'link_name', 'order')

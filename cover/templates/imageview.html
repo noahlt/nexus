@@ -30,9 +30,11 @@
                 </ul>
             </p>
 		{% endif %}
+        {% if obj.caption %}
         <p>
             {{ obj.caption }}
         </p>
+        {% endif %}
         <br>
         <img style="max-width:100%" src="{{ obj.image.url }}">
 {% endblock %}

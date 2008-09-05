@@ -32,7 +32,7 @@ def staff_auto_infopage(request):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
     info = get_object_or_404(InfoPage, slug='staff')
-    pool = Author.objects.filter(retired=False).filter(nexus_staff=True).all()
+    pool = Author.objects.filter(retired=False, nexus_staff=True).all()
     titles = []
     groups = []
     for title in Title.objects.all():

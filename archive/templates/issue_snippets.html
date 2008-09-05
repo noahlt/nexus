@@ -2,9 +2,16 @@
 	<ul class="info" id="articlefloat">
 	{% for article in issue.article_set.all %}
 	<li class="controllink">
-		{% include "articlelink.html" %}
+		<span class="{{ article.slug }}">{% include "articlelink.html" %}</span>
 		<div class="{{ article.slug }} hidden-snippet">
-		{{ article.snippet }} <a class="readmore" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}"><br>Read&nbsp;More...</a>
+		{% if article.image_centric %}
+			{% with article.images.all.0 as image %}
+				{% include "imagelink.html" %}
+			{% endwith %}
+			<a class="readmore" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}"><br>See&nbsp;More...</a>
+		{% else %}
+			{{ article.snippet }} <a class="readmore" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}"><br>Read&nbsp;More...</a>
+		{% endif %}
 		</div>
 	</li>
 	{% endfor %}

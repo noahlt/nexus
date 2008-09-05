@@ -9,13 +9,13 @@
 
 {% block content %}
     {{ block.super }}
-    {% for title in titles %}
-        <h3>{{ title.0 }}</h3>
-        {% for author in title.1 %}
+    {% for title, authors in titles %}
+        <h3>{{ title }}</h3>
+        {% for author, groups in authors %}
         <ul style="padding-left: 1em">
-            <a href="/author/{{ author.0.slug }}">
-            <li>{{ author.0 }}
-			{% for n in author.1 %}<a href='#note{{ n }}'><sup>{{ n }}</sup></a>{% endfor %}
+            <a href="/author/{{ author.slug }}">
+            <li>{{ author }}
+			{% for n in groups %}<a href='#note{{ n }}'><sup>{{ n }}</sup></a>{% endfor %}
             </li>
             </a>
         </ul>

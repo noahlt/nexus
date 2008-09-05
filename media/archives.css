@@ -1,4 +1,4 @@
-a {
+.navbar a {
 	font-weight: bold;
 	color: #0090bd;
 }
@@ -23,11 +23,19 @@ body {
 	float: left;
 }
 
-.readmore {
+.visible a {
+    font-size: 13pt;
+}
+
+.visible .readmore a {
+    font-size: 10pt;
+}
+
+.navbar .readmore {
+	font-size: 10pt;
 	text-decoration: none;
 	color: gray;
 	border: 0;
-	font-size: 10pt;
 }
 
 .preview, .page {

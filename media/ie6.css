@@ -21,3 +21,8 @@
 .thumb img {
 	width: expression(this.width > 150 ? 150 : true );
 }
+
+.imgsnippet {
+	height: expression(this.height > 300 ? 300 : true );
+}
+

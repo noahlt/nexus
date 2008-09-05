@@ -1,13 +1,15 @@
 $(document).ready(function() {
 	$(".articlelink").click(function(event) {
 		event.preventDefault();
-		var target = $("." + $(this).attr("id")).filter("div");
-		if (!target.hasClass("visible")) {
-			$(".hidden-snippet").removeClass("visible").hide();
-			target.show();
-		} else {
+        var id = "." + $(this).attr("id");
+		var target = $(id).filter("div");
+		if (target.hasClass("visible")) {
+            $(id).removeClass("visible");
 			target.hide();
+		} else {
+			$(".visible").removeClass("visible");
+			$(".hidden-snippet").hide();
+            $(id).addClass("visible").show();
 		}
-		target.toggleClass("visible");
 	});
 });

@@ -1,9 +1,13 @@
 # Create your views here.
 
 from django.shortcuts import render_to_response, get_object_or_404
+from datetime import date
 from archive.models import Issue
 from nexus import settings
 from nexus.cover.models import InfoPage
+
+def __visible(x):
+    return x.filter(date__lte=date.today())
 
 class Year(list):
     def __init__(self, year, issues):
@@ -16,7 +20,7 @@ class Year(list):
 def issue_gallery(request):
     """Thumbnail gallery of front pages."""
     MEDIA_URL = settings.MEDIA_URL
-    issues = Issue.objects.all()
+    issues = __visible(Issue.objects)
     FOOTER = InfoPage.objects.all();
     common_css = MEDIA_URL
     years = [Year(date.year, issues.filter(date__year=date.year))

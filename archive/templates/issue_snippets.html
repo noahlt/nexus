@@ -1,6 +1,7 @@
 <div class="issue_snippets">
 	<ul class="info" id="articlefloat">
 	{% for article in issue.article_set.all %}
+    {% if article.current %}
 	<li class="controllink">
 		<span class="{{ article.slug }}">{% include "articlelink.html" %}</span>
 		<div class="{{ article.slug }} hidden-snippet">
@@ -14,6 +15,7 @@
 		{% endif %}
 		</div>
 	</li>
+    {% endif %}
 	{% endfor %}
 	</ul>
 	<br style="clear:left">

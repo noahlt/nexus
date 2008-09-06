@@ -57,6 +57,7 @@ Embedding images in articles:
 
 	Override display settings:
 
+		clear         -  disallow horizontally adjacent images (buggy in IE6)
 		nocaption     -  hide caption
 		noattr        -  hide attribution
 		showcaption   -  show caption

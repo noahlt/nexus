@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib import admin
 from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
 from nexus.archive.models import Issue
+from datetime import date
 
 IMAGE_PATH = 'image_orig/'
 
@@ -80,6 +81,7 @@ class Image(models.Model):
     authors = models.ManyToManyField(Author)
     date = models.DateField(blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
+    priority = models.IntegerField("Preview priority", default=0)
 
     def save(self):
         super(Image, self).save()
@@ -91,6 +93,9 @@ class Image(models.Model):
 
     def article_size(self):
         return resize(self.image.path, ARTICLE_MAX_SIZE)
+
+    class Meta:
+        ordering = ['-priority']
 
     def __str__(self):
         return self.slug
@@ -105,16 +110,16 @@ class ImageAdmin(admin.ModelAdmin):
         return ', '.join([str(i) for i in obj.authors.all()])
     list_filter = ('date', 'tags')
     list_display = ('slug', author, tags, article_list)
+    search_fields = ('slug', 'caption')
 
 class Article(models.Model):
     title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=20, unique=True)
     snippet = models.CharField(max_length=600, blank=True, null=True)
     fulltext = models.TextField()
-    date = models.DateField()
+    date = models.DateField(help_text="Articles from the future will not be shown.")
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
-    published = models.BooleanField()
     image_centric = models.BooleanField()
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
@@ -125,6 +130,9 @@ class Article(models.Model):
     def tagclasses(self):
         return ' '.join(tag.slug for tag in self.tags.all())
     
+    def current(self):
+        return self.date <= date.today()
+
     def __str__(self):
         return "%s" % self.title
 
@@ -137,16 +145,25 @@ class ArticleAdmin(admin.ModelAdmin):
         return ', '.join([tag.name for tag in obj.tags.all()])
     def author(obj):
         return ', '.join([str(i) for i in obj.authors.all()])
-    list_display = ('title', author, tags, 'printed')
-    list_filter = ('date', 'printed', 'date', 'tags')
-    search_fields = ('title',)
+    def visible(obj):
+        return obj.current()
+    def url(obj):
+        if obj.current():
+            return "/%s/%s" % (obj.date.strftime("%Y/%m"), obj.slug)
+        else:
+            return "/future/%s" % obj.slug
+    visible.boolean = True
+    list_display = ('title', author, tags, visible, url)
+    list_filter = ('date', 'printed', 'tags')
+    search_fields = ('title', 'fulltext')
 
 class InfoPage(models.Model):
     title = models.CharField(max_length=100)
     link_name = models.CharField(max_length=20)
     slug = models.SlugField(max_length=20, unique=True,
         help_text="Note: choosing 'staff' will create a page auto-filled by current staff.")
-    order = models.IntegerField(default=0, help_text="Order of display in footer. Set to -1 to hide from footer.")
+    order = models.IntegerField(default=0, help_text="Order of display in footer.")
+    show_in_footer = models.BooleanField(default=True)
     fulltext = models.TextField(blank=True, null=True)
 
     def __str__(self):

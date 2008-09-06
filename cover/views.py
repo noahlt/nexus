@@ -2,7 +2,8 @@
 import simplejson as json
 
 from cover.models import Article, Tag, Image, Author, InfoPage, Title
-from django.http import HttpResponse
+from datetime import date
+from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context
 from django.template.loader import get_template
@@ -10,16 +11,19 @@ from imageutil import ImageFormatter
 from models import Issue
 from nexus import settings
 
+def __visible(x):
+    return x.filter(date__lte=date.today())
+
 def frontpage(request):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
     num_to_load = 5
-    tags = [ tag for tag in Tag.objects.all() if tag.article_set.count() > 0 ]
-    tags.sort(key=lambda tag: tag.article_set.count(), reverse=True)
-    total = Article.objects.count()
+    tags = [ tag for tag in Tag.objects.all() if __visible(tag.article_set).count() > 0 ]
+    tags.sort(key=lambda tag: __visible(tag.article_set).count(), reverse=True)
+    total = __visible(Article.objects).count()
     remaining = total - num_to_load
-    articles = Article.objects.all()[0:num_to_load]
-    current_issue = Issue.objects.all().reverse()[0]
+    articles = __visible(Article.objects)[0:num_to_load]
+    current_issue = __visible(Issue.objects)[0]
     return render_to_response('frontpage.html', locals())
 
 def imageview(request, slug):
@@ -55,6 +59,21 @@ def infopage(request, slug):
 
 def articlepage(request, year, month, slug):
     article = get_object_or_404(Article, slug=slug)
+    if not article.current() \
+        or article.date.year != int(year) \
+        or article.date.month != int(month):
+            raise Http404
+    html = get_template('article.html').render(Context(
+        {'article': article, 'MEDIA_URL': settings.MEDIA_URL,
+         'FOOTER': InfoPage.objects.all()}
+    ))
+    html = ImageFormatter(html, article.images.all()).format()
+    return HttpResponse(html)
+
+def futurepage(request, slug):
+    article = get_object_or_404(Article, slug=slug)
+    if article.current():
+        raise Http404
     html = get_template('article.html').render(Context(
         {'article': article, 'MEDIA_URL': settings.MEDIA_URL,
          'FOOTER': InfoPage.objects.all()}
@@ -78,7 +97,8 @@ def authorpage(request, slug):
 def tag_data_for(articles, selected_tags):
     # FIXME very inefficient lookup
     alltags = {}
-    for article in articles.all():
+    articles = __visible(articles)
+    for article in articles:
         for tag in article.tags.all():
             if tag in alltags:
                 alltags[tag] += 1
@@ -91,7 +111,7 @@ def tag_data_for(articles, selected_tags):
 def stat_articles(request):
     data = request.GET
     tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
-    articles = Article.objects.all();
+    articles = __visible(Article.objects)
     for tag in tags:
         articles = articles.filter(tags=tag)
     total = articles.count()
@@ -107,7 +127,7 @@ def load_more_articles(request):
     num_to_load = 5
     data = request.GET
     tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
-    articles = Article.objects.all();
+    articles = __visible(Article.objects)
 
     # by repeatedly applying a new filter for each tag, we get an AND filter,
     # while articles.filter(tags__in=tags) would give us an OR filter.

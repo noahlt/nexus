@@ -15,19 +15,30 @@
 		</span>
 	</h2>
 	<br style="font-size: 5pt">
-	{{ article.fulltext|textile }}
+    {{ article.fulltext|textile }}
 {% endblock %}
 
 {% block extra %}
 	<p>
 	Tags: {% with article.tags.all as tags %}{% include "taglinks.html" %}{% endwith %}
 	</p>
-	{% if article.printed %}
-		<p>
-			Article published
-			<a href="/archive/{{ article.printed.date }}">
-				{{ article.printed.date|date:"F d, Y" }}.
-			</a>
-		</p>
-	{% endif %}
+    {% if not article.current %}
+        <p>
+            Article not yet published.
+        </p>
+    {% else %}
+        {% if article.printed %}
+            <p>
+                Article published
+                <a href="/archive/{{ article.printed.date }}">
+                    {{ article.printed.date|date:"F d, Y" }}.
+                </a>
+            </p>
+        {% else %}
+            <p>
+                Article published
+                {{ article.date|date:"F d, Y" }}.
+            </p>
+        {% endif %}
+    {% endif %}
 {% endblock %}

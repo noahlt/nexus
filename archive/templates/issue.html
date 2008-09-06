@@ -21,6 +21,7 @@
 
 {% block content %}
 {% spaceless %}
+    {% if issue.current %}
     {% for pdf in issue.pdf_set.all %}
         {% for page in pdf.page_set.all %}
             <a class="preview" href="{{ page.pdf.url }}">
@@ -28,5 +29,6 @@
             </a>
         {% endfor %}
     {% endfor %}
+    {% endif %}
 {% endspaceless %}
 {% endblock %}

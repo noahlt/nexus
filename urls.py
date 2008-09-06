@@ -1,7 +1,6 @@
 from django.conf.urls.defaults import *
-from cover.views import frontpage, articlepage, infopage, staff_auto_infopage, \
-    tagpage, load_more_articles, imageview, authorpage, stat_articles
-from archive.views import issue_gallery, page_gallery
+from cover.views import *
+from archive.views import *
 from nexus import settings
 
 # Uncomment the next two lines to enable the admin:
@@ -29,6 +28,7 @@ urlpatterns = patterns('',
     (r'^author/([-_a-z0-9]+)$', authorpage),
     (r'^info/staff$', staff_auto_infopage),
     (r'^info/([-_a-z0-9]+)$', infopage),
+    (r'^future/([-_a-z0-9]+)/$', futurepage),
 )
 
     # Do not use in production!

@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.db import models
 from os.path import basename
 from pdfutil import pdf_to_thumbnail, burst_pdf, validate_pdf, joined_pdfs
+from datetime import date
 
 PDF_PATH = 'pdf_orig/'
 
@@ -60,9 +61,13 @@ class PDFInline(admin.TabularInline):
 
 class IssueAdmin(admin.ModelAdmin):
     inlines = [PDFInline]
+    def visible(obj):
+        return obj.current()
+    visible.boolean = True
+    list_display = ('date', visible)
 
 class Issue(models.Model):
-    date = models.DateField(unique=True)
+    date = models.DateField(unique=True, help_text="Issues from the future will not be shown.")
 
     def calculate_thumbnail_url(self):
         try:
@@ -72,6 +77,9 @@ class Issue(models.Model):
         except IndexError: # someone deleted all the pages
             return None
 
+    def current(self):
+        return self.date <= date.today()
+
     def calculate_join_url(self):
         return joined_pdfs(self.pdf_set.all())
 
@@ -79,4 +87,4 @@ class Issue(models.Model):
         return "%s" % self.date
 
     class Meta:
-        ordering = ['date']
+        ordering = ['-date']

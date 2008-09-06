@@ -69,7 +69,9 @@
 	<li id="IE6_PLACEHOLDER" style="display: inline !important; padding: 0 !important;"></li>
 	<![endif]-->
     {% for article in articles %}
-      {% include "article_snippet.html" %}
+      {% if article.current %}
+          {% include "article_snippet.html" %}
+      {% endif %}
     {% endfor %}
   </ul>
 

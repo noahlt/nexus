@@ -2,9 +2,10 @@
 {% load markup %}
 
 {% block style %}
+	{{ block.super }}
 #extra {
-	display: none;
-}
+		display: none;
+	}
 {% endblock %}
 
 {% block title %}

@@ -1,8 +1,9 @@
-from django.db import models
+from datetime import date
 from django.contrib import admin
+from django.db import models
 from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
 from nexus.archive.models import Issue
-from datetime import date
+from nexus.settings import MEDIA_ROOT
 
 IMAGE_PATH = 'image_orig/'
 
@@ -112,6 +113,19 @@ class ImageAdmin(admin.ModelAdmin):
     list_display = ('slug', author, tags, article_list)
     search_fields = ('slug', 'caption')
 
+class CustomArticleTemplate(models.Model):
+    name = models.CharField(max_length=50)
+    template = models.TextField(
+        default=open(MEDIA_ROOT + 'article-extension-example.html').read())
+
+    def __str__(self):
+        return self.name
+
+class CustomArticleTemplateAdmin(admin.ModelAdmin):
+    def article_count(obj):
+        return obj.article_set.count()
+    list_display = ('name', article_count)
+
 class Article(models.Model):
     title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=20, unique=True)
@@ -123,6 +137,8 @@ class Article(models.Model):
     image_centric = models.BooleanField()
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
+    custom_template = models.ForeignKey(
+        CustomArticleTemplate, blank=True, null=True)
 
     # Article tags are stored (in slug form) as the classes of the li's that
     # wrap articles, so the js doesn't have to look up article tags itself.
@@ -143,8 +159,6 @@ class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     def tags(obj):
         return ', '.join([tag.name for tag in obj.tags.all()])
-    def author(obj):
-        return ', '.join([str(i) for i in obj.authors.all()])
     def visible(obj):
         return obj.current()
     def url(obj):
@@ -152,9 +166,11 @@ class ArticleAdmin(admin.ModelAdmin):
             return "/%s/%s" % (obj.date.strftime("%Y/%m"), obj.slug)
         else:
             return "/future/%s" % obj.slug
+    def template(obj):
+        return obj.custom_template if obj.custom_template else ''
     visible.boolean = True
-    list_display = ('title', author, tags, visible, url)
-    list_filter = ('date', 'printed', 'tags')
+    list_display = ('title', tags, visible, url, template)
+    list_filter = ('date', 'printed', 'authors')
     search_fields = ('title', 'fulltext')
 
 class InfoPage(models.Model):

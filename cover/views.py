@@ -5,7 +5,7 @@ from cover.models import Article, Tag, Image, Author, InfoPage, Title
 from datetime import date
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
-from django.template import Context
+from django.template import Context, Template
 from django.template.loader import get_template
 from imageutil import ImageFormatter
 from models import Issue
@@ -63,7 +63,9 @@ def articlepage(request, year, month, slug):
         or article.date.year != int(year) \
         or article.date.month != int(month):
             raise Http404
-    html = get_template('article.html').render(Context(
+    template = Template(article.custom_template.template) \
+        if article.custom_template else get_template('article.html')
+    html = template.render(Context(
         {'article': article, 'MEDIA_URL': settings.MEDIA_URL,
          'FOOTER': InfoPage.objects.all()}
     ))

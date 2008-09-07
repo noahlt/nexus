@@ -11,6 +11,7 @@
 		<link rel="stylesheet" href="{{ MEDIA_URL }}ie6.css" type="text/css" />
 		<![endif]-->
 		<style>
+			{% block style %}
             .wrapper {
 				overflow: hidden;
 				margin: 0;
@@ -42,7 +43,7 @@
 			p {
 				padding: .5em;
 			}
-			{% block style %}{% endblock %}
+			{% endblock %}
 		</style>
 	</head>
 	<body>

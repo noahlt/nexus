@@ -27,7 +27,7 @@
   <ul id="tags">
     <li class="activetag" id="alltags">(Show All)</li>
     {% for tag in tags %}
-    <li id="{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
+    <li id="tag_{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
         <span >
         {{ tag.name }}
         </span>
@@ -65,7 +65,7 @@
     </li>
   </ul>
   <ul id="results">
-	<!--[if lt IE 8]>
+	<!--[if lt IE 7]>
 	<li id="IE6_PLACEHOLDER" style="display: inline !important; padding: 0 !important;"></li>
 	<![endif]-->
     {% for article in articles %}

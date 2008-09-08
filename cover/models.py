@@ -139,7 +139,7 @@ class Article(models.Model):
     images = models.ManyToManyField(Image, blank=True)
     custom_template = models.ForeignKey(
         CustomArticleTemplate, blank=True, null=True)
-    
+
     def current(self):
         return self.date <= date.today()
 

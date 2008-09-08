@@ -319,19 +319,6 @@ a:hover {
   border-bottom: 1px solid #305cb6;
 }
 
-#toggleprint {
-  float: right;
-}
-
-.tagcount {
-    float: right;
-    font-size: 10pt;
-}
-
-.currenttag {
-  background-color: #000;
-}
-
 li#alltags {
   background-color: #305cb6;
   width: 185px;

@@ -14,7 +14,7 @@ $(document).ready(function() {
 		$("#tags li").not("#alltags").map(
 			function() {
 				for (var i in taginfo) {
-					if ($(this).attr("id") == taginfo[i][0]) {
+					if ($(this).attr("id").substring(4) == taginfo[i][0]) {
 						if (!taginfo[i][1])
 							$(this).addClass("useless");
 						else
@@ -28,9 +28,13 @@ $(document).ready(function() {
 	}
 
 	function __update_results(results) {
-		$("#results li").not("#IE6_PLACEHOLDER").remove();
-		for (var i in results)
-			$("#results").append(results[i]);
+		$("#results li").not("#IE6_PLACEHOLDER").hide();
+		var visible = results['all'];
+		var data = results['new'];
+		for (var i in visible)
+			$("#results li").filter("#art_" + visible[i]).show();
+		for (var j in data)
+			$("#results").append(data[j]);
 	}
 
 	function __update_paginator(pages) {
@@ -52,10 +56,15 @@ $(document).ready(function() {
 		history.push(current_page = page);
 		var selectedtags = $("#tags li").filter(".activetag").not("#alltags")
 			.map(function() {
-					return $(this).attr("id");
+					return $(this).attr("id").substring(4); // tag_
+				}).get();
+		var have_articles = $("#results li")
+			.not("#IE6_PLACEHOLDER")
+			.map(function() {
+					return $(this).attr("id").substring(4); // art_
 				}).get();
 		$.get("/ajax/paginator",
-			{"tags": selectedtags, "page": page},
+			{"tags": selectedtags, "page": page, "have_articles": have_articles},
 			function(responseData) {
 				__update_tags(responseData['tags']);
 				__update_results(responseData['results']);

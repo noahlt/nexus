@@ -111,14 +111,16 @@ def __tag_data(articles, selected_tags):
 
 def paginate(request):
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
+    have_articles = request.GET.getlist('have_articles')
     articles = __visible(Article.objects)
     for tag in tags:
         articles = articles.filter(tags=tag)
     paginator = Paginator(articles, PAGE_SIZE)
+    object_list = paginator.page(request.GET.get('page', 1)).object_list
     results = [get_template('article_snippet.html') \
-               .render(Context({'article': article, 'hidden': True}))
-               for article in paginator.page(request.GET.get('page', 1)).object_list]
-    r = {'results': results,
+               .render(Context({'article': article}))
+               for article in object_list if article.slug not in have_articles ]
+    r = {'results': {'new': results, 'all': [ article.slug for article in object_list ]},
          'tags': __tag_data(articles, tags),
          'pages': {'num_pages': paginator.num_pages, 'this_page': request.GET.get('page', 1)}}
     return HttpResponse(json.dumps(r), mimetype="application/json")

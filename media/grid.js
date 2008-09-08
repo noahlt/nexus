@@ -1,5 +1,15 @@
 $(document).ready(function() {
 
+	var current_page; // not quite the same as the last history item
+	var history = [];
+	history.push(current_page = 1);
+
+	function click_page(event) {
+		event.preventDefault();
+		window.scroll(0,0);
+		update($(this).attr("id"));
+	}
+
 	function __update_tags(taginfo) {
 		$("#tags li").not("#alltags").map(
 			function() {
@@ -35,13 +45,11 @@ $(document).ready(function() {
 					+ i + "</a></li>");
 			}
 		}
-		$("#paginator .pagelink").click(function(event) {
-			event.preventDefault();
-			update($(this).attr("id"));
-		});
+		$("#paginator .pagelink").click(click_page);
 	}
 
 	function update(page) {
+		history.push(current_page = page);
 		var selectedtags = $("#tags li").filter(".activetag").not("#alltags")
 			.map(function() {
 					return $(this).attr("id");
@@ -55,10 +63,7 @@ $(document).ready(function() {
 			}, "json");
 	}
 
-	$("#paginator .pagelink").click(function(event) {
-		event.preventDefault();
-		update($(this).attr("id"));
-	});
+	$("#paginator .pagelink").click(click_page);
 
 	$("#tags li").not("#alltags").click(function() {
 		if ($(this).hasClass("useless"))
@@ -95,9 +100,18 @@ $(document).ready(function() {
 	document.onkeypress = function(x) {
 		var e = window.event || x;
 		var keyunicode = e.charCode || e.keyCode;
-		if (keyunicode == 8 && !$("#alltags").hasClass("activetag")) {
-			$("#alltags").click();
-			return false;
+		if (keyunicode == 8) {
+			if (current_page != 1 && history.length > 0) {
+				var i = history.pop();
+				while (current_page == i && history.length > 0)
+					i = history.pop();
+				window.scroll(0,0);
+				update(i);
+				return false;
+			} else if (!$("#alltags").hasClass("activetag")) {
+				$("#alltags").click();
+				return false;
+			}
 		}
 		return true;
 	};

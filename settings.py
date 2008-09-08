@@ -4,6 +4,7 @@ import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+CACHE_BACKEND = 'dummy:///'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -60,10 +61,12 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 ROOT_URLCONF = 'nexus.urls'

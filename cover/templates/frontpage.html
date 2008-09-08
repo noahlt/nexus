@@ -74,14 +74,18 @@
       {% endif %}
     {% endfor %}
   </ul>
-
-  <div class="controlnav" id="remainder">
-    <a class="controllink" href="#">load more articles (<span id="remaining">{{ remaining }}</span> remaining of <span id="total">{{ total }}</span>)</a>
-  </div>
+	<ul id="paginator">
+	{% for n in paginator.page_range %}
+		{% ifequal n 1 %}
+			<li>{{ n }}</li>
+		{% else %}
+			<li class="pagelink" id="{{ n }}"><a href="#page{{ n }}">{{ n }}</a></li>
+		{% endifequal %}
+	{% endfor %}
+	</ul>
 
   <div id="signed">&mdash;el;nt '09</div>  {# don't remove this, it's actually important #}
 </div>
 
 {% include "footer.html" %}
-
 </body> </html>

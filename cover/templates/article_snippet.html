@@ -1,5 +1,5 @@
-<li style="overflow: hidden" class="{{ article.tagclasses }} {% if hidden %}new-article{% endif %}">
-  <h3 class="{{ article.slug }}">{% include "articlelink.html" %}</h3>
+<li>
+  <h3>{% include "articlelink.html" %}</h3>
   {% if article.current %}
       {% if article.images.all %}
         {% if article.image_centric %}

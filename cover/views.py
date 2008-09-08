@@ -3,6 +3,7 @@ import simplejson as json
 
 from cover.models import Article, Tag, Image, Author, InfoPage, Title
 from datetime import date
+from django.core.paginator import Paginator
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context, Template
@@ -11,18 +12,18 @@ from imageutil import ImageFormatter
 from models import Issue
 from nexus import settings
 
+PAGE_SIZE = 10
+
 def __visible(x):
     return x.filter(date__lte=date.today())
 
 def frontpage(request):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
-    num_to_load = 5
     tags = [ tag for tag in Tag.objects.all() if __visible(tag.article_set).count() > 0 ]
     tags.sort(key=lambda tag: __visible(tag.article_set).count(), reverse=True)
-    total = __visible(Article.objects).count()
-    remaining = total - num_to_load
-    articles = __visible(Article.objects)[0:num_to_load]
+    paginator = Paginator(__visible(Article.objects), PAGE_SIZE)
+    articles = paginator.page(1).object_list
     current_issue = __visible(Issue.objects)[0]
     return render_to_response('frontpage.html', locals())
 
@@ -96,8 +97,7 @@ def authorpage(request, slug):
     authors = [ x for x in author.subauthors.all() if x.nexus_staff ]
     return render_to_response('author.html', locals())
 
-def tag_data_for(articles, selected_tags):
-    # FIXME very inefficient lookup
+def __tag_data(articles, selected_tags):
     alltags = {}
     articles = __visible(articles)
     for article in articles:
@@ -109,41 +109,16 @@ def tag_data_for(articles, selected_tags):
     total = articles.count()
     return [ (tag.slug, tag in selected_tags or alltags[tag] != total) for tag in alltags.keys() ]
 
-
-def stat_articles(request):
-    data = request.GET
-    tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
+def paginate(request):
+    tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
     articles = __visible(Article.objects)
     for tag in tags:
         articles = articles.filter(tags=tag)
-    total = articles.count()
-    extra_tag_data = tag_data_for(articles, tags)
-    articles = articles.exclude(slug__in=data.getlist('have_articles'))
-    stats = {
-        'stats': {'total': total, 'remaining': max(0, articles.count())},
-        'tags': extra_tag_data
-    }
-    return HttpResponse(json.write(stats), mimetype="application/json")
-
-def load_more_articles(request):
-    num_to_load = 5
-    data = request.GET
-    tags = Tag.objects.filter(slug__in=data.getlist('tagslugs'))
-    articles = __visible(Article.objects)
-
-    # by repeatedly applying a new filter for each tag, we get an AND filter,
-    # while articles.filter(tags__in=tags) would give us an OR filter.
-    for tag in tags:
-        articles = articles.filter(tags=tag)
-    total = articles.count()
-    extra_tag_data = tag_data_for(articles, tags)
-    articles = articles.exclude(slug__in=data.getlist('have_articles'))
-    stats = {'total': total, 'remaining': max(0, articles.count() - num_to_load)}
-    article_data = [{'tagclasses': article.tagclasses.split(' '),
-          'slug': article.slug,
-          'html': get_template('article_snippet.html') \
-                      .render(Context({'article': article,
-                                       'hidden': True}))
-    } for article in articles[0:num_to_load]]
-    r = {'stats': stats, 'articles': article_data, 'tags': extra_tag_data}
-    return HttpResponse(json.write(r), mimetype="application/json")
+    paginator = Paginator(articles, PAGE_SIZE)
+    results = [get_template('article_snippet.html') \
+               .render(Context({'article': article, 'hidden': True}))
+               for article in paginator.page(request.GET.get('page', 1)).object_list]
+    r = {'results': results,
+         'tags': __tag_data(articles, tags),
+         'pages': {'num_pages': paginator.num_pages, 'this_page': request.GET.get('page', 1)}}
+    return HttpResponse(json.dumps(r), mimetype="application/json")

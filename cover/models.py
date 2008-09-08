@@ -134,17 +134,11 @@ class Article(models.Model):
     date = models.DateField(help_text="Articles from the future will not be shown.")
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
-    image_centric = models.BooleanField()
+    image_centric = models.BooleanField(help_text="Shows a large image preview.")
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
     custom_template = models.ForeignKey(
         CustomArticleTemplate, blank=True, null=True)
-
-    # Article tags are stored (in slug form) as the classes of the li's that
-    # wrap articles, so the js doesn't have to look up article tags itself.
-    @property
-    def tagclasses(self):
-        return ' '.join(tag.slug for tag in self.tags.all())
     
     def current(self):
         return self.date <= date.today()

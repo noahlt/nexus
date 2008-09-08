@@ -19,7 +19,10 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 
 .imgsnippet {
   max-height: 300px;
+  float: left;
+  width: auto;
   display: block;
+  padding-right: 1em;
 }
 
 #tags a {
@@ -181,6 +184,28 @@ h3 {
   text-align: center;
 }
 
+#paginator li {
+  display: inline;
+  border: 1px solid transparent;
+  font-size: 10pt;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+#paginator li.pagelink:hover {
+  border: 1px solid #305cb6;
+  cursor: pointer;
+}
+
+#paginator a:hover {
+  border: 0;
+}
+
+#paginator {
+  text-align: center;
+  margin-bottom: 2em; /* ie7 */
+}
+
 #gridtypes li {
   display: inline;
   background-color: #222;
@@ -224,18 +249,13 @@ h3 {
   text-align: right;
 }
 
-#results, #grid .controlnav {
+#results, #paginator {
   margin-left: 170px;
   margin-right: 170px;
   line-height: 1.5em;
   padding: 1em;
   background-color: white;
   color: #222;
-}
-
-#grid .controlnav {
-  padding-bottom: 3em;
-  clear:none;
 }
 
 #results {
@@ -246,6 +266,7 @@ h3 {
   border: none;
   font-size: 12pt;
   padding-bottom: 1em;
+  overflow: hidden;
 }
 
 #footer {
@@ -302,20 +323,6 @@ a:hover {
   float: right;
 }
 
-.controllink {
-  font-size: 10pt;
-}
-
-.controllink:hover {
-  border: 0;
-  color: blue; /* FIXME */
-}
-
-.controlnav {
-  clear: left;
-  text-align: center;
-}
-
 .tagcount {
     float: right;
     font-size: 10pt;
@@ -332,10 +339,6 @@ li#alltags {
 
 #tags, #dates {
   width: 184px;
-}
-
-.new-article {
-  display: none;
 }
 
 .useless {

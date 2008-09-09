@@ -70,9 +70,6 @@ sup {
 	outline: 0;
 }
 
-#dates ::-moz-selection { background-color: transparent; color: inherit }
-#tags ::-moz-selection { background-color: transparent; color: inherit }
-
 body {
 	color: #FFF;
 	background: #000;
@@ -162,17 +159,25 @@ h3 {
 }
 
 #dates li {
-  background-color: #222;
   padding: 0;
+  cursor: pointer;
 }
 
-#dates li li {
+#dates li li, #dates li#alldates{
   border: 1px solid #BBB;
   margin: 0;
   padding: 0.5em;
 }
 
+#alldates {
+  padding: 0.5em;
+}
+
 #dates li li:hover {
+  background-color: #555;
+}
+
+#dates li li.activedate {
   background-color: #B8D8FF;
   color: #333;
 }

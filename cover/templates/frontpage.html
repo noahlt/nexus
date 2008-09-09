@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{{ MEDIA_URL }}ie7.css" type="text/css" />
 <![endif]-->
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}jquery-disable-text-select.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
 </head>
 
@@ -35,34 +36,14 @@
     {% endfor %}
   </ul>
   <ul id="dates">
-    <li><h3>2007-08</h3>
-      <ul>
-  <li>August</li>
-  <li>September</li>
-  <li>November</li>
-  <li>December</li>
-  <li>January</li>
-  <li>February</li>
-  <li>March</li>
-  <li>April</li>
-  <li>May</li>
-  <li>June</li>
-      </ul>
-    </li>
-    <li><h3>2008-09</h3>
-      <ul>
-  <li>August</li>
-  <li>September</li>
-  <li>November</li>
-  <li>December</li>
-  <li>January</li>
-  <li>February</li>
-  <li>March</li>
-  <li>April</li>
-  <li>May</li>
-  <li>June</li>
-      </ul>
-    </li>
+    <li class="activedate" id="alldates">(Show All)</li>
+    {% for year in dates %}
+    <li><h3>{{ year.year }}</h3><ul>
+        {% for month in year.dates %}
+        <li id="{{ month|date:"Ym01"}}">{{ month|date:"M" }}</li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
   </ul>
   <ul id="results">
 	<!--[if lt IE 7]>

@@ -165,7 +165,7 @@ class ArticleAdmin(admin.ModelAdmin):
     visible.boolean = True
     list_display = ('title', tags, visible, url, template)
     list_filter = ('date', 'printed', 'authors')
-    search_fields = ('title', 'fulltext')
+    search_fields = ('title', 'fulltext', 'date')
 
 class InfoPage(models.Model):
     title = models.CharField(max_length=100)

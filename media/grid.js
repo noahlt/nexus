@@ -4,6 +4,10 @@ $(document).ready(function() {
 	var history = [];
 	history.push(current_page = 1);
 
+	var selecting_dates = false;
+	var DATE_MIN = 10000101;
+	var DATE_MAX = 30000101;
+
 	function click_page(event) {
 		event.preventDefault();
 		window.scroll(0,0);
@@ -54,6 +58,14 @@ $(document).ready(function() {
 
 	function update(page) {
 		history.push(current_page = page);
+		var min = DATE_MIN, max = DATE_MAX;
+		if (!$("#dates #alldates").hasClass("activedate")) {
+			var selected_dates = $("#dates .activedate").map(function() {
+					return $(this).attr('id');
+				}).get();
+			min = Math.min.apply(null, selected_dates);
+			max = Math.max.apply(null, selected_dates) + 30;
+		}
 		var selectedtags = $("#tags li").filter(".activetag").not("#alltags")
 			.map(function() {
 					return $(this).attr("id").substring(4); // tag_
@@ -64,7 +76,8 @@ $(document).ready(function() {
 					return $(this).attr("id").substring(4); // art_
 				}).get();
 		$.get("/ajax/paginator",
-			{"tags": selectedtags, "page": page, "have_articles": have_articles},
+			{"tags": selectedtags, "page": page, "have_articles": have_articles,
+			 "date_min": min, "date_max": max},
 			function(responseData) {
 				__update_tags(responseData['tags']);
 				__update_results(responseData['results']);
@@ -78,7 +91,7 @@ $(document).ready(function() {
 		if ($(this).hasClass("useless"))
 			$("#tags .activetag").not("#alltags")
 				.removeClass("activetag")
-				.width($(this).width()); // XXX
+				.width($(this).width());
 		tagslug = $(this).attr("id");
 		$(this).removeClass("useless");
 		$(this).toggleClass("activetag");
@@ -98,13 +111,45 @@ $(document).ready(function() {
 		$("#tags li").removeClass("useless");
 		$("#tags .activetag").not("#alltags")
 			.removeClass("activetag")
-			.width($(this).width() - 13); // XXX
+			.width($(this).width() - 13);
 		update(1);
 	});
 
 	$("#tags li a").click(function(event) {
 		event.preventDefault();
 	});
+
+	$("#dates li li").mousedown(function() {
+		if (!selecting_dates) {
+			$("#dates li").removeClass('activedate');
+			$(this).addClass("activedate");
+			selecting_dates = true;
+		}
+	});
+
+	$("#dates li li").mousemove(function() {
+		if (selecting_dates) {
+			$(this).addClass("activedate");
+		}
+	});
+
+	$("#dates li#alldates").click(function() {
+		$("#dates li").removeClass("activedate");
+		selecting_dates = false;
+		$(this).addClass("activedate");
+		update(1);
+	});
+
+	$("#dates li li").mouseup(function() {
+		if (selecting_dates) {
+			$(this).addClass("activedate");
+			selecting_dates = false;
+			update(1);
+		}
+	});
+
+	$("#tags").disableTextSelect();
+	$("#dates").disableTextSelect();
 
 	document.onkeypress = function(x) {
 		var e = window.event || x;

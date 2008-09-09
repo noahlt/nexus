@@ -17,6 +17,11 @@ PAGE_SIZE = 10
 def __visible(x):
     return x.filter(date__lte=date.today())
 
+def what_school_year(date):
+    if date.month <= 7:
+        return date.year
+    return date.year + 1
+
 def frontpage(request):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
@@ -25,6 +30,19 @@ def frontpage(request):
     paginator = Paginator(__visible(Article.objects), PAGE_SIZE)
     articles = paginator.page(1).object_list
     current_issue = __visible(Issue.objects)[0]
+    # `dates` looks like this:
+    #   [[2009, date, date, date], [2008, date, date, date]]
+    class Schoolyear(list):
+        def __init__(self, year, dates):
+            self.year = year
+            self.dates = dates
+    dates = []
+    for date in Article.objects.dates('date', 'month', order='DESC'):
+        year = what_school_year(date)
+        if not dates or dates[-1].year != year:
+            dates.append(Schoolyear(year, [date]))
+        else:
+            dates[-1].dates.append(date)
     return render_to_response('frontpage.html', locals())
 
 def imageview(request, slug):
@@ -109,10 +127,21 @@ def __tag_data(articles, selected_tags):
     total = articles.count()
     return [ (tag.slug, tag in selected_tags or alltags[tag] != total) for tag in alltags.keys() ]
 
+def __parse_date(input):
+    '''Turns an integer date like 20080103 into a datetime object like
+    datetime.date(2008, 1, 3)'''
+    strdate = str(input)
+    year = int(strdate[0:4])
+    month = int(strdate[4:6])
+    day = int(strdate[6:9])
+    return date(year, month, day)
+
 def paginate(request):
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
     have_articles = request.GET.getlist('have_articles')
-    articles = __visible(Article.objects)
+    min_date = __parse_date(request.GET.get('date_min'))
+    max_date = __parse_date(request.GET.get('date_max'))
+    articles = __visible(Article.objects).filter(date__lte=max_date, date__gt=min_date);
     for tag in tags:
         articles = articles.filter(tags=tag)
     paginator = Paginator(articles, PAGE_SIZE)

@@ -2,7 +2,7 @@
 import simplejson as json
 
 from cover.models import Article, Tag, Image, Author, InfoPage, Title
-from datetime import date
+from datetime import date, timedelta
 from django.core.paginator import Paginator
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
@@ -136,12 +136,17 @@ def __parse_date(input):
     day = int(strdate[6:9])
     return date(year, month, day)
 
+def __month_end(d):
+    '''Takes a datetime.date and returns the date for the last day in the
+    same month.'''
+    return date(d.year, d.month+1, d.day) - timedelta(1)
+
 def paginate(request):
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
     have_articles = request.GET.getlist('have_articles')
     min_date = __parse_date(request.GET.get('date_min'))
-    max_date = __parse_date(request.GET.get('date_max'))
-    articles = __visible(Article.objects).filter(date__lte=max_date, date__gt=min_date);
+    max_date = __month_end(__parse_date(request.GET.get('date_max')))
+    articles = __visible(Article.objects).filter(date__range=[min_date, max_date])
     for tag in tags:
         articles = articles.filter(tags=tag)
     paginator = Paginator(articles, PAGE_SIZE)

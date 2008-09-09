@@ -64,7 +64,7 @@ $(document).ready(function() {
 					return $(this).attr('id');
 				}).get();
 			min = Math.min.apply(null, selected_dates);
-			max = Math.max.apply(null, selected_dates) + 30;
+			max = Math.max.apply(null, selected_dates);
 		}
 		var selectedtags = $("#tags li").filter(".activetag").not("#alltags")
 			.map(function() {

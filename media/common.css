@@ -160,16 +160,11 @@ h3 {
 
 #dates li {
   padding: 0;
-  cursor: pointer;
 }
 
-#dates li li, #dates li#alldates{
+#dates li li {
   border: 1px solid #BBB;
   margin: 0;
-  padding: 0.5em;
-}
-
-#alldates {
   padding: 0.5em;
 }
 
@@ -337,16 +332,16 @@ li#alltags {
 	border: 0;
 }
 
-#tags li.useless:hover {
+#tags li.useless:hover, li.useless:hover {
 	cursor: default;
 }
 
-#tags li.useless {
+#tags li.useless, li.useless {
 	border: 1px solid #333;
 	color: gray;
 }
 
-#tags .useless a {
+#tags .useless a, .useless a {
 	color: gray;
 }
 

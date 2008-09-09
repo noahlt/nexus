@@ -36,11 +36,10 @@
     {% endfor %}
   </ul>
   <ul id="dates">
-    <li class="activedate" id="alldates">(Show All)</li>
     {% for year in dates %}
-    <li><h3>{{ year.year }}</h3><ul>
+    <li class="year"><h3>{{ year.year }}</h3><ul>
         {% for month in year.dates %}
-        <li id="{{ month|date:"Ym01"}}">{{ month|date:"M" }}</li>
+        <li id="{{ month|date:"Ym"}}">{{ month|date:"M" }}</li>
         {% endfor %}
         </ul>
     {% endfor %}

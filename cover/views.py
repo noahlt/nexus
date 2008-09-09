@@ -37,7 +37,7 @@ def frontpage(request):
             self.year = year
             self.dates = dates
     dates = []
-    for date in Article.objects.dates('date', 'month', order='DESC'):
+    for date in __visible(Article.objects).dates('date', 'month', order='DESC'):
         year = what_school_year(date)
         if not dates or dates[-1].year != year:
             dates.append(Schoolyear(year, [date]))
@@ -117,7 +117,6 @@ def authorpage(request, slug):
 
 def __tag_data(articles, selected_tags):
     alltags = {}
-    articles = __visible(articles)
     for article in articles:
         for tag in article.tags.all():
             if tag in alltags:
@@ -127,34 +126,43 @@ def __tag_data(articles, selected_tags):
     total = articles.count()
     return [ (tag.slug, tag in selected_tags or alltags[tag] != total) for tag in alltags.keys() ]
 
+def perror(e):
+    x = open("/home/eric/Desktop/x", "w")
+    x.write(str(e))
+    x.close()
+
+def __dates_of(articles):
+    return list(set([article.date.strftime('%Y%m') for article in articles.all()]))
+
 def __parse_date(input):
-    '''Turns an integer date like 20080103 into a datetime object like
-    datetime.date(2008, 1, 3)'''
+    '''Turns an integer date like 200801 into a datetime object like
+    datetime.date(2008, 1, 1)'''
     strdate = str(input)
     year = int(strdate[0:4])
     month = int(strdate[4:6])
-    day = int(strdate[6:9])
-    return date(year, month, day)
+    return date(year, month, 1)
 
 def __month_end(d):
     '''Takes a datetime.date and returns the date for the last day in the
     same month.'''
-    return date(d.year, d.month+1, d.day) - timedelta(1)
+    return date(d.year if d.month < 12 else d.year + 1, d.month+1 if d.month < 12 else 1, d.day) - timedelta(1)
 
 def paginate(request):
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
     have_articles = request.GET.getlist('have_articles')
     min_date = __parse_date(request.GET.get('date_min'))
     max_date = __month_end(__parse_date(request.GET.get('date_max')))
-    articles = __visible(Article.objects).filter(date__range=[min_date, max_date])
+    articles = __visible(Article.objects)
     for tag in tags:
         articles = articles.filter(tags=tag)
+    dates = __dates_of(articles) # BEFORE date filtering
+    articles = articles.filter(date__range=[min_date, max_date])
     paginator = Paginator(articles, PAGE_SIZE)
     object_list = paginator.page(request.GET.get('page', 1)).object_list
     results = [get_template('article_snippet.html') \
                .render(Context({'article': article}))
                for article in object_list if article.slug not in have_articles ]
     r = {'results': {'new': results, 'all': [ article.slug for article in object_list ]},
-         'tags': __tag_data(articles, tags),
+         'tags': __tag_data(articles, tags), 'dates': dates,
          'pages': {'num_pages': paginator.num_pages, 'this_page': request.GET.get('page', 1)}}
     return HttpResponse(json.dumps(r), mimetype="application/json")

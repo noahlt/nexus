@@ -34,6 +34,15 @@ sup {
     font-family: sans;
 }
 
+noscript {
+	font-size: 12pt;
+	letter-spacing: 0;
+	position: relative;
+	top: 12pt;
+	left: 15pt;
+	color: yellow;
+}
+
 .beta {
 	font-size: 12pt;
 	text-transform: uppercase;

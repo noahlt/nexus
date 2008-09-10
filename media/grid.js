@@ -15,6 +15,13 @@ $(document).ready(function() {
 		update($(this).attr("id"));
 	}
 
+	function __redraw_showall() {
+		if (!$("#tags li").hasClass("activetag") && !$("#dates li").hasClass("activedate"))
+			$("#tags #alltags").addClass("activetag");
+		else
+			$("#tags #alltags").removeClass("activetag");
+	}
+
 	function __update_tags(taginfo) {
 		$("#tags li").not("#alltags").map(
 			function() {
@@ -73,6 +80,7 @@ $(document).ready(function() {
 
 	function update(page) {
 		history.push(current_page = page);
+		__redraw_showall();
 		var min = DATE_MIN, max = DATE_MAX;
 		var selected_dates = $("#dates .activedate").map(function() {
 				return $(this).attr('id');
@@ -104,7 +112,7 @@ $(document).ready(function() {
 	$("#paginator .pagelink").click(click_page);
 
 	$("#tags li").not("#alltags").click(function() {
-		if ($(this).hasClass("useless"))
+		if ($(this).hasClass("useless") && !$(this).hasClass("activetag"))
 			$("#tags .activetag").not("#alltags")
 				.removeClass("activetag")
 				.width($(this).width());
@@ -113,11 +121,8 @@ $(document).ready(function() {
 		$(this).toggleClass("activetag");
 		if ($(this).hasClass("activetag")) {
 			$(this).width($(this).width() + 13);
-			$("#tags #alltags").removeClass("activetag");
 		} else {
 			$(this).width($(this).width() - 13);
-			if (!$("#tags li").hasClass("activetag"))
-				$("#tags #alltags").addClass("activetag");
 		}
 		update(1);
 	});
@@ -125,7 +130,6 @@ $(document).ready(function() {
 	$("#tags #alltags").click(function() {
 		$("#dates li").removeClass("activedate");
 		selecting_dates = false;
-		$(this).addClass("activetag");
 		$("#tags li").removeClass("useless");
 		$("#tags .activetag").not("#alltags")
 			.removeClass("activetag")

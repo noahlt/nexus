@@ -1,9 +1,9 @@
 # Create your views here.
 
 from django.shortcuts import render_to_response, get_object_or_404
+from django.conf import settings
 from datetime import date
 from archive.models import Issue
-from nexus import settings
 from nexus.cover.models import InfoPage
 
 def __visible(x):

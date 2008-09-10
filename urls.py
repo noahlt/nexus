@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
+from django.conf import settings
 from cover.views import *
 from archive.views import *
-from nexus import settings
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin

@@ -1,5 +1,5 @@
 import Image
-from nexus import settings
+from django.conf import settings
 from os.path import basename, dirname, exists, getmtime
 from os import makedirs, remove, devnull
 from django.forms import ValidationError

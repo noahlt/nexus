@@ -3,6 +3,7 @@ import simplejson as json
 
 from cover.models import Article, Tag, Image, Author, InfoPage, Title
 from datetime import date, timedelta
+from django.conf import settings
 from django.core.paginator import Paginator
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
@@ -10,7 +11,6 @@ from django.template import Context, Template
 from django.template.loader import get_template
 from imageutil import ImageFormatter
 from models import Issue
-from nexus import settings
 
 PAGE_SIZE = 10
 

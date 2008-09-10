@@ -1,9 +1,9 @@
 from datetime import date
+from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
 from nexus.archive.models import Issue
-from nexus.settings import MEDIA_ROOT
 
 IMAGE_PATH = 'image_orig/'
 
@@ -116,7 +116,7 @@ class ImageAdmin(admin.ModelAdmin):
 class CustomArticleTemplate(models.Model):
     name = models.CharField(max_length=50)
     template = models.TextField(
-        default=open(MEDIA_ROOT + 'article-extension-example.html').read())
+        default=open(settings.MEDIA_ROOT + 'article-extension-example.html').read())
 
     def __str__(self):
         return self.name

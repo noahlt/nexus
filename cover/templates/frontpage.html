@@ -39,7 +39,7 @@
     {% for year in dates %}
     <li class="year"><h3>{{ year.year }}</h3><ul>
         {% for month in year.dates %}
-        <li id="{{ month|date:"Ym"}}">{{ month|date:"M" }}</li>
+        <li class="month" id="{{ month|date:"Ym"}}">{{ month|date:"F" }}</li>
         {% endfor %}
         </ul>
     {% endfor %}

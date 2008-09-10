@@ -173,13 +173,13 @@ h3 {
 }
 
 #dates li li {
-  border: 1px solid #BBB;
+  border: 0;
   margin: 0;
   padding: 0.5em;
 }
 
 #dates li li:hover {
-  background-color: #555;
+  cursor: crosshair;
 }
 
 #dates li li.activedate {

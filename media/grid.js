@@ -154,23 +154,31 @@ $(document).ready(function() {
 	});
 
 	$("#dates li li").mousemove(function() {
-		if (selecting_dates) {
+		if (selecting_dates)
 			$(this).addClass("activedate");
-		}
 	});
 
-	$("#dates li li").mouseup(function() {
+	$("#dates li").mouseup(function() {
 		if (down == $(this).attr("id")) {
 			$(this).removeClass("activedate");
 		} else if (selecting_dates) {
 			$(this).addClass("activedate");
 		}
-		selecting_dates = false;
-		update(1);
+		if (selecting_dates) {
+			selecting_dates = false;
+			update(1);
+		}
 	});
 
 	$("#tags").disableTextSelect();
 	$("#dates").disableTextSelect();
+
+	document.onmouseup = function() {
+		if (selecting_dates) {
+			selecting_dates = false;
+			update(1);
+		}
+	};
 
 	document.onkeypress = function(x) {
 		var e = window.event || x;

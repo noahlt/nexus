@@ -2,6 +2,7 @@ $(document).ready(function() {
 
 	var current_page; // not quite the same as the last history item
 	var history = [];
+	var cached = new Object();
 	history.push(current_page = 1);
 
 	var selecting_dates = false;
@@ -98,15 +99,25 @@ $(document).ready(function() {
 			.map(function() {
 					return $(this).attr("id").substring(4); // art_
 				}).get();
-		$.get("/ajax/paginator",
-			{"tags": selectedtags, "page": page, "have_articles": have_articles,
-			 "date_min": min, "date_max": max},
-			function(responseData) {
-				__update_tags(responseData['tags']);
-				__update_dates(responseData['dates']);
-				__update_results(responseData['results']);
-				__update_paginator(responseData['pages']);
-			}, "json");
+		var responseData = cached[[selectedtags, page, min, max]];
+		if (responseData) {
+			__update_tags(responseData['tags']);
+			__update_dates(responseData['dates']);
+			__update_results(responseData['results']);
+			__update_paginator(responseData['pages']);
+		} else {
+			$.get("/ajax/paginator",
+				{"tags": selectedtags, "page": page, "have_articles": have_articles,
+				 "date_min": min, "date_max": max},
+				function(responseData) {
+					__update_tags(responseData['tags']);
+					__update_dates(responseData['dates']);
+					__update_results(responseData['results']);
+					__update_paginator(responseData['pages']);
+					responseData['results']['new'] = null;
+					cached[[selectedtags, page, min, max]] = responseData;
+				}, "json");
+		}
 	}
 
 	$("#paginator .pagelink").click(click_page);

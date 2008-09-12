@@ -29,7 +29,10 @@ def frontpage(request):
     tags.sort(key=lambda tag: __visible(tag.article_set).count(), reverse=True)
     paginator = Paginator(__visible(Article.objects), PAGE_SIZE)
     articles = paginator.page(1).object_list
-    current_issue = __visible(Issue.objects)[0]
+    try:
+        current_issue = __visible(Issue.objects)[0]
+    except IndexError:
+        current_issue = False
     # `dates` looks like this:
     #   [[2009, date, date, date], [2008, date, date, date]]
     class Schoolyear(list):

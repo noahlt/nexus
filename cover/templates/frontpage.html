@@ -55,6 +55,7 @@
     {% endfor %}
   </ul>
 	<ul id="paginator">
+    {% ifnotequal 1 paginator.num_pages %}
 	{% for n in paginator.page_range %}
 		{% ifequal n 1 %}
 			<li>{{ n }}</li>
@@ -62,6 +63,7 @@
 			<li class="pagelink" id="{{ n }}"><a href="#page{{ n }}">{{ n }}</a></li>
 		{% endifequal %}
 	{% endfor %}
+    {% endifnotequal %}
 	</ul>
 
   <div id="signed">&mdash;el;nt '09</div>  {# don't remove this, it's actually important #}

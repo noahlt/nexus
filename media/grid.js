@@ -89,6 +89,11 @@ $(document).ready(function() {
 		if (selected_dates.length > 0) {
 			min = Math.min.apply(null, selected_dates);
 			max = Math.max.apply(null, selected_dates);
+			$("#dates li li").not(".activedate").map(function() {
+				var date = $(this).attr('id');
+				if (date > min && date < max)
+					$(this).addClass("activedate");
+			});
 		}
 		var selectedtags = $("#tags li").filter(".activetag").not("#alltags")
 			.map(function() {

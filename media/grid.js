@@ -69,9 +69,9 @@ $(document).ready(function() {
 		if (pages['num_pages'] > 1) {
 			for (var i = 1; i <= pages['num_pages']; i++) {
 				if (i == pages['this_page'])
-					$("#paginator").append("\n<li>" + i + "</li>");
+					$("#paginator").append(" <li>" + i + "</li>");
 				else
-					$("#paginator").append("\n<li id=\""
+					$("#paginator").append(" <li id=\""
 					+ i + "\" class=\"pagelink\" href=\"#paginator\"><a>"
 					+ i + "</a></li>");
 			}

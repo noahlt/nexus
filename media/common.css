@@ -176,9 +176,6 @@ h3 {
   border: 0;
   margin: 0;
   padding: 0.5em;
-}
-
-#dates li li:hover {
   cursor: crosshair;
 }
 
@@ -196,7 +193,7 @@ h3 {
 
 #paginator li {
   display: inline;
-  border: 1px solid transparent;
+  border: 1px solid white;
   font-size: 10pt;
   padding-left: 2px;
   padding-right: 2px;
@@ -204,6 +201,9 @@ h3 {
 
 #paginator li.pagelink:hover {
   border: 1px solid #305cb6;
+}
+
+.pagelink {
   cursor: pointer;
 }
 

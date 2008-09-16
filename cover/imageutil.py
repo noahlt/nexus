@@ -35,14 +35,9 @@ class ImageFormatter():
 
     def __process_match(self, match):
         hunk = match.group()[2:-2]
-        classes = []
+        classes = hunk.split(':')[:-1]
         template_type = None
-        index = hunk.find(':')
-        while index >= 0:
-            classes.append(hunk[0:index])
-            hunk = hunk[index+1:]
-            index = hunk.find(':')
-        obj = self.images.get(hunk)
+        obj = self.images.get(hunk.split(':')[-1])
         if obj:
             template = get_template(self.IMAGE_TEMPLATE)
             viewlink = '/image/' + obj.slug

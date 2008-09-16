@@ -25,6 +25,12 @@ table, caption, tbody, tfoot, thead, tr, th, td {
   padding-right: 1em;
 }
 
+.date {
+  font-size: 10pt;
+  color: gray;
+  padding-bottom: .4em;
+}
+
 #tags a {
 	color: white;
 }
@@ -142,7 +148,6 @@ h3 {
   letter-spacing: 1pt;
   text-align: left;
   padding-top: .5em;
-  padding-bottom: .5em;
 }
 
 #navbar {
@@ -182,6 +187,10 @@ h3 {
 #dates li li.activedate {
   background-color: #B8D8FF;
   color: #333;
+}
+
+#dates li li.useless {
+  color: gray;
 }
 
 #dates h3 {
@@ -331,7 +340,6 @@ a:hover {
 
 li#alltags {
   background-color: #305cb6;
-  width: 185px;
 }
 
 #tags, #dates {

@@ -153,6 +153,8 @@ $(document).ready(function() {
 		update(1);
 	});
 
+	$("#tags #alltags").width($("#tags #alltags").width() + 13);
+
 	$("#tags li a").click(function(event) {
 		event.preventDefault();
 	});

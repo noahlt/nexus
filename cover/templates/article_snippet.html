@@ -1,5 +1,6 @@
 <li style="overflow: hidden;" id="art_{{ article.slug }}">
   <h3>{% include "articlelink.html" %}</h3>
+  <div class="date">{{ article.date|date:"F d, Y" }}</div>
   {% if article.current %}
       {% if article.images.all %}
         {% if article.image_centric %}

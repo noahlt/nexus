@@ -129,11 +129,6 @@ def __tag_data(articles, selected_tags):
     total = articles.count()
     return [ (tag.slug, tag in selected_tags or alltags[tag] != total) for tag in alltags.keys() ]
 
-def perror(e):
-    x = open("/home/eric/Desktop/x", "w")
-    x.write(str(e))
-    x.close()
-
 def __dates_of(articles):
     return list(set([article.date.strftime('%Y%m') for article in articles.all()]))
 

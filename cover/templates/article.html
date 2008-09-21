@@ -9,6 +9,7 @@
 	<h2>{{ article.title }}
 		<br>
 		<span class="subauthor">
+			{{ article.date|date:"F d, Y" }}&nbsp;&nbsp;|&nbsp;
 			{% with article.authors.all as authors %}
 			{% include "authorlinks.html" %}
 			{% endwith %}
@@ -22,23 +23,12 @@
 	<p>
 	Tags: {% with article.tags.all as tags %}{% include "taglinks.html" %}{% endwith %}
 	</p>
-    {% if not article.current %}
-        <p>
-            Article not yet published.
-        </p>
-    {% else %}
-        {% if article.printed %}
-            <p>
-                Article published
-                <a href="/archive/{{ article.printed.date }}">
-                    {{ article.printed.date|date:"F d, Y" }}.
-                </a>
-            </p>
-        {% else %}
-            <p>
-                Article published
-                {{ article.date|date:"F d, Y" }}.
-            </p>
-        {% endif %}
+	{% if article.printed %}
+		<p>
+			Article printed
+			<a href="/archive/{{ article.printed.date }}">
+				{{ article.printed.date|date:"F d, Y" }}.
+			</a>
+		</p>
     {% endif %}
 {% endblock %}

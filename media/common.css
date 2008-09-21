@@ -27,8 +27,8 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 
 .date {
   font-size: 10pt;
-  color: gray;
-  padding-bottom: .4em;
+  padding-bottom: .3em;
+  padding-top: .1em;
 }
 
 #tags a {
@@ -75,7 +75,6 @@ noscript {
 .subauthor {
 	font-family: sans;
 	font-size: 10pt;
-	color: gray;
 	letter-spacing: 0;
 	font-weight: normal;
 }

@@ -3,6 +3,7 @@ $(document).ready(function() {
 	var current_page; // not quite the same as the last history item
 	var history = [];
 	var cached = new Object();
+	var request = null;
 	history.push(current_page = 1);
 
 	var selecting_dates = false;
@@ -45,7 +46,7 @@ $(document).ready(function() {
 			function() {
 				for (var i in dates) {
 					if ($(this).attr("id") == dates[i]) {
-                        $(this).removeClass("useless");
+						$(this).removeClass("useless");
 						return;
 					}
 				}
@@ -80,6 +81,8 @@ $(document).ready(function() {
 	}
 
 	function update(page) {
+		if (request)
+			request.abort();
 		history.push(current_page = page);
 		__redraw_showall();
 		var min = DATE_MIN, max = DATE_MAX;
@@ -111,7 +114,7 @@ $(document).ready(function() {
 			__update_results(responseData['results']);
 			__update_paginator(responseData['pages']);
 		} else {
-			$.get("/ajax/paginator",
+			request = $.get("/ajax/paginator",
 				{"tags": selectedtags, "page": page, "have_articles": have_articles,
 				 "date_min": min, "date_max": max},
 				function(responseData) {
@@ -121,6 +124,7 @@ $(document).ready(function() {
 					__update_paginator(responseData['pages']);
 					responseData['results']['new'] = null;
 					cached[[selectedtags, page, min, max]] = responseData;
+					request = null;
 				}, "json");
 		}
 	}
@@ -217,3 +221,4 @@ $(document).ready(function() {
 		return true;
 	};
 });
+// vim:noexpandtab

@@ -1,4 +1,5 @@
 from datetime import date
+from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
@@ -26,8 +27,8 @@ class Author(models.Model):
         help_text="Year of graduation, if applicable.")
     retired = models.BooleanField(help_text="Adds 'former' to title; hides author from staff list.")
     nexus_staff = models.BooleanField(help_text="Allows author to show up in staff list if not retired.")
-    subauthors = models.ManyToManyField('self', blank=True, null=True,
-        help_text="Applicable if the 'author' is really a group of people.")
+    grouping = models.ManyToManyField('self', blank=True, null=True,
+        help_text="Associates author with group and vice versa.")
 
     def __str__(self):
         return self.name
@@ -35,29 +36,27 @@ class Author(models.Model):
     class Meta:
         ordering = ('retired', 'name',)
 
+class AuthorAdminForm(forms.ModelForm):
+    def clean_grouping(self):
+        if self.instance in self.cleaned_data['grouping']:
+            raise forms.ValidationError("Cannot be subset of '%s'." % self.instance)
+        return self.cleaned_data['grouping']
+
 class AuthorAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+    form = AuthorAdminForm
     def num_articles(obj):
         return str(obj.article_set.count())
     def num_images(obj):
         return str(obj.image_set.count())
-    def groups(obj):
+    def grouped_with(obj):
         try:
-            return ', '.join([group.name for group in obj.subauthors.all()])
+            return ', '.join([group.name for group in obj.grouping.all()])
         except:
             return None
-    list_display = ('name', 'year', 'title', groups, num_articles, num_images)
+    list_display = ('name', 'year', 'title', grouped_with, num_articles, num_images, 'nexus_staff')
     list_filter = ('title', 'year', 'retired')
     search_fields = ('name',)
-    fieldsets = (
-        (None, {
-            'fields': ('name', 'slug', 'title', 'year', 'retired', 'nexus_staff')
-        }),
-        ('Group relations', {
-            'classes': ('collapse',),
-            'fields': ('subauthors',)
-        }),
-    )
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
@@ -165,7 +164,7 @@ class ArticleAdmin(admin.ModelAdmin):
     visible.boolean = True
     list_display = ('title', tags, visible, url, template)
     list_filter = ('date', 'printed', 'authors')
-    search_fields = ('title', 'fulltext', 'date')
+    search_fields = ('title', 'snippet', 'date')
 
 class InfoPage(models.Model):
     title = models.CharField(max_length=100)

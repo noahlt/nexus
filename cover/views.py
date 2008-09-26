@@ -66,7 +66,7 @@ def staff_auto_infopage(request):
         if authors_for_title:
             titles.append((title, authors_for_title))
             for author in authors_for_title:
-                for group in author[0].subauthors.all():
+                for group in author[0].grouping.all():
                     if group.nexus_staff:
                         if group not in groups:
                             groups.append(group)
@@ -115,7 +115,7 @@ def authorpage(request, slug):
     FOOTER = InfoPage.objects.all();
     MEDIA_URL = settings.MEDIA_URL
     author = get_object_or_404(Author, slug=slug)
-    authors = [ x for x in author.subauthors.all() if x.nexus_staff ]
+    authors = [ x for x in author.grouping.all() ]
     return render_to_response('author.html', locals())
 
 def __tag_data(articles, selected_tags):

@@ -40,11 +40,10 @@
 {% endblock %}
 
 {% block extra %}
+	<p>
 	{% if author.year %}
-		Class of {{ author.year }}
+		Class of {{ author.year }}{% endif %}{% if authors %}{% if author.year %}, {% endif %}
+		{% include "authorlinks.html" %}
 	{% endif %}
-	{% if authors %}
-        {% if author.year %}<br>{% endif %}
-        {% include "authorlinks.html" %}
-	{% endif %}
+	</p>
 {% endblock %}

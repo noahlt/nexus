@@ -1,11 +1,11 @@
 </p> <!-- XXX keep div out of p -->
 {% spaceless %}
 <div class="image-default {{ classes }}">
-    <a href="{{ viewlink }}">
-        <div class="image-wrap">
-			<img id="{{ slug }}" alt="{{ slug }}" src="{{ image }}">
-        </div>
-    </a>
+	<div class="image-wrap">
+		<a href="{{ viewlink }}">
+				<img id="{{ slug }}" alt="{{ slug }}" src="{{ image }}">
+		</a>
+	</div>
     <span class="author">
         {% if any_not_staff %}Image courtesy of {% endif %}
 		{% include "authorlinks.html" %}

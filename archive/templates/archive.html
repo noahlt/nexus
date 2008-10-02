@@ -5,17 +5,17 @@
     <title>
         {% block title %}Nexus Archives{% endblock %}
     </title>
-	<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
-	<link rel="stylesheet" href="{{ MEDIA_URL }}archives.css" type="text/css" />
+	<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css">
+	<link rel="stylesheet" href="{{ MEDIA_URL }}archives.css" type="text/css">
 	<!--[if lt IE 7]>
-	<link rel="stylesheet" href="{{ MEDIA_URL }}ie6.css" type="text/css" />
+	<link rel="stylesheet" href="{{ MEDIA_URL }}ie6.css" type="text/css">
 	<![endif]-->
 	{% block include %}{% endblock %}
 </head>
 <body>
-	<a href="/" style="text-decoration:none;"><h1>
+	<h1><a href="/" style="text-decoration:none;">
         {% block header %}The Nexus Archives{% endblock %}
-	</h1></a>
+	</a></h1>
     <div class=navbar>
         {% block navbar %}{% endblock %}
     </div>

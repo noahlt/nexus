@@ -5,12 +5,12 @@
 		<title>
 			{% block title %}The Nexus{% endblock %}
 		</title>
-		<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css" />
-		<link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css" />
+		<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css">
+		<link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css">
 		<!--[if lt IE 7]>
-		<link rel="stylesheet" href="{{ MEDIA_URL }}ie6.css" type="text/css" />
+		<link rel="stylesheet" href="{{ MEDIA_URL }}ie6.css" type="text/css">
 		<![endif]-->
-		<style>
+		<style type="text/css">
 			{% block style %}
             .wrapper {
 				overflow: hidden;
@@ -49,11 +49,11 @@
 	<body>
 		<center>
 		<div class="wrapper" style="text-align:left">
-		<a href="/" style="text-decoration:none;"><h1>
+		<h1><a href="/" style="text-decoration:none;">
 			{% block header %}
 			The Nexus
 			{% endblock %}
-		</h1></a>
+		</a></h1>
         <div class="content">
 		<h2>{% block subtitle %}{% endblock %}</h2>
 		{% block content %}{% endblock %}

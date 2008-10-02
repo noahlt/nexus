@@ -14,11 +14,11 @@ $(document).ready(function() {
 	function click_page(event) {
 		event.preventDefault();
 		window.scroll(0,0);
-		update($(this).attr("id"));
+		update($(this).attr("id").substring(2)); // n_
 	}
 
 	function __redraw_showall() {
-		if (!$("#tags li").hasClass("activetag") && !$("#dates li").hasClass("activedate"))
+		if (!$("#tags li").not("#alltags").hasClass("activetag") && !$("#dates li").hasClass("activedate"))
 			$("#tags #alltags").addClass("activetag");
 		else
 			$("#tags #alltags").removeClass("activetag");
@@ -45,7 +45,7 @@ $(document).ready(function() {
 		$("#dates li").not(".year").map(
 			function() {
 				for (var i in dates) {
-					if ($(this).attr("id") == dates[i]) {
+					if ($(this).attr("id").substring(3) == dates[i]) { // ym_
 						$(this).removeClass("useless");
 						return;
 					}
@@ -72,7 +72,7 @@ $(document).ready(function() {
 				if (i == pages['this_page'])
 					$("#paginator").append(" <li>" + i + "</li>");
 				else
-					$("#paginator").append(" <li id=\""
+					$("#paginator").append(" <li id=\"n_"
 					+ i + "\" class=\"pagelink\" href=\"#paginator\"><a>"
 					+ i + "</a></li>");
 			}
@@ -87,13 +87,13 @@ $(document).ready(function() {
 		__redraw_showall();
 		var min = DATE_MIN, max = DATE_MAX;
 		var selected_dates = $("#dates .activedate").map(function() {
-				return $(this).attr('id');
+				return $(this).attr('id').substring(3); // ym_
 			}).get();
 		if (selected_dates.length > 0) {
 			min = Math.min.apply(null, selected_dates);
 			max = Math.max.apply(null, selected_dates);
 			$("#dates li li").not(".activedate").map(function() {
-				var date = $(this).attr('id');
+				var date = $(this).attr('id').substring(3); // ym_
 				if (date > min && date < max)
 					$(this).addClass("activedate");
 			});

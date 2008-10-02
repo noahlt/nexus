@@ -14,7 +14,7 @@ Click below to see what's behind these front pages.
             {% for issue in year reversed %}
             <div class="thumbblock">
                 <a class="page" href="{{ issue.date }}">
-                    <img class="thumb" src="{{ issue.calculate_thumbnail_url }}">
+					<img alt="Issue {{ issue.date }}." class="thumb" src="{{ issue.calculate_thumbnail_url }}">
                 </a>
                 <div class="thumbtext">{{ issue.date|date:"F j" }}</div>
             </div>

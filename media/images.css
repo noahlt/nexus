@@ -1,9 +1,3 @@
-/* disable border-bottom-as-underline here */
-a:hover {
-	text-decoration: underline;
-	border: none;
-}
-
 .image-default {
 	margin-bottom: 1em;
 	float: left;

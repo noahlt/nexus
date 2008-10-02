@@ -17,11 +17,18 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 	vertical-align: baseline;
 }
 
+a {
+  color: #305cb6;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 .imgsnippet {
   max-height: 300px;
-  float: left;
   width: auto;
-  display: block;
   padding-right: 1em;
 }
 
@@ -41,11 +48,6 @@ sup {
 }
 
 noscript {
-	font-size: 12pt;
-	letter-spacing: 0;
-	position: relative;
-	top: 12pt;
-	left: 15pt;
 	color: yellow;
 }
 
@@ -115,19 +117,22 @@ blockquote, q {
 	quotes: "" "";
 }
 
-h1 {
+h1, h1 a {
   font-family: helvetica;
   font-size: 40pt;
   font-weight: bold;
   letter-spacing: 0.8pt;
-  padding-left: 12pt;
+  padding-left: 4pt;
   padding-top: 12pt;
   padding-bottom: 0;
   background-color: #0090bd;
   color: white;
   height: 1.5em;
   margin-bottom: 0;
-  cursor: pointer;
+}
+
+h1 a:hover {
+  text-decoration: none;
 }
 
 h2 {
@@ -216,7 +221,7 @@ h3 {
 }
 
 #paginator a:hover {
-  border: 0;
+  text-decoration: none;
 }
 
 #paginator {
@@ -252,7 +257,7 @@ h3 {
   color: #FFF;
 }
 
-#tags a, #tags a:hover { color: inherit; border: none; }
+#tags a, #tags a:hover { color: inherit; text-decoration: none; }
 
 #dates {
   float: right;
@@ -326,15 +331,6 @@ h3 {
 #results h3 {
   font-weight: bold;
   letter-spacing: .2em;
-}
-
-a {
-  color: #305cb6;
-  text-decoration: none;
-}
-
-a:hover {
-  border-bottom: 1px solid #305cb6;
 }
 
 li#alltags {

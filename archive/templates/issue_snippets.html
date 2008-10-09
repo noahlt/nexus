@@ -3,8 +3,8 @@
 	{% for article in issue.article_set.all %}
     {% if article.current %}
 	<li class="controllink">
-		<span class="{{ article.slug }}">{% include "articlelink.html" %}</span>
-		<div class="{{ article.slug }} hidden-snippet">
+		<span class="art_{{ article.slug }}">{% include "articlelink.html" %}</span>
+		<div class="art_{{ article.slug }} hidden-snippet">
 		{% if article.image_centric %}
 			{% with article.images.all.0 as image %}
 				{% include "imagelink.html" %}

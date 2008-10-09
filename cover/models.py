@@ -22,7 +22,7 @@ class TitleAdmin(admin.ModelAdmin):
 class Author(models.Model):
     name = models.CharField(max_length=75)
     slug = models.SlugField(max_length=30, unique=True)
-    title = models.ForeignKey(Title, blank=True, null=True)
+    title = models.ForeignKey(Title, blank=True, null=True, help_text="Leave blank if unknown or to exclude author from staff page.")
     year = models.PositiveSmallIntegerField(blank=True, null=True,
         help_text="Year of graduation, if applicable.")
     retired = models.BooleanField(help_text="Adds 'former' to title; hides author from staff list.")

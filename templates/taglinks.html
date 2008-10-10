@@ -1,1 +1,1 @@
-{% for tag in tags %}{% if not forloop.first %}, {% endif %}<a href="/tag/{{ tag.slug }}">{{ tag }}</a>{% endfor %}
+{% for tag in tags %}{% if not forloop.first %}, {% endif %}<a class="taglink" href="/tag/{{ tag.slug }}">{{ tag }}</a>{% endfor %}

@@ -1,20 +1,13 @@
 {% extends "info.html" %}
 {% load markup %}
 
-{% block style %}
-	{{ block.super }}
-#extra {
-		display: block;
-	}
-{% endblock %}
-
 {% block content %}
     {{ block.super }}
     {% for title, authors in titles %}
         <h3>{{ title }}</h3>
         {% for author, groups in authors %}
         <ul style="padding-left: 1em">
-            <li><a href="/author/{{ author.slug }}">
+            <li style="border:0"><a class="authorlink" href="/author/{{ author.slug }}">
             {{ author }}</a>
 			{% for n in groups %}<a href='#note{{ n }}'><sup>{{ n }}</sup></a>{% endfor %}
             </li>
@@ -26,8 +19,8 @@
 {% block extra %}
 <ul>
     {% for group in groups %}
-    <li id="note{{ forloop.counter }}">
-    [{{ forloop.counter }}] <a href="/author/{{ group.slug }}">{{ group }}</a>
+    <li style="border: 0" id="note{{ forloop.counter }}">
+    [{{ forloop.counter }}] <a class="authorlink" href="/author/{{ group.slug }}">{{ group }}</a>
     </li>
     {% endfor %}
 </ul>

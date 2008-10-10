@@ -1,11 +1,9 @@
 {% extends "basic.html" %}
 {% load markup %}
 
-{% block style %}
-	{{ block.super }}
-#extra {
-		display: none;
-	}
+{% block subtitle %}
+{{ info.title }}
+<br style="font-size: 5pt">
 {% endblock %}
 
 {% block title %}
@@ -13,7 +11,5 @@
 {% endblock %}
 
 {% block content %}
-	<h2>{{ info.title }}</h2>
-	<br style="font-size: 5pt">
 	{{ info.fulltext|textile }}
 {% endblock %}

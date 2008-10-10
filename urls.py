@@ -18,15 +18,24 @@ urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root),
 
     (r'^$', frontpage),
-    (r'^(\d{4})/(\d{2})/([-_a-z0-9]+)/$', articlepage),
+    (r'^ajax/embed/(\d{4})/(\d{2})/([-_a-z0-9]+)/$', extract_content(articlepage)),
+    (r'^ajax/embed/author/([-_a-z0-9]+)$', extract_content(authorpage)),
+    (r'^ajax/embed/image/([-_a-z0-9]+)/$', extract_content(imageview)),
+    (r'^ajax/embed/tag/([-_a-z0-9]+)$', extract_content(tagpage)),
+    (r'^ajax/embed/info/staff$', extract_content(staff_auto_infopage)),
+    (r'^ajax/embed/info/([-_a-z0-9]+)$', extract_content(infopage)),
+    (r'^ajax/paginator$', paginate),
+
     (r'^archive/$', issue_gallery),
     (r'^archive/(\d{4}-\d{2}-\d{2})/$', page_gallery),
-    (r'^ajax/paginator$', paginate),
+
+    (r'^(\d{4})/(\d{2})/([-_a-z0-9]+)/$', articlepage),
     (r'^image/([-_a-z0-9]+)/$', imageview),
     (r'^tag/([-_a-z0-9]+)$', tagpage),
     (r'^author/([-_a-z0-9]+)$', authorpage),
     (r'^info/staff$', staff_auto_infopage),
     (r'^info/([-_a-z0-9]+)$', infopage),
+
     (r'^future/([-_a-z0-9]+)/$', futurepage),
 )
 

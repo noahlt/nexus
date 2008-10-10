@@ -5,21 +5,24 @@
 	{{ article.title }}
 {% endblock %}
 
+{% block subtitle %}
+	{{ article.title }}
+	<br>
+	<span class="subauthor">
+		{{ article.date|date:"F d, Y" }}&nbsp;&nbsp;|&nbsp;
+		{% with article.authors.all as authors %}
+		{% include "authorlinks.html" %}
+		{% endwith %}
+	</span>
+{% endblock %}
+
 {% block content %}
-	<h2>{{ article.title }}
-		<br>
-		<span class="subauthor">
-			{{ article.date|date:"F d, Y" }}&nbsp;&nbsp;|&nbsp;
-			{% with article.authors.all as authors %}
-			{% include "authorlinks.html" %}
-			{% endwith %}
-		</span>
-	</h2>
 	<br style="font-size: 5pt">
     {{ article.fulltext|textile }}
 {% endblock %}
 
 {% block extra %}
+<div class="goto_top embed" style="display:none; float: right;"><a id="goto_top" href="#">Top of Page</a></div>
 	<p>
 	Tags: {% with article.tags.all as tags %}{% include "taglinks.html" %}{% endwith %}
 	</p>

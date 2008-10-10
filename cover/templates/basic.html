@@ -22,26 +22,8 @@
 				color: black;
             }
 
-			.content {
-				padding: 1.5em;
-				overflow: hidden;
-				padding-top: 0;
-				margin: 0;
-			}
-
-			#extra {
-				padding: 1em;
-				clear: both;
-				overflow: hidden;
-				background-color: #eee;
-			}
-
 			body {
 				background-color: #222;
-			}
-
-			p {
-				padding: .5em;
 			}
 			{% endblock %}
 		</style>
@@ -54,13 +36,15 @@
 			The Nexus
 			{% endblock %}
 		</a></h1>
-        <div class="content">
+<!--BEGIN CONTENT-->
+        <div id="content">
 		<h2>{% block subtitle %}{% endblock %}</h2>
 		{% block content %}{% endblock %}
 		</div>
 		<div id="extra">
 			{% block extra %}{% endblock %}
 		</div>
+<!--END CONTENT-->
         </div>
 		</center>
 		{% include "footer.html" %}

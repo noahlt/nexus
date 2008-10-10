@@ -6,10 +6,6 @@
   margin-left: -12pt;
 }
 
-.image-default img {
-	width: expression(this.width > 788 ? 788 : true );
-}
-
 .small img {
 	width: expression(this.width > 325 ? 325 : true );
 }

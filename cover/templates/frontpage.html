@@ -3,6 +3,7 @@
 <html> <head>
 <title>Nexus</title>
 <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css">
+<link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css">
 <!--[if lt IE 7]>
 <link rel="stylesheet" href="{{ MEDIA_URL }}ie6.css" type="text/css">
 <![endif]-->
@@ -28,7 +29,7 @@
   <ul id="tags">
     <li class="activetag" id="alltags">(Show All)</li>
     {% for tag in tags %}
-    <li id="tag_{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">
+    <li id="tag_{{ tag.slug }}"><a class="not_taglink" href="/tag/{{ tag.slug }}">
         <span >
         {{ tag.name }}
         </span>
@@ -47,7 +48,9 @@
         </ul>
     {% endfor %}
   </ul>
-  <ul id="results">
+  <div id="centercolumn">
+  <div id="back_button" class="embed" style="display:none"><a href="#back">Back to Results</a></div>
+  <ul id="results" class="results">
 	<!--[if lt IE 7]>
 	<li id="IE6_PLACEHOLDER" style="display: inline !important; padding: 0 !important;"></li>
 	<![endif]-->
@@ -57,7 +60,8 @@
       {% endif %}
     {% endfor %}
   </ul>
-	<ul id="paginator">
+  <div id="embedded_content" class="embed"></div>
+	<ul id="paginator" class="results">
     {% ifnotequal 1 paginator.num_pages %}
 	{% for n in paginator.page_range %}
 		{% ifequal n 1 %}
@@ -68,6 +72,7 @@
 	{% endfor %}
     {% endifnotequal %}
 	</ul>
+    </div>
 
   <div id="signed">&mdash;el;nt '09</div>  {# don't remove this, it's actually important #}
 </div>

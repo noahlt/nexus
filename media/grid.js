@@ -17,6 +17,58 @@ $(document).ready(function() {
 		update($(this).attr("id").substring(2)); // n_
 	}
 
+	function go_back() {
+		if (current_page != 1 && history.length > 0) {
+			var i = history.pop();
+			while (current_page == i && history.length > 0)
+				i = history.pop();
+			window.scroll(0,0);
+			update(i);
+			return false;
+		} else if (!$("#alltags").hasClass("activetag")) {
+			$("#alltags").click();
+			return false;
+		}
+	}
+
+	function click_embed(event) {
+		event.preventDefault();
+		if (request)
+			request.abort();
+		history.push(current_page = null);
+		url = $(this).attr("href");
+		if (url.match("http://")) { // whatever IE is doing, undo it
+			url = url.substring(7);
+			url = url.substring(url.indexOf("/"));
+		}
+		request = $.get("/ajax/embed" + url,
+			function(responseData) {
+				$(".results").hide();
+				$("#embedded_content").html(responseData);
+				grab_links();
+				$(".embed").show();
+				window.scroll(0,0);
+				request = null;
+			}, "html");
+	}
+
+	function click_tag(event) {
+		event.preventDefault();
+		$("#alltags").click();
+		slug = $(this).attr("href").substring(5); // XXX strip /tag/
+		$("#tag_" + slug).click();
+		window.scroll(0,0);
+		update(1);
+	}
+
+	function grab_links() {
+		$(".articlelink").click(click_embed);
+		$(".authorlink").click(click_embed);
+		$(".infolink").click(click_embed);
+		$(".imagelink").click(click_embed);
+		$(".taglink").click(click_tag);
+	}
+
 	function __redraw_showall() {
 		if (!$("#tags li").not("#alltags").hasClass("activetag") && !$("#dates li").hasClass("activedate"))
 			$("#tags #alltags").addClass("activetag");
@@ -63,6 +115,9 @@ $(document).ready(function() {
 			$("#results li").filter("#art_" + visible[i]).show();
 		for (var j in data)
 			$("#results").append(data[j]);
+		grab_links();
+		$(".embed").hide();
+		$(".results").show();
 	}
 
 	function __update_paginator(pages) {
@@ -163,6 +218,9 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
+	$("#back_button a").click(go_back);
+	grab_links();
+
 	$("#dates li li").mousedown(function() {
 		if (!selecting_dates) {
 			if ($(this).hasClass("activedate"))
@@ -205,20 +263,8 @@ $(document).ready(function() {
 	document.onkeypress = function(x) {
 		var e = window.event || x;
 		var keyunicode = e.charCode || e.keyCode;
-		if (keyunicode == 8) {
-			if (current_page != 1 && history.length > 0) {
-				var i = history.pop();
-				while (current_page == i && history.length > 0)
-					i = history.pop();
-				window.scroll(0,0);
-				update(i);
-				return false;
-			} else if (!$("#alltags").hasClass("activetag")) {
-				$("#alltags").click();
-				return false;
-			}
-		}
-		return true;
+		return keyunicode == 8 ? go_back() : true;
 	};
 });
+
 // vim:noexpandtab

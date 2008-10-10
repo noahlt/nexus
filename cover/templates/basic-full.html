@@ -39,9 +39,11 @@
 			The Nexus
 			{% endblock %}
 		</a></h1>
-        <div class="content">
+<!--BEGIN CONTENT-->
+        <div id="content">
 		<h2>{% block subtitle %}{% endblock %}</h2>
 		{% block content %}{% endblock %}
+<!--END CONTENT-->
         </div></div>
 		</center>
 		{% include "footer.html" %}

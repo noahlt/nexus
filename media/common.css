@@ -6,15 +6,15 @@ small, strike, strong, tt, var,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	outline: 0;
-	font-weight: inherit;
-	font-style: inherit;
-	font-size: 100%;
-	font-family: inherit;
-	vertical-align: baseline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
 }
 
 a {
@@ -39,82 +39,86 @@ a:hover {
 }
 
 #tags a {
-	color: white;
+  color: white;
 }
 
 sup {
-    font-size: 7pt;
-    font-family: sans;
+  font-size: 7pt;
+  font-family: sans;
+}
+
+p {
+  padding: .5em;
 }
 
 noscript {
-	color: yellow;
+  color: yellow;
 }
 
 .beta {
-	font-size: 12pt;
-	text-transform: uppercase;
-	letter-spacing: 0;
-	position: relative;
-	top: 12pt;
-	left: 5pt;
+  font-size: 12pt;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  position: relative;
+  top: 12pt;
+  left: 5pt;
 }
 
 .info {
-	line-height: 1.5em;
-	margin-left: 1em;
+  line-height: 1.5em;
+  margin-left: 1em;
 }
 
 .subtitle {
-	font-family: sans;
-	text-transform: lowercase;
-	font-size: 9pt;
-	letter-spacing: 0;
-	font-weight: normal;
-	font-style: italic;
+  font-family: sans;
+  text-transform: lowercase;
+  font-size: 9pt;
+  letter-spacing: 0;
+  font-weight: normal;
+  font-style: italic;
 }
 
 .subauthor {
-	font-family: sans;
-	font-size: 10pt;
-	letter-spacing: 0;
-	font-weight: normal;
+  font-family: sans;
+  font-size: 10pt;
+  letter-spacing: 0;
+  font-weight: normal;
 }
 
 /* remember to define focus styles! */
 :focus {
-	outline: 0;
+  outline: 0;
 }
 
 body {
-	color: #FFF;
-	background: #000;
-	font-size: 11pt;
-	font-family: Arial, Helvetica, sans-serif;
+  color: #FFF;
+  background: #000;
+  font-size: 11pt;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 ol, ul {
-	list-style: none;
+  list-style: none;
 }
 
 /* tables still need 'cellspacing="0"' in the markup */
 table {
-	border-collapse: separate;
-	border-spacing: 0;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 caption, th, td {
-	text-align: left;
-	font-weight: normal;
+  text-align: left;
+  font-weight: normal;
 }
 
 blockquote:before, blockquote:after,
 q:before, q:after {
-	content: "";
+  content: "";
 }
 
 blockquote, q {
-	quotes: "" "";
+  quotes: "" "";
 }
 
 h1, h1 a {
@@ -141,8 +145,13 @@ h2 {
   font-weight: bold;
   letter-spacing: 1pt;
   text-align: center;
-  padding-top: 0.5em;
+  padding-top: 1em;
   margin-bottom: .5em;
+}
+
+#embedded_content h2 {
+  margin: 0;
+  padding: 0;
 }
 
 h3 {
@@ -272,13 +281,35 @@ h3 {
   text-align: right;
 }
 
-#results, #paginator {
+#extra {
+  padding: 1em;
+  clear: both;
+  overflow: hidden;
+  background-color: #eee;
+}
+
+#centercolumn {
   margin-left: 170px;
   margin-right: 170px;
-  line-height: 1.5em;
-  padding: 1em;
   background-color: white;
   color: #222;
+}
+
+#results, #paginator, #back_button {
+  overflow: hidden;
+  line-height: 1.5em;
+  padding: 1em;
+}
+
+.goto_top {
+  text-align: right;
+}
+
+#content {
+  padding: 1.5em;
+  overflow: hidden;
+  padding-top: 0;
+  margin: 0;
 }
 
 #results {
@@ -342,24 +373,24 @@ li#alltags {
 }
 
 .useless {
-	border: 0;
+  border: 0;
 }
 
 #tags li.useless:hover, li.useless:hover {
-	cursor: default;
+  cursor: default;
 }
 
 #tags li.useless, li.useless {
-	border: 1px solid #333;
-	color: gray;
+  border: 1px solid #333;
+  color: gray;
 }
 
 #tags .useless a, .useless a {
-	color: gray;
+  color: gray;
 }
 
 .useless a:hover {
-	cursor: default;
+  cursor: default;
 }
 
 #tags li.activetag {
@@ -373,15 +404,15 @@ li#alltags {
 }
 
 li#alltags {
-	color: white;
+  color: white;
 }
 
 li#alltags:hover {
-	background-color: #EEE;
-	color: black;
+  background-color: #EEE;
+  color: black;
 }
 
 #tags li:hover {
-  background-color: #EEE; /* FIXME make this teal later */
+  background-color: #EEE;
   color: #222;
 }

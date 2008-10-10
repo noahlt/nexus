@@ -1,4 +1,5 @@
 # Create your views here.
+import re
 import simplejson as json
 
 from cover.models import Article, Tag, Image, Author, InfoPage, Title
@@ -13,6 +14,7 @@ from imageutil import ImageFormatter
 from models import Issue
 
 PAGE_SIZE = 10
+CONTENT_MARKER = re.compile("<!--BEGIN CONTENT-->.*<!--END CONTENT-->", flags=re.DOTALL)
 
 def __visible(x):
     return x.filter(date__lte=date.today())
@@ -144,6 +146,11 @@ def __month_end(d):
     '''Takes a datetime.date and returns the date for the last day in the
     same month.'''
     return date(d.year if d.month < 12 else d.year + 1, d.month+1 if d.month < 12 else 1, d.day) - timedelta(1)
+
+def extract_content(function):
+    def stripped(*args):
+        return HttpResponse(CONTENT_MARKER.search(function(*args).content).group())
+    return stripped
 
 def paginate(request):
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))

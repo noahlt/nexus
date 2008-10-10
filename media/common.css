@@ -186,6 +186,10 @@ h3 {
 }
 
 #dates li {
+  cursor: pointer;
+}
+
+#dates li {
   padding: 0;
   background-color: #222;
 }

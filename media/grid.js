@@ -221,6 +221,25 @@ $(document).ready(function() {
 	$("#back_button a").click(go_back);
 	grab_links();
 
+	$("#dates h3").click(function() {
+		var min = ($(this).html() - 1) + "08";
+		var max = $(this).html() + "07";
+		var deselect = true;
+		$("#dates li li").map(function() {
+			var date = $(this).attr('id').substring(3); // ym_
+			if (date >= min && date <= max) {
+				if (!$(this).hasClass("activedate"))
+					deselect = false;
+				$(this).addClass("activedate");
+			} else {
+				$(this).removeClass("activedate");
+			}
+		});
+		if (deselect)
+			$("#dates li").removeClass("activedate");
+		update(1);
+	});
+
 	$("#dates li li").mousedown(function() {
 		if (!selecting_dates) {
 			if ($(this).hasClass("activedate"))

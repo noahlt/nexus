@@ -3,26 +3,74 @@ $(document).ready(function() {
 	var current_page; // not quite the same as the last history item
 	var history = [];
 	var cached = new Object();
-	var request = null;
 	history.push(current_page = 1);
+
+	// for handling concurrency
+	var request = null;
+	var activelink = null;
+	var oldtag = null; // active but to be superceded by another
+	// special case since tag-width changing is done BEFORE the request completes
+	var newtag = null;
 
 	var selecting_dates = false;
 	var down;
 	var DATE_MIN = 100001;
 	var DATE_MAX = 300001;
+	var TAG_NORMAL = $("#alltags").width();
+	var TAG_EXPANDED = TAG_NORMAL + 13;
+	$("#tags #alltags").width(TAG_EXPANDED);
 
 	function click_page(event) {
 		event.preventDefault();
-		window.scroll(0,0);
+		activelink = $(this).addClass("active");
 		update($(this).attr("id").substring(2)); // n_
 	}
 
+	// call before ajax request; aborts previous ones
+	// set request/activelink AFTER calling
+	// set newtag BEFORE calling
+	function acquire_request() {
+		if (request) {
+			request.abort();
+			request = null;
+		}
+		if (activelink) {
+			activelink.removeClass("active");
+			activelink = null;
+		}
+		if (oldtag) { // abort the old tag
+			if (!newtag || newtag.attr("id") != "alltags") // because alltags deactivates them all
+				oldtag.toggleClass("activetag");
+			if (oldtag.attr("id") != "alltags") {
+				if (oldtag.hasClass("activetag"))
+					oldtag.width(TAG_EXPANDED);
+				else
+					oldtag.width(TAG_NORMAL);
+			}
+			oldtag = null;
+		}
+		oldtag = newtag; // set this as the old one now
+		newtag = null;
+		window.status = "Sent XMLHttpRequest...";
+	}
+
+	// call at end of dom update
+	function release_request() {
+		window.status = null;
+		window.scroll(0,0); // misc
+		request = null;
+		if (activelink)
+			activelink.removeClass("active");
+		activelink = null;
+		oldtag = null;
+	}
+
+	// back to previous page
 	function go_back() {
 		if (current_page != 1 && history.length > 0) {
 			var i = history.pop();
 			while (current_page == i && history.length > 0)
 				i = history.pop();
-			window.scroll(0,0);
 			update(i);
 			return false;
 		} else if (!$("#alltags").hasClass("activetag")) {
@@ -31,25 +79,24 @@ $(document).ready(function() {
 		}
 	}
 
+	// load link into center column
 	function click_embed(event) {
 		event.preventDefault();
-		if (request)
-			request.abort();
+		acquire_request();
 		history.push(current_page = null);
+		activelink = $(this).addClass("active");
 		url = $(this).attr("href");
 		if (url.match("http://")) { // whatever IE is doing, undo it
 			url = url.substring(7);
 			url = url.substring(url.indexOf("/"));
 		}
-		request = $.get("/ajax/embed" + url,
-			function(responseData) {
-				$(".results").hide();
-				$("#embedded_content").html(responseData);
-				grab_links();
-				$(".embed").show();
-				window.scroll(0,0);
-				request = null;
-			}, "html");
+		request = $.get("/ajax/embed" + url, function(responseData) {
+			$("#embedded_content").html(responseData);
+			grab_links();
+			$(".results").hide();
+			$(".embed").show();
+			release_request();
+		}, "html");
 	}
 
 	function click_tag(event) {
@@ -57,16 +104,16 @@ $(document).ready(function() {
 		$("#alltags").click();
 		slug = $(this).attr("href").substring(5); // XXX strip /tag/
 		$("#tag_" + slug).click();
-		window.scroll(0,0);
 		update(1);
 	}
 
+	// call after new stuff is loaded to bind javascript functions
 	function grab_links() {
 		$(".articlelink").click(click_embed);
-		$(".authorlink").click(click_embed);
-		$(".infolink").click(click_embed);
-		$(".imagelink").click(click_embed);
 		$(".taglink").click(click_tag);
+		$("a[@href*=/author/]").click(click_embed); // .authorlink
+		$("a[@href*=/info/]").click(click_embed); // .infolink
+		$("a[@href*=/image/]").click(click_embed); // .imagelink
 	}
 
 	function __redraw_showall() {
@@ -136,8 +183,7 @@ $(document).ready(function() {
 	}
 
 	function update(page) {
-		if (request)
-			request.abort();
+		acquire_request();
 		history.push(current_page = page);
 		__redraw_showall();
 		var min = DATE_MIN, max = DATE_MAX;
@@ -168,6 +214,7 @@ $(document).ready(function() {
 			__update_dates(responseData['dates']);
 			__update_results(responseData['results']);
 			__update_paginator(responseData['pages']);
+			release_request();
 		} else {
 			request = $.get("/ajax/paginator",
 				{"tags": selectedtags, "page": page, "have_articles": have_articles,
@@ -179,7 +226,7 @@ $(document).ready(function() {
 					__update_paginator(responseData['pages']);
 					responseData['results']['new'] = null;
 					cached[[selectedtags, page, min, max]] = responseData;
-					request = null;
+					release_request();
 				}, "json");
 		}
 	}
@@ -190,15 +237,14 @@ $(document).ready(function() {
 		if ($(this).hasClass("useless") && !$(this).hasClass("activetag"))
 			$("#tags .activetag").not("#alltags")
 				.removeClass("activetag")
-				.width($(this).width());
+				.width(TAG_NORMAL);
 		tagslug = $(this).attr("id");
-		$(this).removeClass("useless");
-		$(this).toggleClass("activetag");
-		if ($(this).hasClass("activetag")) {
-			$(this).width($(this).width() + 13);
-		} else {
-			$(this).width($(this).width() - 13);
-		}
+		$(this).removeClass("useless").toggleClass("activetag");
+		if ($(this).hasClass("activetag"))
+			$(this).width(TAG_EXPANDED);
+		else
+			$(this).width(TAG_NORMAL);
+		newtag = $(this);
 		update(1);
 	});
 
@@ -208,11 +254,10 @@ $(document).ready(function() {
 		$("#tags li").removeClass("useless");
 		$("#tags .activetag").not("#alltags")
 			.removeClass("activetag")
-			.width($(this).width() - 13);
+			.width(TAG_NORMAL);
+		newtag = $(this);
 		update(1);
 	});
-
-	$("#tags #alltags").width($("#tags #alltags").width() + 13);
 
 	$("#tags li a").click(function(event) {
 		event.preventDefault();
@@ -222,8 +267,8 @@ $(document).ready(function() {
 	grab_links();
 
 	$("#dates h3").click(function() {
-		var min = ($(this).html() - 1) + "08";
-		var max = $(this).html() + "07";
+		var min = ($(this).text() - 1) + "08";
+		var max = $(this).text() + "07";
 		var deselect = true;
 		$("#dates li li").map(function() {
 			var date = $(this).attr('id').substring(3); // ym_

@@ -149,10 +149,14 @@ def __month_end(d):
 
 def extract_content(function):
     def stripped(*args):
+        import time
+        time.sleep(1);
         return HttpResponse(CONTENT_MARKER.search(function(*args).content).group())
     return stripped
 
 def paginate(request):
+    import time
+    time.sleep(1);
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
     have_articles = request.GET.getlist('have_articles')
     min_date = __parse_date(request.GET.get('date_min'))

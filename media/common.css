@@ -420,3 +420,10 @@ li#alltags:hover {
   background-color: #EEE;
   color: #222;
 }
+
+a.active {
+  color: gray;
+  text-decoration: none;
+  cursor: wait;
+  background-color: #f2f2f2;
+}

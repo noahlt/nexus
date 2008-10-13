@@ -154,6 +154,11 @@ h2 {
   padding: 0;
 }
 
+#none-visible {
+  color: red;
+  display: none;
+}
+
 h3 {
   font-family: helvetica;
   font-size: 14pt;
@@ -426,4 +431,13 @@ a.active {
   text-decoration: none;
   cursor: wait;
   background-color: #f2f2f2;
+}
+
+#footer a.active {
+  background-color: #323232;
+  border-bottom: 1em solid #305cb6;
+}
+
+#extra a.active {
+  background-color: #ddd;
 }

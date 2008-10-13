@@ -1,2 +1,2 @@
 {% for author in authors %}{% if not forloop.first %}, {% endif %}
-<a class="authorlink" href="/author/{{ author.slug }}">{{ author }}</a>{% endfor %}
+<a href="/author/{{ author.slug }}">{{ author }}</a>{% endfor %}

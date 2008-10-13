@@ -8,9 +8,6 @@ $(document).ready(function() {
 	// for handling concurrency
 	var request = null;
 	var activelink = null;
-	var oldtag = null; // active but to be superceded by another
-	// special case since tag-width changing is done BEFORE the request completes
-	var newtag = null;
 
 	var selecting_dates = false;
 	var down;
@@ -28,7 +25,6 @@ $(document).ready(function() {
 
 	// call before ajax request; aborts previous ones
 	// set request/activelink AFTER calling
-	// set newtag BEFORE calling
 	function acquire_request() {
 		if (request) {
 			request.abort();
@@ -38,19 +34,6 @@ $(document).ready(function() {
 			activelink.removeClass("active");
 			activelink = null;
 		}
-		if (oldtag) { // abort the old tag
-			if (!newtag || newtag.attr("id") != "alltags") // because alltags deactivates them all
-				oldtag.toggleClass("activetag");
-			if (oldtag.attr("id") != "alltags") {
-				if (oldtag.hasClass("activetag"))
-					oldtag.width(TAG_EXPANDED);
-				else
-					oldtag.width(TAG_NORMAL);
-			}
-			oldtag = null;
-		}
-		oldtag = newtag; // set this as the old one now
-		newtag = null;
 		window.status = "Sent XMLHttpRequest...";
 	}
 
@@ -62,7 +45,6 @@ $(document).ready(function() {
 		if (activelink)
 			activelink.removeClass("active");
 		activelink = null;
-		oldtag = null;
 	}
 
 	// back to previous page
@@ -111,9 +93,9 @@ $(document).ready(function() {
 	function grab_links() {
 		$(".articlelink").click(click_embed);
 		$(".taglink").click(click_tag);
-		$("a[@href*=/author/]").click(click_embed); // .authorlink
-		$("a[@href*=/info/]").click(click_embed); // .infolink
-		$("a[@href*=/image/]").click(click_embed); // .imagelink
+		$("a[@href*=/author/]").click(click_embed);
+		$("a[@href*=/info/]").click(click_embed);
+		$("a[@href*=/image/]").click(click_embed);
 	}
 
 	function __redraw_showall() {
@@ -165,6 +147,10 @@ $(document).ready(function() {
 		grab_links();
 		$(".embed").hide();
 		$(".results").show();
+		if (visible.length === 0)
+			$("#none-visible").show();
+		else
+			$("#none-visible").hide();
 	}
 
 	function __update_paginator(pages) {
@@ -244,7 +230,6 @@ $(document).ready(function() {
 			$(this).width(TAG_EXPANDED);
 		else
 			$(this).width(TAG_NORMAL);
-		newtag = $(this);
 		update(1);
 	});
 
@@ -255,7 +240,6 @@ $(document).ready(function() {
 		$("#tags .activetag").not("#alltags")
 			.removeClass("activetag")
 			.width(TAG_NORMAL);
-		newtag = $(this);
 		update(1);
 	});
 
@@ -330,5 +314,3 @@ $(document).ready(function() {
 		return keyunicode == 8 ? go_back() : true;
 	};
 });
-
-// vim:noexpandtab

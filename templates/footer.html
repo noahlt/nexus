@@ -2,7 +2,7 @@
   <div><p>&copy; {% now "Y" %} the nexus, westview</p></div>
   {% for i in FOOTER %}
 	{% if i.show_in_footer %}
-    <a class="infolink" href="/info/{{ i.slug }}">{{ i.link_name }}</a>
+    <a href="/info/{{ i.slug }}">{{ i.link_name }}</a>
 	{% endif %}
   {% endfor %}
 </div>

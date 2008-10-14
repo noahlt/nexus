@@ -22,12 +22,8 @@
 
 <div id="grid">
 <noscript>Javascript is required to filter by tag and date.</noscript>
-  <ul id="gridtypes">
-    <li><a href="/archive/{{ current_issue.date }}"><span>Current Issue</span></a></li>
-    <li><a href="/archive"><span>Issue Archive</span></a></li>
-  </ul>
   <ul id="tags">
-    <li class="activetag" id="alltags">(Show All)</li>
+    <li class="activetag" id="alltags"><a href="#">(Show All)</a></li>
     {% for tag in tags %}
     <li id="tag_{{ tag.slug }}"><a class="not_taglink" href="/tag/{{ tag.slug }}">
         <span >
@@ -35,6 +31,10 @@
         </span>
     </a></li>
     {% endfor %}
+  </ul>
+  <ul id="gridtypes">
+    <li><a href="/archive/{{ current_issue.date }}"><span>Current Issue</span></a></li>
+    <li><a href="/archive"><span>Issue Archive</span></a></li>
   </ul>
   <ul id="dates" title="drag to select a date range">
 	<!--[if lt IE 7]>

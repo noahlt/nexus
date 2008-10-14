@@ -1,7 +1,7 @@
 .image-default {
 	margin-bottom: 1em;
 	float: left;
-	width: 100%
+	width: 592px;
 }
 
 .image-wrap {
@@ -11,7 +11,7 @@
 
 .image-default img {
 	border: none;
-	max-width: 100%;
+	width: 590px;
 }
 
 .small {
@@ -24,7 +24,7 @@
 }
 
 .small img {
-	max-width: 275px;
+	width: 275px;
 	border: none;
 }
 
@@ -45,6 +45,7 @@
 .thumb img {
 	border: none;
 	max-width: 150px;
+	width: auto !important;
 }
 
 .author {
@@ -96,26 +97,14 @@
 	margin-right: 1.5em;
 }
 
-.fill-black .image-wrap {
-	background-color: #000;
-}
-
-.stretch .image-wrap img {
-	width: 100%;
-}
-
-.align-right .image-wrap {
-	text-align: right;
-}
-
-.align-left .image-wrap {
-	text-align: left;
-}
-
 .noborder .image-wrap {
 	border: none;
 }
 
 .clear {
 	clear: both;
+}
+
+.noscale img {
+	width: auto !important;
 }

@@ -154,7 +154,7 @@ h2 {
 }
 
 #none-visible {
-  color: red;
+  color: #305cb6;
   display: none;
 }
 
@@ -176,12 +176,13 @@ h3 {
 }
 
 #grid {
-  background-color:#333;
-  background: url("/site_media/fade.png");
   background-repeat: repeat-y;
   margin-right: 2em;
-  padding: 0 1em 1em 0;
+  padding: 0 1em 0 0;
   border: 0;
+  max-width: 1013px;
+  /* IE6 below */
+  width: auto !important;
   width: 1013px;
 }
 
@@ -194,30 +195,39 @@ h3 {
 #dates li {
   cursor: pointer;
   padding: 0;
-  color: black;
+  border: 0;
+  color: white;
+  background-color: #333;
+}
+
+ul#dates, ul#gridtypes {
+  border: 1px solid #bbb;
+  border-top: 0;
 }
 
 #dates li li {
   border: 0;
   margin: 0;
   padding: 0.5em;
+  color: white;
   cursor: crosshair;
 }
 
 #dates li li.activedate {
-  background-color: #B8D8FF;
-  color: #333;
+  background-color: #b8d8ff;
+  color: black;
 }
 
 #dates li li.useless {
-  color: gray;
+  color: #666;
 }
 
 #dates h3 {
   padding: .2em;
-  border-bottom: 1px solid #BBB;
   font-size: 10pt;
   text-align: center;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
 }
 
 #paginator li {
@@ -246,12 +256,8 @@ h3 {
 }
 
 #gridtypes li {
-  display: none;
   background-color: #222;
-}
-
-#gridtypes span {
-  padding: 1em;
+  border-bottom: 1px;
 }
 
 #gridtypes {
@@ -267,18 +273,20 @@ h3 {
 }
 
 #tags li {
-  cursor: pointer;
   background-color: #222;
   color: #FFF;
+  border: 1px solid #666;
+  border-left: 1px solid #0070ad;
 }
 
-#tags a, #tags a:hover { color: inherit; text-decoration: none; }
+#tags a, #tags a:hover { color: inherit; text-decoration: none; cursor: default; }
 
-#dates {
+#dates, #gridtypes {
   float: right;
+  clear: right;
   position: relative;
-  left: 2.5em;
-  top: 1em;
+  left: 2em;
+  margin-top: 1em;
 }
 
 #signed {
@@ -295,10 +303,11 @@ h3 {
 }
 
 #centercolumn {
-  margin-left: 200px;
+  margin-left: 205px;
   margin-right: 168px;
   background-color: white;
-  border-right: 1px solid #aaa;
+  border: 1px solid #bbb;
+  border-top: 0;
   color: #222;
 }
 
@@ -333,20 +342,24 @@ h3 {
 }
 
 #footer {
-  background-color: #000;
-  color: #BBB;
+  color: #222;
+  background-color: white;
   text-align: center;
   padding-bottom: 2em;
   font-size: 8pt;
-  letter-spacing: 4pt;
+  letter-spacing: 3pt;
   padding-left: 1em;
   padding-right: 1em;
   clear: both;
+  max-width: 1030px;
+  /* IE6 below */
+  width: auto !important;
+  width: 1030px;
 }
 
 #footer a {
   padding: 1em;
-  border-bottom: 1em solid #222;
+  border-bottom: 1em solid white;
 }
 
 #footer a:hover {
@@ -373,11 +386,7 @@ h3 {
   letter-spacing: .2em;
 }
 
-li#alltags {
-  background-color: #305cb6;
-}
-
-#tags, #dates {
+#tags, #dates, #gridtypes {
   width: 184px;
 }
 
@@ -391,11 +400,20 @@ li#alltags {
 
 #tags li.useless, li.useless {
   border: 1px solid #333;
-  color: gray;
 }
 
 #tags .useless a, .useless a {
-  color: gray;
+  color: #555;
+}
+
+#tags li:hover {
+  filter: alpha(opacity=80);
+  opacity: .8;
+}
+
+#tags li.useless:hover {
+  filter: alpha(opacity=100);
+  opacity: 1;
 }
 
 #tags .useless.activetag a {
@@ -407,27 +425,19 @@ li#alltags {
 }
 
 #tags li.activetag {
-  background-color: green;
+  background-color: #0070ad;
+  border: 1px solid #07d;
   color: white;
 }
 
-.activetag:hover {
-  background-color: #EEE;
-  color: black;
+#tags li#alltags {
+  background-color: #0070ad;
+  border: 1px solid #0070ad;
+  color: white;
 }
 
 li#alltags {
   color: white;
-}
-
-li#alltags:hover {
-  background-color: #EEE;
-  color: black;
-}
-
-#tags li:hover {
-  background-color: #EEE;
-  color: #222;
 }
 
 a.active {
@@ -438,7 +448,6 @@ a.active {
 }
 
 #footer a.active {
-  background-color: #121212;
   border-bottom: 1em solid #305cb6;
 }
 

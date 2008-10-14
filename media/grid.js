@@ -93,8 +93,6 @@ $(document).ready(function() {
 	});
 
 	$("#tags #alltags").click(function() {
-		$("#dates li").removeClass("activedate");
-		selecting_dates = false;
 		$("#tags li").removeClass("useless");
 		$("#tags .activetag").not("#alltags")
 			.removeClass("activetag")

@@ -92,7 +92,6 @@ noscript {
 
 body {
   color: #FFF;
-  background: #000;
   font-size: 11pt;
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -129,7 +128,7 @@ h1, h1 a {
   padding-left: 4pt;
   padding-top: 12pt;
   padding-bottom: 0;
-  background-color: #0090bd;
+  background-color: #0070ad;
   color: white;
   height: 1.5em;
   margin-bottom: 0;
@@ -178,10 +177,12 @@ h3 {
 
 #grid {
   background-color:#333;
-  margin-left:2em;
-  margin-right:2em;
-  padding:1em;
+  background: url("/site_media/fade.png");
+  background-repeat: repeat-y;
+  margin-right: 2em;
+  padding: 0 1em 1em 0;
   border: 0;
+  width: 1013px;
 }
 
 #grid li {
@@ -192,11 +193,8 @@ h3 {
 
 #dates li {
   cursor: pointer;
-}
-
-#dates li {
   padding: 0;
-  background-color: #222;
+  color: black;
 }
 
 #dates li li {
@@ -248,7 +246,7 @@ h3 {
 }
 
 #gridtypes li {
-  display: inline;
+  display: none;
   background-color: #222;
 }
 
@@ -266,7 +264,6 @@ h3 {
 
 #tags {
   float: left;
-  margin-left: -24pt;
 }
 
 #tags li {
@@ -280,13 +277,13 @@ h3 {
 #dates {
   float: right;
   position: relative;
-  left: 2em;
+  left: 2.5em;
+  top: 1em;
 }
 
 #signed {
   clear: both;
-  color: #333;
-  margin-top: -2em;
+  color: #eee;
   text-align: right;
 }
 
@@ -298,9 +295,10 @@ h3 {
 }
 
 #centercolumn {
-  margin-left: 170px;
-  margin-right: 170px;
+  margin-left: 200px;
+  margin-right: 168px;
   background-color: white;
+  border-right: 1px solid #aaa;
   color: #222;
 }
 
@@ -308,6 +306,7 @@ h3 {
   overflow: hidden;
   line-height: 1.5em;
   padding: 1em;
+  padding-left: 1.2em;
 }
 
 .goto_top {
@@ -316,12 +315,13 @@ h3 {
 
 #content {
   padding: 1.5em;
+  padding-left: 1.7em;
   overflow: hidden;
   padding-top: 0;
   margin: 0;
 }
 
-#results {
+#results, #content {
   text-align: justify;
 }
 
@@ -333,7 +333,7 @@ h3 {
 }
 
 #footer {
-  background-color: #222;
+  background-color: #000;
   color: #BBB;
   text-align: center;
   padding-bottom: 2em;
@@ -438,7 +438,7 @@ a.active {
 }
 
 #footer a.active {
-  background-color: #323232;
+  background-color: #121212;
   border-bottom: 1em solid #305cb6;
 }
 

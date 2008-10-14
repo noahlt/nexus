@@ -7,6 +7,26 @@ from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
 from nexus.archive.models import Issue
 
 IMAGE_PATH = 'image_orig/'
+ARTICLE_TEMPLATE = """{% extends "article.html" %}
+
+You can modify blocks by adding text/html around the {{ block.super }} part.
+Most anything outside the block tags will be ignored.
+
+{% block article_title %}
+{{ block.super }}
+{% endblock %}
+
+{% block article_subtitle %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+{% endblock %}
+
+{% block extra %}
+{{ block.super }}
+{% endblock %}"""
 
 class Title(models.Model):
     title = models.CharField(max_length=30, help_text="Staff Writer, Photographer, etc.")
@@ -115,7 +135,7 @@ class ImageAdmin(admin.ModelAdmin):
 class CustomArticleTemplate(models.Model):
     name = models.CharField(max_length=50)
     template = models.TextField(
-        default=open(settings.MEDIA_ROOT + 'article-extension-example.html').read())
+        default=ARTICLE_TEMPLATE)
 
     def __str__(self):
         return self.name

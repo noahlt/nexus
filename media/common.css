@@ -398,6 +398,10 @@ li#alltags {
   color: gray;
 }
 
+#tags .useless.activetag a {
+  color: white;
+}
+
 .useless a:hover {
   cursor: default;
 }

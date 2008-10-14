@@ -16,7 +16,7 @@
 
 .small {
 	border: none;
-	width: 327px;
+	width: 277px;
 	margin-top: 1em;
 	margin-left: 1em;
 	margin-right: .2em;
@@ -24,21 +24,7 @@
 }
 
 .small img {
-	max-width: 325px;
-	border: none;
-}
-
-.medium {
-	border: none;
-	width: 502px;
-	margin-top: 1em;
-	margin-left: 1em;
-	margin-right: .2em;
-	float: right;
-}
-
-.medium img {
-	max-width: 500px;
+	max-width: 275px;
 	border: none;
 }
 

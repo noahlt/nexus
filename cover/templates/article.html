@@ -6,13 +6,15 @@
 {% endblock %}
 
 {% block subtitle %}
-	{{ article.title }}
+	{% block article_title %}{{ article.title }}{% endblock %}
 	<br>
 	<span class="subauthor">
+		{% block article_subtitle %}
 		{{ article.date|date:"F d, Y" }}&nbsp;&nbsp;|&nbsp;
 		{% with article.authors.all as authors %}
 		{% include "authorlinks.html" %}
 		{% endwith %}
+		{% endblock %}
 	</span>
 {% endblock %}
 

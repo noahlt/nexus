@@ -39,7 +39,7 @@
 <!--BEGIN CONTENT-->
         <div id="content">
 		<h2>{% block subtitle %}{% endblock %}</h2>
-		{% block content %}{% endblock %}
+		<div id="text_content">{% block content %}{% endblock %}</div>
 		</div>
 		<div id="extra">
 			{% block extra %}{% endblock %}

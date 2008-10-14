@@ -38,7 +38,6 @@ Embedding images in articles:
 		[[solar-eclipse]]
 		[[thumb:track]]
 		[[left:small:nexus-logo]]
-		[[medium:left:noattr:nexus-logo]]
 		[[fill-black:center:dark-diagram]]
 
 		... Buffalo buffalo buffalo buffalo.
@@ -50,8 +49,7 @@ Embedding images in articles:
 
 	Adjust the position and size of the image:
 
-		small  -  limits image width to 1/3 the page; text wraps around
-		medium -  limits image width to 2/3 the page; text wraps around
+		small  -  limits image width to ~1/2 the page; text wraps around
 		thumb  -  shows thumbnail with no caption or attribution
 		left   -  float image at left, only affects small/thumb images
 

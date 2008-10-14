@@ -81,18 +81,10 @@ $(document).ready(function() {
 		}, "html");
 	}
 
-	function click_tag(event) {
-		event.preventDefault();
-		$("#alltags").click();
-		slug = $(this).attr("href").substring(5); // XXX strip /tag/
-		$("#tag_" + slug).click();
-		update(1);
-	}
-
 	// call after new stuff is loaded to bind javascript functions
 	function grab_links() {
 		$(".articlelink").click(click_embed);
-		$(".taglink").click(click_tag);
+		$(".taglink").click(click_embed);
 		$("a[@href*=/author/]").click(click_embed);
 		$("a[@href*=/info/]").click(click_embed);
 		$("a[@href*=/image/]").click(click_embed);

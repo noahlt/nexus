@@ -36,5 +36,5 @@ Image by {% include "authorlinks.html" %}
         </p>
         {% endif %}
         <br>
-        <img alt="{{ obj.image.slug }}" style="max-width:100%" src="{{ obj.image.url }}">
+		<a target="_blank" href="{{ obj.image.url }}"><img alt="{{ obj.image.slug }}" style="max-width:100%" src="{{ obj.image.url }}"></a>
 {% endblock %}

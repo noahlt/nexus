@@ -2,6 +2,7 @@
 	margin-bottom: 1em;
 	float: left;
 	width: 592px;
+	overflow: hidden;
 }
 
 .image-wrap {

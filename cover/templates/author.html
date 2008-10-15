@@ -17,7 +17,7 @@
 	</span>
 </h2>
 	{% if author.article_set.all %}
-		<ul id="results" style="margin:0">
+		<ul id="sub_results" style="margin:0">
 			{% for article in author.article_set.all %}
             {% if article.current %}
                 {% if not article.image_centric %}

@@ -1,18 +1,10 @@
 {% extends "basic-full.html" %}
 
 {% block subtitle %}
-{% with obj.authors.all as authors %}
-Image by {% include "authorlinks.html" %}
-{% endwith %}
 {% endblock %}
 
 {% block content %}
-        {% if obj.date %}
-			<h3>Created:</h3>
-			<span class="info">
-				{{ obj.date }}
-			</span>
-        {% endif %}
+<h3>Image {{ obj.date }} by {% with obj.authors.all as authors %}{% include "authorlinks.html" %}{% endwith %}</h3>
 		{% if obj.tags.all %}
 			<h3>Tags:</h3>
 			<span class="info">

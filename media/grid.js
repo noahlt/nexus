@@ -169,19 +169,7 @@ $(document).ready(function() {
 			grab_links();
 			$(".results").hide();
 			$(".embed").show();
-			if (history.length >= 2) {
-				var item = history[history.length-2];
-				if (item instanceof Array) {
-					if (item[0].length > 0)
-						$("#back_button a").html("Back to [" + item[0] + "]");
-					else
-						$("#back_button a").html("Back to front page");
-					$("#back_button a").attr("href", "#back");
-				} else {
-					$("#back_button a").html("Back to " + item);
-					$("#back_button a").attr("href", item);
-				}
-			}
+			update_backbutton();
 			release_request();
 		}, "html");
 	}
@@ -289,6 +277,22 @@ $(document).ready(function() {
 			$("#tags #alltags").removeClass("activetag");
 	}
 
+	function update_backbutton() {
+		if (history.length >= 2) {
+			var item = history[history.length-2];
+			if (item instanceof Array) {
+				if (item[0].length > 0)
+					$("#back_button a").html("Back to [" + item[0] + "]");
+				else
+					$("#back_button a").html("Back to front page");
+				$("#back_button a").attr("href", "#back");
+			} else {
+				$("#back_button a").html("Back to " + item);
+				$("#back_button a").attr("href", item);
+			}
+		}
+	}
+
 	function __update_tags(taginfo) {
 		$("#tags li").not("#alltags").map(
 			function() {
@@ -331,9 +335,11 @@ $(document).ready(function() {
 		grab_links();
 		$(".embed").hide();
 		$(".results").show();
-		if (visible.length === 0)
+		if (visible.length === 0) {
+			update_backbutton();
 			$("#none-visible").show();
-		else
+			$("#back_button").show();
+		} else
 			$("#none-visible").hide();
 	}
 

@@ -156,6 +156,7 @@ h2 {
 #none-visible {
   color: #305cb6;
   display: none;
+  margin-top: -1em;
 }
 
 h3 {

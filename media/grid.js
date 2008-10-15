@@ -1,10 +1,5 @@
 $(document).ready(function() {
 
-	var current_page; // not quite the same as the last history item
-	var history = [];
-	var cached = new Object();
-	history.push(current_page = 1);
-
 	// for handling concurrency
 	var request = null;
 	var activelink = null;
@@ -17,11 +12,251 @@ $(document).ready(function() {
 	var TAG_EXPANDED = TAG_NORMAL + 13;
 	$("#tags #alltags").width(TAG_EXPANDED);
 
+	var cached = new Object();
+	var history = [];
+	history.push([[], 1, DATE_MIN, DATE_MAX]);
+
+	// change page number
 	function click_page(event) {
 		event.preventDefault();
 		activelink = $(this).addClass("active");
 		update($(this).attr("id").substring(2)); // n_
 	}
+
+	// load link into center column
+	function click_embed(event) {
+		event.preventDefault();
+		acquire_request();
+		activelink = $(this).addClass("active");
+		url = $(this).attr("href");
+		if (url.match("http://")) { // whatever IE is doing, undo it
+			url = url.substring(7);
+			url = url.substring(url.indexOf("/"));
+		}
+		history.push(url);
+		load_url(url);
+	}
+
+	// back to previous page
+	function go_back() {
+		if (history.length >= 2) {
+			history.pop();
+			var previous = history[history.length-1];
+			acquire_request();
+			if (previous instanceof Array) {
+				select_tags(previous[0]);
+				select_dates(previous[2], previous[3]);
+				load_selection(previous);
+			} else {
+				activelink = $("#back_button a").addClass("active");
+				load_url(previous);
+			}
+			return false;
+		}
+		return true;
+	}
+
+	function update(page) {
+		acquire_request();
+		__redraw_showall();
+		var min = DATE_MIN, max = DATE_MAX;
+		var selected_dates = $("#dates .activedate").map(function() {
+				return $(this).attr('id').substring(3); // ym_
+			}).get();
+		if (selected_dates.length > 0) {
+			min = Math.min.apply(null, selected_dates);
+			max = Math.max.apply(null, selected_dates);
+			select_dates(min, max);
+		}
+		var selectedtags = $("#tags li").filter(".activetag").not("#alltags")
+			.map(function() {
+					return $(this).attr("id").substring(4); // tag_
+				}).get();
+		load_selection([selectedtags, page, min, max]);
+		history.push([selectedtags, page, min, max]);
+	}
+
+	$("#paginator .pagelink").click(click_page);
+
+	$("#tags li").not("#alltags").click(function() {
+		if ($(this).hasClass("useless") && !$(this).hasClass("activetag"))
+			$("#tags .activetag").not("#alltags")
+				.removeClass("activetag")
+				.width(TAG_NORMAL);
+		tagslug = $(this).attr("id");
+		$(this).removeClass("useless").toggleClass("activetag");
+		if ($(this).hasClass("activetag"))
+			$(this).width(TAG_EXPANDED);
+		else
+			$(this).width(TAG_NORMAL);
+		update(1);
+	});
+
+	$("#tags #alltags").click(function() {
+		$("#dates li").removeClass("activedate");
+		selecting_dates = false;
+		$("#tags li").removeClass("useless");
+		$("#tags .activetag").not("#alltags")
+			.removeClass("activetag")
+			.width(TAG_NORMAL);
+		update(1);
+	});
+
+	$("#tags li a").click(function(event) {
+		event.preventDefault();
+	});
+
+	$("#back_button a").click(go_back);
+	grab_links();
+
+	$("#dates h3").click(function() {
+		var min = ($(this).text() - 1) + "08";
+		var max = $(this).text() + "07";
+		if (!select_dates(min, max)[0])
+			$("#dates li").removeClass("activedate");
+		update(1);
+	});
+
+	$("#dates li li").mousedown(function() {
+		if (!selecting_dates) {
+			if ($(this).hasClass("activedate"))
+				down = $(this).attr("id");
+			else
+				down = false;
+			$("#dates li").removeClass("activedate");
+			$(this).addClass("activedate");
+			selecting_dates = true;
+		}
+	});
+
+	$("#dates li li").mousemove(function() {
+		if (selecting_dates)
+			$(this).addClass("activedate");
+	});
+
+	$("#dates li").mouseup(function() {
+		if (down == $(this).attr("id")) {
+			$(this).removeClass("activedate");
+		} else if (selecting_dates) {
+			$(this).addClass("activedate");
+		}
+		if (selecting_dates) {
+			selecting_dates = false;
+			update(1);
+		}
+	});
+
+	$("#tags").disableTextSelect();
+	$("#dates").disableTextSelect();
+
+	document.onmouseup = function() {
+		if (selecting_dates) {
+			selecting_dates = false;
+			update(1);
+		}
+	};
+
+	document.onkeypress = function(x) {
+		var e = window.event || x;
+		var keyunicode = e.charCode || e.keyCode;
+		return keyunicode == 8 ? go_back() : true;
+	};
+
+	// url = /path/from/root
+	function load_url(url) {
+		request = $.get("/ajax/embed" + url, function(responseData) {
+			$("#embedded_content").html(responseData);
+			grab_links();
+			$(".results").hide();
+			$(".embed").show();
+			if (history.length >= 2) {
+				var item = history[history.length-2];
+				if (item instanceof Array) {
+					if (item[0].length > 0)
+						$("#back_button a").html("Back to [" + item[0] + "]");
+					else
+						$("#back_button a").html("Back to front page");
+					$("#back_button a").attr("href", "#back");
+				} else {
+					$("#back_button a").html("Back to " + item);
+					$("#back_button a").attr("href", item);
+				}
+			}
+			release_request();
+		}, "html");
+	}
+
+	// data = [tags, page, datemin, datemax]
+	function load_selection(data) {
+		var responseData = cached[data];
+		if (responseData) {
+			__update_tags(responseData['tags']);
+			__update_dates(responseData['dates']);
+			__update_results(responseData['results']);
+			__update_paginator(responseData['pages']);
+			release_request();
+		} else {
+			var have_articles = $("#results li")
+				.not("#IE6_PLACEHOLDER")
+				.map(function() {
+						return $(this).attr("id").substring(4); // art_
+					}).get();
+			request = $.get("/ajax/paginator",
+				{"tags": data[0], "page": data[1], "have_articles": have_articles,
+				 "date_min": data[2], "date_max": data[3]},
+				function(responseData) {
+					__update_tags(responseData['tags']);
+					__update_dates(responseData['dates']);
+					__update_results(responseData['results']);
+					__update_paginator(responseData['pages']);
+					responseData['results']['new'] = null;
+					cached[data] = responseData;
+					release_request();
+				}, "json");
+		}
+	}
+
+	// call after new stuff is loaded to bind javascript functions
+	function grab_links() {
+		$(".articlelink").click(click_embed);
+		$(".taglink").click(click_embed);
+		$("a[@href*=/author/]").click(click_embed);
+		$("a[@href*=/info/]").click(click_embed);
+		$("a[@href*=/image/]").click(click_embed);
+	}
+
+	function select_tags(tags) {
+		$("#tags li").removeClass("activetag").not("#alltags").width(TAG_NORMAL);
+		if (tags.length > 0) {
+			$("#alltags").removeClass("activetag");
+			for (var i in tags)
+				$("#tag_" + tags[i]).addClass("activetag").width(TAG_EXPANDED);
+		} else {
+			$("#alltags").addClass("activetag");
+		}
+	}
+
+	function select_dates(min, max) {
+		var added_some = false, removed_some = false;
+		$("#dates li li").map(function() {
+			var date = $(this).attr('id').substring(3); // ym_
+			if (date >= min && date <= max) {
+				if (!$(this).hasClass("activedate")) {
+					$(this).addClass("activedate");
+					added_some = true;
+				}
+			} else {
+				if ($(this).hasClass("activedate")) {
+					$(this).removeClass("activedate");
+					removed_some = true;
+				}
+			}
+		});
+		if ($("#dates li li").filter(".activedate").size() == $("#dates li li").size())
+			$("#dates li li").removeClass("activedate");
+		return [added_some,removed_some];
+	}
+
 
 	// call before ajax request; aborts previous ones
 	// set request/activelink AFTER calling
@@ -45,49 +280,6 @@ $(document).ready(function() {
 		if (activelink)
 			activelink.removeClass("active");
 		activelink = null;
-	}
-
-	// back to previous page
-	function go_back() {
-		if (current_page != 1 && history.length > 0) {
-			var i = history.pop();
-			while (current_page == i && history.length > 0)
-				i = history.pop();
-			update(i);
-			return false;
-		} else if (!$("#alltags").hasClass("activetag")) {
-			$("#alltags").click();
-			return false;
-		}
-	}
-
-	// load link into center column
-	function click_embed(event) {
-		event.preventDefault();
-		acquire_request();
-		history.push(current_page = null);
-		activelink = $(this).addClass("active");
-		url = $(this).attr("href");
-		if (url.match("http://")) { // whatever IE is doing, undo it
-			url = url.substring(7);
-			url = url.substring(url.indexOf("/"));
-		}
-		request = $.get("/ajax/embed" + url, function(responseData) {
-			$("#embedded_content").html(responseData);
-			grab_links();
-			$(".results").hide();
-			$(".embed").show();
-			release_request();
-		}, "html");
-	}
-
-	// call after new stuff is loaded to bind javascript functions
-	function grab_links() {
-		$(".articlelink").click(click_embed);
-		$(".taglink").click(click_embed);
-		$("a[@href*=/author/]").click(click_embed);
-		$("a[@href*=/info/]").click(click_embed);
-		$("a[@href*=/image/]").click(click_embed);
 	}
 
 	function __redraw_showall() {
@@ -159,150 +351,4 @@ $(document).ready(function() {
 		}
 		$("#paginator .pagelink").click(click_page);
 	}
-
-	function update(page) {
-		acquire_request();
-		history.push(current_page = page);
-		__redraw_showall();
-		var min = DATE_MIN, max = DATE_MAX;
-		var selected_dates = $("#dates .activedate").map(function() {
-				return $(this).attr('id').substring(3); // ym_
-			}).get();
-		if (selected_dates.length > 0) {
-			min = Math.min.apply(null, selected_dates);
-			max = Math.max.apply(null, selected_dates);
-			$("#dates li li").not(".activedate").map(function() {
-				var date = $(this).attr('id').substring(3); // ym_
-				if (date > min && date < max)
-					$(this).addClass("activedate");
-			});
-		}
-		var selectedtags = $("#tags li").filter(".activetag").not("#alltags")
-			.map(function() {
-					return $(this).attr("id").substring(4); // tag_
-				}).get();
-		var have_articles = $("#results li")
-			.not("#IE6_PLACEHOLDER")
-			.map(function() {
-					return $(this).attr("id").substring(4); // art_
-				}).get();
-		var responseData = cached[[selectedtags, page, min, max]];
-		if (responseData) {
-			__update_tags(responseData['tags']);
-			__update_dates(responseData['dates']);
-			__update_results(responseData['results']);
-			__update_paginator(responseData['pages']);
-			release_request();
-		} else {
-			request = $.get("/ajax/paginator",
-				{"tags": selectedtags, "page": page, "have_articles": have_articles,
-				 "date_min": min, "date_max": max},
-				function(responseData) {
-					__update_tags(responseData['tags']);
-					__update_dates(responseData['dates']);
-					__update_results(responseData['results']);
-					__update_paginator(responseData['pages']);
-					responseData['results']['new'] = null;
-					cached[[selectedtags, page, min, max]] = responseData;
-					release_request();
-				}, "json");
-		}
-	}
-
-	$("#paginator .pagelink").click(click_page);
-
-	$("#tags li").not("#alltags").click(function() {
-		if ($(this).hasClass("useless") && !$(this).hasClass("activetag"))
-			$("#tags .activetag").not("#alltags")
-				.removeClass("activetag")
-				.width(TAG_NORMAL);
-		tagslug = $(this).attr("id");
-		$(this).removeClass("useless").toggleClass("activetag");
-		if ($(this).hasClass("activetag"))
-			$(this).width(TAG_EXPANDED);
-		else
-			$(this).width(TAG_NORMAL);
-		update(1);
-	});
-
-	$("#tags #alltags").click(function() {
-		$("#dates li").removeClass("activedate");
-		selecting_dates = false;
-		$("#tags li").removeClass("useless");
-		$("#tags .activetag").not("#alltags")
-			.removeClass("activetag")
-			.width(TAG_NORMAL);
-		update(1);
-	});
-
-	$("#tags li a").click(function(event) {
-		event.preventDefault();
-	});
-
-	$("#back_button a").click(go_back);
-	grab_links();
-
-	$("#dates h3").click(function() {
-		var min = ($(this).text() - 1) + "08";
-		var max = $(this).text() + "07";
-		var deselect = true;
-		$("#dates li li").map(function() {
-			var date = $(this).attr('id').substring(3); // ym_
-			if (date >= min && date <= max) {
-				if (!$(this).hasClass("activedate"))
-					deselect = false;
-				$(this).addClass("activedate");
-			} else {
-				$(this).removeClass("activedate");
-			}
-		});
-		if (deselect)
-			$("#dates li").removeClass("activedate");
-		update(1);
-	});
-
-	$("#dates li li").mousedown(function() {
-		if (!selecting_dates) {
-			if ($(this).hasClass("activedate"))
-				down = $(this).attr("id");
-			else
-				down = false;
-			$("#dates li").removeClass("activedate");
-			$(this).addClass("activedate");
-			selecting_dates = true;
-		}
-	});
-
-	$("#dates li li").mousemove(function() {
-		if (selecting_dates)
-			$(this).addClass("activedate");
-	});
-
-	$("#dates li").mouseup(function() {
-		if (down == $(this).attr("id")) {
-			$(this).removeClass("activedate");
-		} else if (selecting_dates) {
-			$(this).addClass("activedate");
-		}
-		if (selecting_dates) {
-			selecting_dates = false;
-			update(1);
-		}
-	});
-
-	$("#tags").disableTextSelect();
-	$("#dates").disableTextSelect();
-
-	document.onmouseup = function() {
-		if (selecting_dates) {
-			selecting_dates = false;
-			update(1);
-		}
-	};
-
-	document.onkeypress = function(x) {
-		var e = window.event || x;
-		var keyunicode = e.charCode || e.keyCode;
-		return keyunicode == 8 ? go_back() : true;
-	};
 });

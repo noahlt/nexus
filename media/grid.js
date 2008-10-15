@@ -208,9 +208,10 @@ $(document).ready(function() {
 	function grab_links() {
 		$(".articlelink").click(click_embed);
 		$(".taglink").click(click_embed);
-		$("a[@href*=/author/]").click(click_embed);
-		$("a[@href*=/info/]").click(click_embed);
-		$("a[@href*=/image/]").click(click_embed);
+		// XXX make sure to flag things like backspace_button as .nomatch
+		$("a[@href*=/author/]").not(".nomatch").click(click_embed);
+		$("a[@href*=/info/]").not(".nomatch").click(click_embed);
+		$("a[@href*=/image/]").not(".nomatch").click(click_embed);
 	}
 
 	function select_tags(tags) {

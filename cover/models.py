@@ -175,10 +175,7 @@ class ArticleAdmin(admin.ModelAdmin):
     def visible(obj):
         return obj.current()
     def url(obj):
-        if obj.current():
-            return "/%s/%s" % (obj.date.strftime("%Y/%m"), obj.slug)
-        else:
-            return "/future/%s" % obj.slug
+        return "/%s/%s" % (obj.date.strftime("%Y/%m"), obj.slug)
     def template(obj):
         return obj.custom_template if obj.custom_template else ''
     visible.boolean = True

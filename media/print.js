@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	$(".articlelink").click(function(event) {
+	$(".print_link").click(function(event) {
 		event.preventDefault();
         var id = "." + $(this).attr("id");
 		var target = $(id).filter("div");

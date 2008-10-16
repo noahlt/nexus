@@ -83,24 +83,11 @@ def infopage(request, slug):
 
 def articlepage(request, year, month, slug):
     article = get_object_or_404(Article, slug=slug)
-    if not article.current() \
-        or article.date.year != int(year) \
-        or article.date.month != int(month):
-            raise Http404
+    if article.date.year != int(year) or article.date.month != int(month):
+        raise Http404
     template = Template(article.custom_template.template) \
         if article.custom_template else get_template('article.html')
     html = template.render(Context(
-        {'article': article, 'MEDIA_URL': settings.MEDIA_URL,
-         'FOOTER': InfoPage.objects.all()}
-    ))
-    html = ImageFormatter(html, article.images.all()).format()
-    return HttpResponse(html)
-
-def futurepage(request, slug):
-    article = get_object_or_404(Article, slug=slug)
-    if article.current():
-        raise Http404
-    html = get_template('article.html').render(Context(
         {'article': article, 'MEDIA_URL': settings.MEDIA_URL,
          'FOOTER': InfoPage.objects.all()}
     ))

@@ -5,12 +5,6 @@
 <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css">
 <link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css">
 <link rel="stylesheet" href="{{ MEDIA_URL }}lightcolors.css" type="text/css">
-<!--[if lt IE 7]>
-<link rel="stylesheet" href="{{ MEDIA_URL }}ie6.css" type="text/css">
-<![endif]-->
-<!--[if lt IE 8]>
-<link rel="stylesheet" href="{{ MEDIA_URL }}ie7.css" type="text/css">
-<![endif]-->
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery-disable-text-select.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
@@ -65,7 +59,7 @@
 	  Select fewer tags to the left, or specify a wider range of dates.
 	</li>
   </ul>
-  <div id="embedded_content" class="embed">{{ content|safe }}</div>
+  <div id="embedded_content" class="embed">{% if content %}{{ content|safe }}{% endif %}</div>
 	<ul id="paginator" class="results">
     {% ifnotequal 1 paginator.num_pages %}
 	{% for n in paginator.page_range %}

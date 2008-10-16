@@ -35,8 +35,6 @@ urlpatterns = patterns('',
     (r'^author/([-_a-z0-9]+)$', wrap(authorpage)),
     (r'^info/staff$', wrap(staff_auto_infopage)),
     (r'^info/([-_a-z0-9]+)$', wrap(infopage)),
-
-    (r'^future/([-_a-z0-9]+)/$', wrap(futurepage)),
 )
 
     # Do not use in production!

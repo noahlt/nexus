@@ -33,9 +33,9 @@ a:hover {
 }
 
 .date {
-  font-size: 10pt;
   padding-bottom: .3em;
   padding-top: .1em;
+  font-size: 9pt;
 }
 
 #tags a {
@@ -60,7 +60,7 @@ noscript {
   text-transform: uppercase;
   letter-spacing: 0;
   position: relative;
-  top: 12pt;
+  top: 9pt;
   left: 5pt;
 }
 
@@ -122,11 +122,11 @@ blockquote, q {
 
 h1, h1 a {
   font-family: helvetica;
-  font-size: 40pt;
+  font-size: 35pt;
   font-weight: bold;
   letter-spacing: 0.8pt;
   padding-left: 4pt;
-  padding-top: 12pt;
+  padding-top: 8pt;
   padding-bottom: 0;
   background-color: #0070ad;
   color: white;
@@ -315,7 +315,6 @@ ul#dates, ul#gridtypes {
 
 #results, #paginator, #back_button {
   overflow: hidden;
-  line-height: 1.5em;
   padding: 1em;
   padding-left: 1.2em;
 }
@@ -332,13 +331,9 @@ ul#dates, ul#gridtypes {
   margin: 0;
 }
 
-#results, #content {
-  text-align: justify;
-}
-
 #results li, #sub_results li {
   border: none;
-  font-size: 12pt;
+  font-size: 11pt;
   padding-bottom: 1em;
   overflow: hidden;
 }

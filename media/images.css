@@ -36,7 +36,7 @@
 	margin-bottom: 1em;
 	margin-left: 1em;
 	margin-right: .2em;
-	width: 150px;
+	width: 100px;
 }
 
 .thumb .image-wrap {
@@ -45,7 +45,7 @@
 
 .thumb img {
 	border: none;
-	max-width: 150px;
+	max-width: 100px;
 	width: auto !important;
 }
 

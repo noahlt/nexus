@@ -452,3 +452,7 @@ a.active {
 #extra a.active {
   background-color: #ddd;
 }
+
+.error {
+  color: red;
+}

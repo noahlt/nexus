@@ -164,14 +164,23 @@ $(document).ready(function() {
 
 	// url = /path/from/root
 	function load_url(url) {
-		request = $.get("/ajax/embed" + url, function(responseData) {
-			$("#embedded_content").html(responseData);
-			grab_links();
-			$(".results").hide();
-			$(".embed").show();
-			update_backbutton();
-			release_request();
-		}, "html");
+		request = $.ajax({
+			type: "GET",
+			url: "ajax/embed" + url,
+			success: function(responseData) {
+				$("#embedded_content").html(responseData);
+			},
+			error: function(xhr) {
+				$("#embedded_content").html(xhr.responseText);
+			},
+			complete: function() {
+				grab_links();
+				$(".results").hide();
+				$(".embed").show();
+				update_backbutton();
+				release_request();
+			}
+		});
 	}
 
 	// data = [tags, page, datemin, datemax]
@@ -189,7 +198,7 @@ $(document).ready(function() {
 				.map(function() {
 						return $(this).attr("id").substring(4); // art_
 					}).get();
-			request = $.get("/ajax/paginator",
+			request = $.getJSON("/ajax/paginator",
 				{"tags": data[0], "page": data[1], "have_articles": have_articles,
 				 "date_min": data[2], "date_max": data[3]},
 				function(responseData) {
@@ -200,7 +209,7 @@ $(document).ready(function() {
 					responseData['results']['new'] = null;
 					cached[data] = responseData;
 					release_request();
-				}, "json");
+				});
 		}
 	}
 

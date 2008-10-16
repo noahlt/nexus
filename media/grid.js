@@ -215,12 +215,7 @@ $(document).ready(function() {
 
 	// call after new stuff is loaded to bind javascript functions
 	function grab_links() {
-		$(".articlelink").click(click_embed);
-		$(".taglink").click(click_embed);
-		// XXX make sure to flag things like backspace_button as .nomatch
-		$("a[@href*=/author/]").not(".nomatch").click(click_embed);
-		$("a[@href*=/info/]").not(".nomatch").click(click_embed);
-		$("a[@href*=/image/]").not(".nomatch").click(click_embed);
+		$(".embeddable").click(click_embed);
 	}
 
 	function select_tags(tags) {

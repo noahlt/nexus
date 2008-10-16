@@ -7,7 +7,7 @@
         <h3>{{ title }}</h3>
         {% for author, groups in authors %}
         <ul style="padding-left: 1em">
-            <li style="border:0"><a href="/author/{{ author.slug }}">
+            <li style="border:0"><a class="embeddable" href="/author/{{ author.slug }}">
             {{ author }}</a>
 			{% for n in groups %}<a href='#note{{ n }}'><sup>{{ n }}</sup></a>{% endfor %}
             </li>
@@ -20,7 +20,7 @@
 <ul>
     {% for group in groups %}
     <li style="border: 0" id="note{{ forloop.counter }}">
-    [{{ forloop.counter }}] <a href="/author/{{ group.slug }}">{{ group }}</a>
+    [{{ forloop.counter }}] <a class="embeddable" href="/author/{{ group.slug }}">{{ group }}</a>
     </li>
     {% endfor %}
 </ul>

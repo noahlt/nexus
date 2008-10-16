@@ -64,7 +64,7 @@
 	  Select fewer tags to the left, or specify a wider range of dates.
 	</li>
   </ul>
-  <div id="embedded_content" class="embed"></div>
+  <div id="embedded_content" class="embed">{{ content|safe }}</div>
 	<ul id="paginator" class="results">
     {% ifnotequal 1 paginator.num_pages %}
 	{% for n in paginator.page_range %}

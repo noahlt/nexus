@@ -14,7 +14,6 @@ from imageutil import ImageFormatter
 from models import Issue
 
 PAGE_SIZE = 10
-CONTENT_MARKER = re.compile("<!--BEGIN CONTENT-->.*<!--END CONTENT-->", flags=re.DOTALL)
 
 def __visible(x):
     return x.filter(date__lte=date.today())
@@ -24,13 +23,14 @@ def what_school_year(date):
         return date.year
     return date.year + 1
 
-def frontpage(request):
+def frontpage(request, content=None):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
     tags = [ tag for tag in Tag.objects.all() if __visible(tag.article_set).count() > 0 ]
     tags.sort(key=lambda tag: __visible(tag.article_set).count(), reverse=True)
-    paginator = Paginator(__visible(Article.objects), PAGE_SIZE)
-    articles = paginator.page(1).object_list
+    if not content:
+        paginator = Paginator(__visible(Article.objects), PAGE_SIZE)
+        articles = paginator.page(1).object_list
     try:
         current_issue = __visible(Issue.objects)[0]
     except IndexError:
@@ -48,7 +48,7 @@ def frontpage(request):
             dates.append(Schoolyear(year, [date]))
         else:
             dates[-1].dates.append(date)
-    return render_to_response('frontpage.html', locals())
+    return HttpResponse(get_template('frontpage.html').render(Context(locals())))
 
 def imageview(request, slug):
     MEDIA_URL = settings.MEDIA_URL
@@ -147,10 +147,10 @@ def __month_end(d):
     same month.'''
     return date(d.year if d.month < 12 else d.year + 1, d.month+1 if d.month < 12 else 1, d.day) - timedelta(1)
 
-def extract_content(function):
-    def stripped(*args):
-        return HttpResponse(CONTENT_MARKER.search(function(*args).content).group())
-    return stripped
+def wrap(function):
+    def wrapped(*args):
+        return frontpage(args[0], function(*args).content)
+    return wrapped
 
 def paginate(request):
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))

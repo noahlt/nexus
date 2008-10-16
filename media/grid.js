@@ -16,6 +16,13 @@ $(document).ready(function() {
 	var history = [];
 	history.push([[], 1, DATE_MIN, DATE_MAX]);
 
+	if (window.location.pathname != "/") {
+		history.push(window.location.pathname);
+		$(".results").hide();
+		$(".embed").show();
+		update_backbutton();
+	}
+
 	// change page number
 	function click_page(event) {
 		event.preventDefault();
@@ -28,11 +35,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		acquire_request();
 		activelink = $(this).addClass("active");
-		url = $(this).attr("href");
-		if (url.match("http://")) { // whatever IE is doing, undo it
-			url = url.substring(7);
-			url = url.substring(url.indexOf("/"));
-		}
+		url = relative($(this).attr("href"));
 		history.push(url);
 		load_url(url);
 	}
@@ -164,26 +167,23 @@ $(document).ready(function() {
 
 	// url = /path/from/root
 	function load_url(url) {
-		request = $.get("/ajax/embed" + url, function(responseData) {
-			$("#embedded_content").html(responseData);
-			grab_links();
-			$(".results").hide();
-			$(".embed").show();
-			if (history.length >= 2) {
-				var item = history[history.length-2];
-				if (item instanceof Array) {
-					if (item[0].length > 0)
-						$("#back_button a").html("Back to [" + item[0] + "]");
-					else
-						$("#back_button a").html("Back to front page");
-					$("#back_button a").attr("href", "#back");
-				} else {
-					$("#back_button a").html("Back to " + item);
-					$("#back_button a").attr("href", item);
-				}
+		request = $.ajax({
+			type: "GET",
+			url: "/ajax/embed" + url,
+			success: function(responseData) {
+				$("#embedded_content").html(responseData);
+			},
+			error: function(xhr) {
+				$("#embedded_content").html(xhr.responseText);
+			},
+			complete: function() {
+				grab_links();
+				$(".results").hide();
+				$(".embed").show();
+				update_backbutton();
+				release_request();
 			}
-			release_request();
-		}, "html");
+		});
 	}
 
 	// data = [tags, page, datemin, datemax]
@@ -201,7 +201,7 @@ $(document).ready(function() {
 				.map(function() {
 						return $(this).attr("id").substring(4); // art_
 					}).get();
-			request = $.get("/ajax/paginator",
+			request = $.getJSON("/ajax/paginator",
 				{"tags": data[0], "page": data[1], "have_articles": have_articles,
 				 "date_min": data[2], "date_max": data[3]},
 				function(responseData) {
@@ -212,7 +212,7 @@ $(document).ready(function() {
 					responseData['results']['new'] = null;
 					cached[data] = responseData;
 					release_request();
-				}, "json");
+				});
 		}
 	}
 
@@ -285,6 +285,22 @@ $(document).ready(function() {
 			$("#tags #alltags").removeClass("activetag");
 	}
 
+	function update_backbutton() {
+		if (history.length >= 2) {
+			var item = history[history.length-2];
+			if (item instanceof Array) {
+				if (item[0].length > 0)
+					$("#back_button a").html("Back to [" + item[0] + "]");
+				else
+					$("#back_button a").html("Back to front page");
+				$("#back_button a").attr("href", "#back");
+			} else {
+				$("#back_button a").html("Back to " + item);
+				$("#back_button a").attr("href", item);
+			}
+		}
+	}
+
 	function __update_tags(taginfo) {
 		$("#tags li").not("#alltags").map(
 			function() {
@@ -327,9 +343,11 @@ $(document).ready(function() {
 		grab_links();
 		$(".embed").hide();
 		$(".results").show();
-		if (visible.length === 0)
+		if (visible.length === 0) {
+			update_backbutton();
 			$("#none-visible").show();
-		else
+			$("#back_button").show();
+		} else
 			$("#none-visible").hide();
 	}
 
@@ -346,5 +364,13 @@ $(document).ready(function() {
 			}
 		}
 		$("#paginator .pagelink").click(click_page);
+	}
+
+	function relative(url) {
+		if (url.match("http://")) { // oops, make it relative again
+			url = url.substring(7);
+			url = url.substring(url.indexOf("/"));
+		}
+		return url;
 	}
 });

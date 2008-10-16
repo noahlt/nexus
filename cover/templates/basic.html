@@ -1,52 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-	<head>
-		<title>
-			{% block title %}The Nexus{% endblock %}
-		</title>
-		<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css">
-		<link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css">
-		<!--[if lt IE 7]>
-		<link rel="stylesheet" href="{{ MEDIA_URL }}ie6.css" type="text/css">
-		<![endif]-->
-		<style type="text/css">
-			{% block style %}
-            .wrapper {
-				overflow: hidden;
-				margin: 0;
-				padding: 0;
-				width: 832px;
-                border: 1px solid #000;
-				background-color: white;
-				color: black;
-            }
-
-			body {
-				background-color: #222;
-			}
-			{% endblock %}
-		</style>
-	</head>
-	<body>
-		<center>
-		<div class="wrapper" style="text-align:left">
-		<h1><a href="/" style="text-decoration:none;">
-			{% block header %}
-			The Nexus
-			{% endblock %}
-		</a></h1>
-<!--BEGIN CONTENT-->
-        <div id="content">
-		<h2>{% block subtitle %}{% endblock %}</h2>
-		<div id="text_content">{% block content %}{% endblock %}</div>
-		</div>
-		<div id="extra">
-			{% block extra %}{% endblock %}
-		</div>
-<!--END CONTENT-->
-        </div>
-		</center>
-		{% include "footer.html" %}
-	</body>
-</html>
+<div id="content">
+<h2>{% block subtitle %}{% endblock %}</h2>
+<div id="text_content">{% block content %}{% endblock %}</div>
+</div>
+<div id="extra">
+	{% block extra %}{% endblock %}
+</div>

@@ -52,7 +52,8 @@ p {
 }
 
 noscript {
-  color: yellow;
+  color: white;
+  background-color: orange;
 }
 
 .beta {

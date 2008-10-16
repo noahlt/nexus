@@ -1,10 +1,4 @@
-{% extends "basic-full.html" %}
-
-{% block subtitle %}
-{% with obj.authors.all as authors %}
-Image by {% include "authorlinks.html" %}
-{% endwith %}
-{% endblock %}
+{% extends "basic.html" %}
 
 {% block content %}
         {% if obj.date %}

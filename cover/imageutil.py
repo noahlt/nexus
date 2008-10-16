@@ -7,8 +7,8 @@ from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
 
-THUMB_MAX_SIZE = (150,150)
-ARTICLE_MAX_SIZE = (788,2048)
+THUMB_MAX_SIZE = (100,100)
+ARTICLE_MAX_SIZE = (590,2048)
 THUMBS_PATH = 'cache/image_thumbs/'
 
 def resize(input, max_size):
@@ -21,6 +21,7 @@ def resize(input, max_size):
         makedirs(dirname(output_file))
     if not exists(output_file) or getmtime(output_file) < getmtime(input):
         image = Image.open(input)
+        image = image.convert('RGBA')
         image.thumbnail(max_size, Image.ANTIALIAS)
         image.save(output_file)
     return output_url

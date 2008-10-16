@@ -218,11 +218,7 @@ $(document).ready(function() {
 
 	// call after new stuff is loaded to bind javascript functions
 	function grab_links() {
-		$(".articlelink").click(click_embed);
-		$(".taglink").click(click_embed);
-		$("a[@href*=/author/]").click(click_embed);
-		$("a[@href*=/info/]").click(click_embed);
-		$("a[@href*=/image/]").click(click_embed);
+		$(".embeddable").click(click_embed);
 	}
 
 	function select_tags(tags) {

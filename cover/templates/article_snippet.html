@@ -4,11 +4,11 @@
   {% if article.current %}
       {% if article.images.all %}
         {% if article.image_centric %}
-            <a class="articlelink" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">
+            <a class="embeddable" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">
                 <img class="imgsnippet" alt="article image" src="{{ article.images.all.0.article_size }}">
             </a>
         {% else %}
-            <a class="articlelink" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}"><img alt="article thumbnail" style="float:right;padding-left:1em;margin-top:-1em" src="{{ article.images.all.0.thumbnail_size }}"></a>
+            <a class="embeddable" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}"><img alt="article thumbnail" style="float:right;padding-left:1em;margin-top:-1em" src="{{ article.images.all.0.thumbnail_size }}"></a>
         {% endif %}
       {% endif %}
       {{ article.snippet }}

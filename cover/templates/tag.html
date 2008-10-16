@@ -21,6 +21,7 @@
 	{% endif %}
 	{% if tag.image_set.all %}
 		<h2>Images tagged '{{ tag.name }}'</h2>
+		<br>
 		<center>
 			{% for image in tag.image_set.all %}
 				{% include "imagelink.html" %}

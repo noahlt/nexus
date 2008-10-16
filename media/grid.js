@@ -32,6 +32,8 @@ $(document).ready(function() {
 
 	// load link into center column
 	function click_embed(event) {
+        if (event.ctrlKey || event.shiftKey)
+            return;
 		event.preventDefault();
 		acquire_request();
 		activelink = $(this).addClass("active");
@@ -41,7 +43,13 @@ $(document).ready(function() {
 	}
 
 	// back to previous page
-	function go_back() {
+    // return false if backspace is handled
+	function go_back(event) {
+        if (event) {
+            if (event.ctrlKey || event.shiftKey)
+                return null; // ret value doesn't matter here
+            event.preventDefault();
+        }
 		if (history.length >= 2) {
 			history.pop();
 			var previous = history[history.length-1];
@@ -81,7 +89,10 @@ $(document).ready(function() {
 
 	$("#paginator .pagelink").click(click_page);
 
-	$("#tags li").not("#alltags").click(function() {
+	$("#tags li").not("#alltags").click(function(event) {
+        if (event.ctrlKey || event.shiftKey)
+            return;
+        event.preventDefault();
 		if ($(this).hasClass("useless") && !$(this).hasClass("activetag"))
 			$("#tags .activetag").not("#alltags")
 				.removeClass("activetag")
@@ -95,7 +106,8 @@ $(document).ready(function() {
 		update(1);
 	});
 
-	$("#tags #alltags").click(function() {
+	$("#tags #alltags").click(function(event) {
+        event.preventDefault();
 		$("#dates li").removeClass("activedate");
 		selecting_dates = false;
 		$("#tags li").removeClass("useless");
@@ -106,13 +118,16 @@ $(document).ready(function() {
 	});
 
 	$("#tags li a").click(function(event) {
+        if (event.ctrlKey || event.shiftKey)
+            return;
 		event.preventDefault();
 	});
 
 	$("#back_button a").click(go_back);
 	grab_links();
 
-	$("#dates h3").click(function() {
+	$("#dates h3").click(function(event) {
+        event.preventDefault();
 		var min = ($(this).text() - 1) + "08";
 		var max = $(this).text() + "07";
 		if (!select_dates(min, max)[0])
@@ -152,18 +167,16 @@ $(document).ready(function() {
 	$("#tags").disableTextSelect();
 	$("#dates").disableTextSelect();
 
-	document.onmouseup = function() {
+	$(document).mouseup(function(event) {
 		if (selecting_dates) {
 			selecting_dates = false;
 			update(1);
 		}
-	};
+	});
 
-	document.onkeypress = function(x) {
-		var e = window.event || x;
-		var keyunicode = e.charCode || e.keyCode;
-		return keyunicode == 8 ? go_back() : true;
-	};
+    $(document).keypress(function(event) {
+		return event.which == 8 ? go_back() : true;
+	});
 
 	// url = /path/from/root
 	function load_url(url) {

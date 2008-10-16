@@ -1,7 +1,4 @@
-{% extends "basic-full.html" %}
-
-{% block subtitle %}
-{% endblock %}
+{% extends "basic.html" %}
 
 {% block content %}
 <h3>Image by {% with obj.authors.all as authors %}{% include "authorlinks.html" %}{% endwith %}{% if obj.date %} in {{ obj.date }}{% endif %}</h3>

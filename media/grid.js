@@ -16,6 +16,13 @@ $(document).ready(function() {
 	var history = [];
 	history.push([[], 1, DATE_MIN, DATE_MAX]);
 
+	if (window.location.pathname != "/") {
+		history.push(window.location.pathname);
+		$(".results").hide();
+		$(".embed").show();
+		update_backbutton();
+	}
+
 	// change page number
 	function click_page(event) {
 		event.preventDefault();
@@ -28,11 +35,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		acquire_request();
 		activelink = $(this).addClass("active");
-		url = $(this).attr("href");
-		if (url.match("http://")) { // whatever IE is doing, undo it
-			url = url.substring(7);
-			url = url.substring(url.indexOf("/"));
-		}
+		url = relative($(this).attr("href"));
 		history.push(url);
 		load_url(url);
 	}
@@ -166,7 +169,7 @@ $(document).ready(function() {
 	function load_url(url) {
 		request = $.ajax({
 			type: "GET",
-			url: "ajax/embed" + url,
+			url: "/ajax/embed" + url,
 			success: function(responseData) {
 				$("#embedded_content").html(responseData);
 			},
@@ -361,5 +364,13 @@ $(document).ready(function() {
 			}
 		}
 		$("#paginator .pagelink").click(click_page);
+	}
+
+	function relative(url) {
+		if (url.match("http://")) { // oops, make it relative again
+			url = url.substring(7);
+			url = url.substring(url.indexOf("/"));
+		}
+		return url;
 	}
 });

@@ -20,9 +20,11 @@ $(document).ready(function() {
 	var hash = window.location.hash.substring(1);
 	setInterval(function() {
 		if (window.location.hash.substring(1) != hash) {
-			autoclick = true;
-			load_hash(window.location.hash);
-			hash = window.location.hash.substring(1);
+			if (window.location.hash.substring(1)) {
+				autoclick = true;
+				load_hash(window.location.hash);
+				hash = window.location.hash.substring(1);
+			}
 		}
 	}, 100);
 

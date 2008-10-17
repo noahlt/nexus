@@ -6,6 +6,7 @@ $(document).ready(function() {
 
 	var selecting_dates = false;
 	var down;
+	var autoclick = false;
 	var DATE_MIN = 100001;
 	var DATE_MAX = 300001;
 	var TAG_NORMAL = $("#alltags").width();
@@ -16,11 +17,17 @@ $(document).ready(function() {
 	var history = [];
 	history.push([[], 1, DATE_MIN, DATE_MAX]);
 
-	if (window.location.pathname != "/") {
-		history.push(window.location.pathname);
-		$(".results").hide();
-		$(".embed").show();
-		update_backbutton();
+	var hash = window.location.hash.substring(1);
+	setInterval(function() {
+		if (window.location.hash.substring(1) != hash) {
+			autoclick = true;
+			load_hash(window.location.hash);
+			hash = window.location.hash.substring(1);
+		}
+	}, 100);
+
+	if (window.location.hash) {
+		load_hash(window.location.hash);
 	}
 
 	// change page number
@@ -42,29 +49,17 @@ $(document).ready(function() {
 		load_url(url);
 	}
 
-	// back to previous page
-    // return false if backspace is handled
-	function go_back(event) {
-        if (event) {
-            if (event.ctrlKey || event.shiftKey)
-                return null; // ret value doesn't matter here
-            event.preventDefault();
-        }
-		if (history.length >= 2) {
-			history.pop();
-			var previous = history[history.length-1];
-			acquire_request();
-			if (previous instanceof Array) {
-				select_tags(previous[0]);
-				select_dates(previous[2], previous[3]);
-				load_selection(previous);
-			} else {
-				activelink = $("#back_button a").addClass("active");
-				load_url(previous);
-			}
-			return false;
+	// with the #
+	function load_hash(hash) {
+		var target = hash ? deserialize(hash.substring(1)) : [[],1,DATE_MIN,DATE_MAX];
+		acquire_request();
+		if (target instanceof Array) {
+			select_tags(target[0]);
+			select_dates(target[2], target[3]);
+			load_selection(target);
+		} else {
+			load_url(target);
 		}
-		return true;
 	}
 
 	function update(page) {
@@ -83,8 +78,9 @@ $(document).ready(function() {
 			.map(function() {
 					return $(this).attr("id").substring(4); // tag_
 				}).get();
-		load_selection([selectedtags, page, min, max]);
-		history.push([selectedtags, page, min, max]);
+		var selection = [selectedtags, page, min, max];
+		load_selection(selection);
+		history.push(selection);
 	}
 
 	$("#paginator .pagelink").click(click_page);
@@ -123,7 +119,6 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
-	$("#back_button a").click(go_back);
 	grab_links();
 
 	$("#dates h3").click(function(event) {
@@ -174,12 +169,10 @@ $(document).ready(function() {
 		}
 	});
 
-    $(document).keypress(function(event) {
-		return event.which == 8 ? go_back() : true;
-	});
-
 	// url = /path/from/root
 	function load_url(url) {
+		if (!autoclick)
+			window.location.hash = hash = url;
 		request = $.ajax({
 			type: "GET",
 			url: "/ajax/embed" + url,
@@ -193,7 +186,6 @@ $(document).ready(function() {
 				grab_links();
 				$(".results").hide();
 				$(".embed").show();
-				update_backbutton();
 				release_request();
 			}
 		});
@@ -201,12 +193,14 @@ $(document).ready(function() {
 
 	// data = [tags, page, datemin, datemax]
 	function load_selection(data) {
+		if (!autoclick)
+			window.location.hash = hash = serialize(data);
 		var responseData = cached[data];
 		if (responseData) {
 			__update_tags(responseData['tags']);
 			__update_dates(responseData['dates']);
 			__update_results(responseData['results']);
-			__update_paginator(responseData['pages']);
+			__update_paginator(responseData['pages'], data);
 			release_request();
 		} else {
 			var have_articles = $("#results li")
@@ -221,7 +215,7 @@ $(document).ready(function() {
 					__update_tags(responseData['tags']);
 					__update_dates(responseData['dates']);
 					__update_results(responseData['results']);
-					__update_paginator(responseData['pages']);
+					__update_paginator(responseData['pages'], data);
 					responseData['results']['new'] = null;
 					cached[data] = responseData;
 					release_request();
@@ -284,11 +278,14 @@ $(document).ready(function() {
 	// call at end of dom update
 	function release_request() {
 		window.status = null;
-		window.scroll(0,0); // misc
 		request = null;
 		if (activelink)
 			activelink.removeClass("active");
 		activelink = null;
+		if (!autoclick) {
+			window.scroll(0,0);
+		}
+		autoclick = false;
 	}
 
 	function __redraw_showall() {
@@ -296,22 +293,6 @@ $(document).ready(function() {
 			$("#tags #alltags").addClass("activetag");
 		else
 			$("#tags #alltags").removeClass("activetag");
-	}
-
-	function update_backbutton() {
-		if (history.length >= 2) {
-			var item = history[history.length-2];
-			if (item instanceof Array) {
-				if (item[0].length > 0)
-					$("#back_button a").html("Back to [" + item[0] + "]");
-				else
-					$("#back_button a").html("Back to front page");
-				$("#back_button a").attr("href", "#back");
-			} else {
-				$("#back_button a").html("Back to " + item);
-				$("#back_button a").attr("href", item);
-			}
-		}
 	}
 
 	function __update_tags(taginfo) {
@@ -356,15 +337,13 @@ $(document).ready(function() {
 		grab_links();
 		$(".embed").hide();
 		$(".results").show();
-		if (visible.length === 0) {
-			update_backbutton();
+		if (visible.length === 0)
 			$("#none-visible").show();
-			$("#back_button").show();
-		} else
+		else
 			$("#none-visible").hide();
 	}
 
-	function __update_paginator(pages) {
+	function __update_paginator(pages, data) {
 		$("#paginator").empty();
 		if (pages['num_pages'] > 1) {
 			for (var i = 1; i <= pages['num_pages']; i++) {
@@ -372,7 +351,9 @@ $(document).ready(function() {
 					$("#paginator").append(" <li>" + i + "</li>");
 				else
 					$("#paginator").append(" <li id=\"n_"
-					+ i + "\" class=\"pagelink\" href=\"#paginator\"><a>"
+					+ i + "\" class=\"pagelink\"><a href=\"#"
+					+ serialize([data[0],i,data[2],data[3]])
+					+ "\">"
 					+ i + "</a></li>");
 			}
 		}
@@ -385,5 +366,18 @@ $(document).ready(function() {
 			url = url.substring(url.indexOf("/"));
 		}
 		return url;
+	}
+
+	// without the #
+	function deserialize(hash) {
+		if (!(hash instanceof Array) && hash.substring(0,1) != "/") {
+			hash = hash.split(",");
+			hash[0] = hash[0].split(";");
+		}
+		return hash;
+	}
+
+	function serialize(selection) {
+		return selection[0].join(";") + "," + selection.slice(1);
 	}
 });

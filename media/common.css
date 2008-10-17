@@ -70,6 +70,11 @@ noscript {
   margin-left: 1em;
 }
 
+.alist {
+  margin: 1em;
+  font-size: 8pt;
+}
+
 .subtitle {
   font-family: sans;
   text-transform: lowercase;
@@ -157,7 +162,6 @@ h2 {
 #none-visible {
   color: #305cb6;
   display: none;
-  margin-top: -1em;
 }
 
 h3 {
@@ -167,14 +171,6 @@ h3 {
   letter-spacing: 1pt;
   text-align: left;
   padding-top: .5em;
-}
-
-#navbar {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 50%;
-  text-align: right;
 }
 
 #grid {
@@ -262,6 +258,10 @@ ul#dates, ul#gridtypes {
   border-bottom: 1px;
 }
 
+#gridtypes li a:hover {
+  color: white;
+}
+
 #gridtypes {
   text-align: center;
 }
@@ -314,7 +314,7 @@ ul#dates, ul#gridtypes {
   color: #222;
 }
 
-#results, #paginator, #back_button {
+#results, #paginator {
   overflow: hidden;
   padding: 1em;
   padding-left: 1.2em;
@@ -328,7 +328,6 @@ ul#dates, ul#gridtypes {
   padding: 1.5em;
   padding-left: 1.7em;
   overflow: hidden;
-  padding-top: 0;
   margin: 0;
 }
 
@@ -340,8 +339,8 @@ ul#dates, ul#gridtypes {
 }
 
 #footer {
-  color: #BBB;
-  background-color: #222;
+  color: #222;
+  background-color: white;
   text-align: center;
   padding-bottom: 2em;
   font-size: 8pt;
@@ -349,11 +348,15 @@ ul#dates, ul#gridtypes {
   padding-left: 1em;
   padding-right: 1em;
   clear: both;
+  max-width: 1030px;
+  /* IE6 below */
+  width: auto !important;
+  width: 1030px;
 }
 
 #footer a {
   padding: 1em;
-  border-bottom: 1em solid #222;
+  border-bottom: 1em solid white;
 }
 
 #footer a:hover {
@@ -449,6 +452,68 @@ a.active {
   background-color: #ddd;
 }
 
+#gridtypes a.active {
+  background-color: transparent;
+}
+
 .error {
   color: red;
+}
+
+.page {
+  color: gray;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  text-decoration: none;
+  outline: none;
+}
+
+.thumbtext {
+  text-align: center;
+  border-top: 1px solid #ddd;
+  background-color: #eee;
+}
+
+.year {
+  color: #305cb6;
+  text-align: left;
+  display: block;
+  margin-left: 0;
+  border-bottom: 1px solid #305cb6;
+}
+
+.yearblock {
+  margin-bottom: 1em;
+  clear: both;
+}
+
+.shadow {
+  float: left;
+  margin: 1em .5em .5em .5em;
+}
+
+.shadow .s2,
+.shadow .s3,
+.shadow .s4 {
+  position: relative;
+  left: -1px;
+  top: -1px;
+}
+
+.shadow .s1 {
+  background: #F1F0F1;
+}
+
+.shadow .s2 {
+  background: #DBDADB;
+}
+
+.shadow .s3 {
+  background: #B8B6B8;
+}
+
+.shadow .s4 {
+  background: #ffffff;
+  border: 1px solid #848284;
 }

@@ -1,10 +1,4 @@
-{% extends "archive.html" %}
-
-{% block navbar %}
-<a href="..">Nexus Home</a>
-<br><br>
-Click below to see what's behind these front pages.
-{% endblock %}
+{% extends "basic.html" %}
 
 {% block content %}
 {% spaceless %}
@@ -12,12 +6,12 @@ Click below to see what's behind these front pages.
         <div class="yearblock">
             <h2 class="year">{{ year.year }}</h2>
             {% for issue in year reversed %}
-            <div class="thumbblock">
-                <a class="page" href="{{ issue.date }}">
-					<img alt="Issue {{ issue.date }}." class="thumb" src="{{ issue.calculate_thumbnail_url }}">
+			<div class="shadow"><div class="s1"><div class="s2"><div class="s3"><div class="s4">
+                <a class="page embeddable" href="/archive/{{ issue.date }}">
+					<img alt="Issue {{ issue.date }}." src="{{ issue.calculate_thumbnail_url }}">
                 </a>
                 <div class="thumbtext">{{ issue.date|date:"F j" }}</div>
-            </div>
+			</div></div></div></div></div>
             {% endfor %}
         </div>
     {% endfor %}

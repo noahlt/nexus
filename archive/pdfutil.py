@@ -25,7 +25,7 @@ def __evince_thumbnailer(input, output, size):
     call(('evince-thumbnailer', '-s', str(size), input, output))
     image = Image.open(output) # resize AGAIN to produce consistent sizes
     image.thumbnail((size,size), Image.ANTIALIAS)
-    image.save(output, 'JPEG', quality=85)
+    image.save(output, 'PNG')
 
 try:
     call(('evince-thumbnailer', devnull, devnull))
@@ -94,7 +94,7 @@ def pdf_to_thumbnail(input, size):
     """Returns url to cached thumbnail, generating one if not available.
     Takes an absolute path to a pdf as input.
     Tries very hard to return something sane."""
-    suffix = '@%i.jpg' % size
+    suffix = '@%i.png' % size
     name = basename(input)[0:-4]
     path = THUMBS_PATH + name + suffix
     output = settings.MEDIA_ROOT + path

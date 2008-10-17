@@ -262,6 +262,10 @@ ul#dates, ul#gridtypes {
   color: white;
 }
 
+#gridtypes li a:hover {
+  color: white;
+}
+
 #gridtypes {
   text-align: center;
 }

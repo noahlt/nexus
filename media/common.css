@@ -318,7 +318,7 @@ ul#dates, ul#gridtypes {
   color: #222;
 }
 
-#results, #paginator {
+#results, #paginator, #back_button {
   overflow: hidden;
   padding: 1em;
   padding-left: 1.2em;

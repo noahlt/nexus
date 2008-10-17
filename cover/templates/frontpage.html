@@ -8,6 +8,16 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery-disable-text-select.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
+<!--[if lt IE 8]>
+<style type="text/css">
+#content {
+	padding-top: 0;
+}
+#none-visible {
+	margin-top: -1em;
+}
+</style>
+<![endif]-->
 </head>
 
 <body>
@@ -44,6 +54,9 @@
     {% endfor %}
   </ul>
   <div id="centercolumn">
+	<!--[if lt IE 8]>
+  <div id="back_button" class="embed" style="display:none"><a href="#back"></a></div>
+	<![endif]-->
   <ul id="results" class="results">
 	<!--[if lt IE 7]>
 	<li id="IE6_PLACEHOLDER" style="display: inline !important; padding: 0 !important;"></li>

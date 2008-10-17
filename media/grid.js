@@ -17,6 +17,47 @@ $(document).ready(function() {
 	var history = [];
 	history.push([[], 1, DATE_MIN, DATE_MAX]);
 
+	/*
+	 * History is handled as such:
+	 * ie6-7: hash + back button link
+	 * other: hash + browser controls
+	 */
+
+	if (window.location.pathname != "/") {
+		history.push(window.location.pathname);
+		$(".results").hide();
+		$(".embed").show();
+		update_backbutton();
+	}
+
+	function go_back(event) {
+		if (event) {
+			if (event.ctrlKey || event.shiftKey)
+				return;
+			event.preventDefault();
+		}
+		if (history.length >= 2) {
+			history.pop();
+			var previous = history[history.length-1];
+			acquire_request();
+			if (previous instanceof Array) {
+				select_tags(previous[0]);
+				select_dates(previous[2], previous[3]);
+				load_selection(previous);
+			} else {
+				activelink = $("#back_button a").addClass("active");
+				load_url(previous);
+			}
+		}
+	}
+
+	if (window.location.hash) {
+		load_hash(window.location.hash);
+	} else {
+		// required for full ie8 support:
+		window.location.hash = serialize(history[0]);
+	}
+
 	var hash = window.location.hash.substring(1);
 	setInterval(function() {
 		if (window.location.hash.substring(1) != hash) {
@@ -27,10 +68,6 @@ $(document).ready(function() {
 			}
 		}
 	}, 100);
-
-	if (window.location.hash) {
-		load_hash(window.location.hash);
-	}
 
 	// change page number
 	function click_page(event) {
@@ -55,6 +92,7 @@ $(document).ready(function() {
 	function load_hash(hash) {
 		var target = hash ? deserialize(hash.substring(1)) : [[],1,DATE_MIN,DATE_MAX];
 		acquire_request();
+		history.push(target);
 		if (target instanceof Array) {
 			select_tags(target[0]);
 			select_dates(target[2], target[3]);
@@ -121,6 +159,7 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
+	$("#back_button a").click(go_back);
 	grab_links();
 
 	$("#dates h3").click(function(event) {
@@ -188,6 +227,7 @@ $(document).ready(function() {
 				grab_links();
 				$(".results").hide();
 				$(".embed").show();
+				update_backbutton();
 				release_request();
 			}
 		});
@@ -297,6 +337,22 @@ $(document).ready(function() {
 			$("#tags #alltags").removeClass("activetag");
 	}
 
+	function update_backbutton() {
+		if (history.length >= 2) {
+			var item = history[history.length-2];
+			if (item instanceof Array) {
+				if (item[0].length > 0)
+					$("#back_button a").html("Back to [" + item[0] + "]");
+				else
+					$("#back_button a").html("Back to front page");
+				$("#back_button a").attr("href", "#back");
+			} else {
+				$("#back_button a").html("Back to " + item);
+				$("#back_button a").attr("href", item);
+			}
+		}
+	}
+
 	function __update_tags(taginfo) {
 		$("#tags li").not("#alltags").map(
 			function() {
@@ -339,9 +395,11 @@ $(document).ready(function() {
 		grab_links();
 		$(".embed").hide();
 		$(".results").show();
-		if (visible.length === 0)
+		if (visible.length === 0) {
+			update_backbutton();
 			$("#none-visible").show();
-		else
+			$("#back_button").show();
+		} else
 			$("#none-visible").hide();
 	}
 

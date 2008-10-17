@@ -2,8 +2,8 @@ Embedding images in articles:
 
 	Rationale:
 
-		The "fulltext" of the article is converted to html following the Textile
-		markup-language. Textile offers a method of embedding images but it is
+		The "fulltext" of the article is converted to html following the Markdown
+		markup-language. Markdown offers a method of embedding images but it is
 		cumbersome and not easily integrated with the database. Therefore we
 		offer image embedding through a custom syntax.
 

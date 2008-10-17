@@ -1,12 +1,7 @@
 {% extends "basic.html" %}
 
 {% block content %}
-        {% if obj.date %}
-			<h3>Created:</h3>
-			<span class="info">
-				{{ obj.date }}
-			</span>
-        {% endif %}
+<h3>Image by {% with obj.authors.all as authors %}{% include "authorlinks.html" %}{% endwith %}{% if obj.date %} in {{ obj.date }}{% endif %}</h3>
 		{% if obj.tags.all %}
 			<h3>Tags:</h3>
 			<span class="info">

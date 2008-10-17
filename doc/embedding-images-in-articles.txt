@@ -26,6 +26,8 @@ Embedding images in articles:
 			                 Authors
 			Caption here.
 
+		The image will be scaled to the exact size of the box.
+
 		Options for the images (see bottom for list) can be specified as:
 
 			[[option1:option2:image-slug]]
@@ -35,10 +37,9 @@ Embedding images in articles:
 
 	Examples:
 
-		[[solar-eclipse]]
+		[[diagram]]
 		[[thumb:track]]
 		[[left:small:nexus-logo]]
-		[[fill-black:center:dark-diagram]]
 
 		... Buffalo buffalo buffalo buffalo.
 		[[buffalo-image]]
@@ -55,17 +56,10 @@ Embedding images in articles:
 
 	Override display settings:
 
+		noscale       -  don't stretch image (use for non-photographic images)
 		clear         -  disallow horizontally adjacent images (buggy in IE6)
 		nocaption     -  hide caption
 		noattr        -  hide attribution
 		showcaption   -  show caption
 		showattr      -  show attribution
 		noborder      -  no image border
-	
-	If the image does not fill its box entirely:
-
-		stretch     -  stretch image to fill box, preserving aspect ratio
-		fill-black  -  fill empty space in box with black (white by default)
-		align-right -  align image right in box (centered by default)
-		align-left  -  align image left in box (centered by default)
-

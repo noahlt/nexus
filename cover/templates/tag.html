@@ -3,7 +3,7 @@
 {% block content %}
 	{% if tag.article_set.all %}
 		<h2>Articles tagged '{{ tag.name }}'</h2>
-		<ul id="results" style="margin:0">
+		<ul id="sub_results" style="margin:0">
 			{% for article in tag.article_set.all %}
             {% if article.current %}
                 {% if not article.image_centric %}

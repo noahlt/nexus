@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html> <head>
-<title>Nexus</title>
+<title>The Nexus</title>
 <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css">
 <link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css">
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
@@ -50,7 +50,6 @@
     {% endfor %}
   </ul>
   <div id="centercolumn">
-  <div id="back_button" class="embed" style="display:none"><a href="#back"></a></div>
   <ul id="results" class="results">
 	<!--[if lt IE 7]>
 	<li id="IE6_PLACEHOLDER" style="display: inline !important; padding: 0 !important;"></li>
@@ -72,7 +71,7 @@
 		{% ifequal n 1 %}
 			<li>{{ n }}</li>
 		{% else %}
-			<li class="pagelink" id="n_{{ n }}"><a href="#page{{ n }}">{{ n }}</a></li>
+			<li class="pagelink" id="n_{{ n }}"><a href="#,{{ n }},100001,300001">{{ n }}</a></li>
 		{% endifequal %}
 	{% endfor %}
     {% endifnotequal %}

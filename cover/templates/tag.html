@@ -1,9 +1,5 @@
 {% extends "basic.html" %}
 
-{% block title %}
-	Nexus: Articles tagged '{{ tag.name }}'
-{% endblock %}
-
 {% block content %}
 	{% if tag.article_set.all %}
 		<h2>Articles tagged '{{ tag.name }}'</h2>

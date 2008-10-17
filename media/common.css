@@ -70,6 +70,11 @@ noscript {
   margin-left: 1em;
 }
 
+.alist {
+  margin: 1em;
+  font-size: 8pt;
+}
+
 .subtitle {
   font-family: sans;
   text-transform: lowercase;
@@ -169,14 +174,6 @@ h3 {
   padding-top: .5em;
 }
 
-#navbar {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 50%;
-  text-align: right;
-}
-
 #grid {
   background-color:#333;
   margin-left:2em;
@@ -193,6 +190,7 @@ h3 {
 
 #dates li {
   cursor: pointer;
+  color: white;
 }
 
 #dates li {
@@ -257,6 +255,10 @@ h3 {
   padding: 1em;
 }
 
+#gridtypes li a:hover {
+  color: white;
+}
+
 #gridtypes {
   text-align: center;
 }
@@ -305,7 +307,7 @@ h3 {
   color: #222;
 }
 
-#results, #paginator, #back_button {
+#results, #paginator {
   overflow: hidden;
   line-height: 1.5em;
   padding: 1em;
@@ -318,7 +320,6 @@ h3 {
 #content {
   padding: 1.5em;
   overflow: hidden;
-  padding-top: 0;
   margin: 0;
 }
 
@@ -445,4 +446,70 @@ a.active {
 
 #extra a.active {
   background-color: #ddd;
+}
+
+#gridtypes a.active {
+  background-color: transparent;
+}
+
+.error {
+  color: red;
+}
+
+.page {
+  color: gray;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  text-decoration: none;
+  outline: none;
+}
+
+.thumbtext {
+  text-align: center;
+  border-top: 1px solid #ddd;
+  background-color: #eee;
+}
+
+.year {
+  color: #305cb6;
+  text-align: left;
+  display: block;
+  margin-left: 0;
+  border-bottom: 1px solid #305cb6;
+}
+
+.yearblock {
+  margin-bottom: 1em;
+  clear: both;
+}
+
+.shadow {
+  float: left;
+  margin: 1em .5em .5em .5em;
+}
+
+.shadow .s2,
+.shadow .s3,
+.shadow .s4 {
+  position: relative;
+  left: -1px;
+  top: -1px;
+}
+
+.shadow .s1 {
+  background: #F1F0F1;
+}
+
+.shadow .s2 {
+  background: #DBDADB;
+}
+
+.shadow .s3 {
+  background: #B8B6B8;
+}
+
+.shadow .s4 {
+  background: #ffffff;
+  border: 1px solid #848284;
 }

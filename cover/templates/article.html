@@ -1,10 +1,6 @@
 {% extends "basic.html" %}
 {% load markup %}
 
-{% block title %}
-	{{ article.title }}
-{% endblock %}
-
 {% block subtitle %}
 	{% block article_title %}{{ article.title }}{% endblock %}
 	<br>

@@ -1,32 +1,27 @@
-{% extends "archive.html" %}
+{% extends "basic.html" %}
 
-{% block header %}
-	{{ block.super }} - {{ issue.date|date:"F d, Y" }}
-{% endblock %}
-
-{% block include %}
-<script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}print.js"></script>
-{% endblock %}
-
-{% block navbar %}
-	<a href="/archive">Archive Home</a>
-	<br><br>
-	See bottom of page to download originals or
-	<a href="{{ issue.calculate_join_url }}">here</a>
-	to grab the complete set.
-	<h3>From this issue:</h3>
-	{% include "issue_snippets.html" %}
+{% block subtitle %}
+	{{ issue.date|date:"F d, Y" }}
 {% endblock %}
 
 {% block content %}
+	<br>
+	<a href="{{ issue.calculate_join_url }}">Download the complete issue.</a>
+	<div class=alist>
+	{% for article in issue.article_set.all %}
+	{% if article.current %}
+		{% include "articlelink.html" %}<br>
+	{% endif %}{% endfor %}
+	</div>
 {% spaceless %}
     {% if issue.current %}
     {% for pdf in issue.pdf_set.all %}
         {% for page in pdf.page_set.all %}
-            <a class="preview" href="{{ page.pdf.url }}">
-				<img alt="{{ page.pdf }}" class="thumb2" src="{{ page.calculate_thumbnail_url }}">
+		<div class="shadow"><div class="s1"><div class="s2"><div class="s3"><div class="s4">
+            <a href="{{ page.pdf.url }}">
+				<img alt="{{ page.pdf }}" src="{{ page.calculate_thumbnail_url }}">
             </a>
+		</div></div></div></div></div>
         {% endfor %}
     {% endfor %}
     {% endif %}

@@ -12,7 +12,7 @@ $(document).ready(function() {
 	var DATE_MAX = 300001;
 	var TAG_NORMAL = $("#alltags").width();
 	var TAG_EXPANDED = TAG_NORMAL + 13;
-	var FS = ".", FS2 = ",";
+	var FS = ".", FS2 = ","; // remember to change in paginator/frontpage template too
 	$("#tags #alltags").width(TAG_EXPANDED);
 
 	var IFRAME = $("iframe").size() > 0;
@@ -23,7 +23,11 @@ $(document).ready(function() {
 		if (arg1 && arg1.charAt(0) == "#") {
 			var hash = arg1.substring(1).split(FS);
 			this.url = hash[0];
-			this.selection = [hash[1].split(FS2), hash[2], hash[3], hash[4]];
+			var tags = hash[1] ? hash[1].split(FS2) : '';
+			var page = hash[2] ? hash[2] : 1;
+			var date_min = hash[3] ? hash[3] : DATE_MIN;
+			var date_max = hash[4] ? hash[4] : DATE_MAX;
+			this.selection = [tags, page, date_min, date_max];
 		} else {
 			this.url = arg1 ? arg1 : '';
 			this.selection = selection ? selection : [[], 1, DATE_MIN, DATE_MAX];
@@ -38,40 +42,33 @@ $(document).ready(function() {
 				load_selection(this.selection);
 		};
 		this.toString = function() {
-			return this.url + FS + this.selection[0].join(FS2) + FS + this.selection.slice(1).join(FS);
+			var tags = (this.selection && this.selection[0]) ? this.selection[0].join(FS2) : '';
+			var sel = this.selection ? this.selection.slice(1).join(FS) : '';
+			return this.url + FS + tags + FS + sel;
 		};
 		this.set = function() {
-			window.location.hash = hash = this;
-			if (IFRAME) $("#iFrame").attr("src", "/echo/" + this);
+			window.location.hash = State.hash = this.toString();
+			if (IFRAME) {
+				window["iFrame"].document.body.innerHTML = this;
+				$("#iFrame").attr("src", "/echo/" + this);
+			}
 		};
 	}
+	State.hash = window.location.hash.substring(1);
 
-	if (window.location.pathname != "/") {
-		history.push(new State(window.location.pathname, current_selection()));
-		$(".results").hide();
-		$(".embed").show();
-	}
-
-	if (window.location.hash) {
+	if (window.location.hash) // permalink
 		new State(window.location.hash).load();
-	} else {
-		if (window.location.pathname != "/")
-			window.location.hash = new State(window.location.pathname, current_selection());
-		else
-			window.location.hash = new State();
-	}
 
-	var hash = window.location.hash.substring(1);
 	setInterval(function() {
 		var state;
-		if (window.location.hash.substring(1) != hash && window.location.hash.substring(1)) {
+		if (window.location.hash.substring(1) != State.hash) {
 			manual_click = false;
 			state = new State(window.location.hash);
-			hash = state.toString();
+			state.set();
 			state.load();
-		} else if (IFRAME && window["iFrame"].document.body.innerHTML != hash) {
+		} else if (IFRAME && window["iFrame"].document.body.innerHTML != State.hash) {
 			state = new State("#" + window["iFrame"].document.body.innerHTML);
-			hash = state.toString();
+			state.set();
 			state.load();
 		}
 	}, 100);
@@ -90,8 +87,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		acquire_request();
 		activelink = $(this).addClass("active");
-		url = relative($(this).attr("href"));
-		load_url(url);
+		load_url(relative($(this).attr("href")));
 	}
 
 	function update(page) {
@@ -113,9 +109,9 @@ $(document).ready(function() {
 		tagslug = $(this).attr("id");
 		$(this).removeClass("useless").toggleClass("activetag");
 		if ($(this).hasClass("activetag"))
-			$(this).width(TAG_EXPANDED);
+			$(this).animate({"width":TAG_EXPANDED});
 		else
-			$(this).width(TAG_NORMAL);
+			$(this).animate({"width":TAG_NORMAL});
 		update(1);
 	});
 
@@ -186,7 +182,7 @@ $(document).ready(function() {
 		}
 	});
 
-	// url = /path/from/root
+	// url = /relative/path/from/root
 	function load_url(url) {
 		if (manual_click)
 			new State(url, current_selection()).set();
@@ -209,16 +205,23 @@ $(document).ready(function() {
 	}
 
 	// data = [tags, page, datemin, datemax]
-	function load_selection(data) {
+	function load_selection(selection) {
 		if (manual_click)
-			new State(null, data).set();
-		var responseData = cached[data];
-		if (responseData) {
-			__update_tags(responseData['tags']);
-			__update_dates(responseData['dates']);
-			__update_results(responseData['results']);
-			__update_paginator(responseData['pages'], data);
+			new State(null, selection).set();
+		var hit = cached[selection];
+		function load(data) {
+			read_json_tags(data['tags']);
+			read_json_dates(data['dates']);
+			read_json_results(data['results']);
+			read_json_paginator(data['pages'], selection);
+			if (!hit) {
+				data['results']['new'] = null;
+				cached[selection] = data;
+			}
 			release_request();
+		}
+		if (hit) {
+			load(hit);
 		} else {
 			var have_articles = $("#results li")
 				.not("#IE6_PLACEHOLDER")
@@ -226,17 +229,8 @@ $(document).ready(function() {
 						return $(this).attr("id").substring(4); // art_
 					}).get();
 			request = $.getJSON("/ajax/paginator",
-				{"tags": data[0], "page": data[1], "have_articles": have_articles,
-				 "date_min": data[2], "date_max": data[3]},
-				function(responseData) {
-					__update_tags(responseData['tags']);
-					__update_dates(responseData['dates']);
-					__update_results(responseData['results']);
-					__update_paginator(responseData['pages'], data);
-					responseData['results']['new'] = null;
-					cached[data] = responseData;
-					release_request();
-				});
+				{"tags": selection[0], "page": selection[1], "have_articles": have_articles,
+				 "date_min": selection[2], "date_max": selection[3]}, load);
 		}
 	}
 
@@ -311,7 +305,7 @@ $(document).ready(function() {
 			$("#tags #alltags").removeClass("activetag");
 	}
 
-	function __update_tags(taginfo) {
+	function read_json_tags(taginfo) {
 		$("#tags li").not("#alltags").map(
 			function() {
 				for (var i in taginfo) {
@@ -328,7 +322,7 @@ $(document).ready(function() {
 		);
 	}
 
-	function __update_dates(dates) {
+	function read_json_dates(dates) {
 		$("#dates li").not(".year").map(
 			function() {
 				for (var i in dates) {
@@ -342,7 +336,7 @@ $(document).ready(function() {
 		);
 	}
 
-	function __update_results(results) {
+	function read_json_results(results) {
 		$("#results li").not("#IE6_PLACEHOLDER").hide();
 		var visible = results['all'];
 		var data = results['new'];
@@ -359,7 +353,7 @@ $(document).ready(function() {
 			$("#none-visible").hide();
 	}
 
-	function __update_paginator(pages, data) {
+	function read_json_paginator(pages, data) {
 		$("#paginator").empty();
 		if (pages['num_pages'] > 1) {
 			for (var i = 1; i <= pages['num_pages']; i++) {

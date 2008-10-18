@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.http import HttpResponse
 from cover.views import *
 from archive.views import *
 
@@ -18,6 +19,7 @@ urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root),
 
     (r'^$', frontpage),
+    (r'^echo/(.*)', lambda request,x: HttpResponse(x)),
     (r'^ajax/embed/(\d{4})/(\d{2})/([-_a-z0-9]+)/$', articlepage),
     (r'^ajax/embed/author/([-_a-z0-9]+)$', authorpage),
     (r'^ajax/embed/image/([-_a-z0-9]+)/$', imageview),

@@ -4,20 +4,9 @@
 <title>The Nexus</title>
 <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css">
 <link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css">
-<link rel="stylesheet" href="{{ MEDIA_URL }}lightcolors.css" type="text/css">
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery-disable-text-select.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
-<!--[if lt IE 8]>
-<style type="text/css">
-#content {
-	padding-top: 0;
-}
-#none-visible {
-	margin-top: -1em;
-}
-</style>
-<![endif]-->
 </head>
 
 <body>
@@ -54,8 +43,8 @@
     {% endfor %}
   </ul>
   <div id="centercolumn">
-	<!--[if lt IE 8]>
-  <div id="back_button" class="embed" style="display:none"><a href="#back"></a></div>
+    <!--[if lt IE 8]>
+    <iframe style="display:none" id='iFrame' name="iFrame" src='/echo/'></iframe>
 	<![endif]-->
   <ul id="results" class="results">
 	<!--[if lt IE 7]>
@@ -76,7 +65,7 @@
     {% ifnotequal 1 paginator.num_pages %}
 	{% for n in paginator.page_range %}
 		{% ifequal n 1 %}
-			<li>{{ n }}</li>
+			<li id="thispage">{{ n }}</li>
 		{% else %}
 			<li class="pagelink" id="n_{{ n }}"><a href="#,{{ n }},100001,300001">{{ n }}</a></li>
 		{% endifequal %}

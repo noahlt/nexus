@@ -25,5 +25,5 @@
         </p>
         {% endif %}
         <br>
-		<a target="_blank" href="{{ obj.image.url }}"><img alt="{{ obj.image.slug }}" style="max-width:100%" src="{{ obj.image.url }}"></a>
+		<a target="_blank" href="{{ obj.image.url }}"><img alt="{{ obj.image.slug }}" style="width: expression(this.width > 585 ? 585 : true ); max-width: 585px" src="{{ obj.image.url }}"></a>
 {% endblock %}

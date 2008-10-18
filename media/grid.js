@@ -4,68 +4,75 @@ $(document).ready(function() {
 	var request = null;
 	var activelink = null;
 
+	var cached = new Object();
 	var selecting_dates = false;
 	var down;
-	var autoclick = false;
+	var manual_click = true; // false if we don't want the hash to be generated again
 	var DATE_MIN = 100001;
 	var DATE_MAX = 300001;
 	var TAG_NORMAL = $("#alltags").width();
 	var TAG_EXPANDED = TAG_NORMAL + 13;
+	var FS = ".", FS2 = ",";
 	$("#tags #alltags").width(TAG_EXPANDED);
 
-	var cached = new Object();
-	var history = [];
-	history.push([[], 1, DATE_MIN, DATE_MAX]);
+	var IFRAME = $("iframe").size() > 0;
 
-	/*
-	 * History is handled as such:
-	 * ie6-7: hash + back button link
-	 * other: hash + browser controls
-	 */
-
-	if (window.location.pathname != "/") {
-		history.push(window.location.pathname);
-		$(".results").hide();
-		$(".embed").show();
-		update_backbutton();
+	// takes (#serializedstate) or (/path/to/url, [[tags],page,dmin,dmax])
+	// for the second any nulls will be replaced by default values
+	function State(arg1, selection) {
+		if (arg1 && arg1.charAt(0) == "#") {
+			var hash = arg1.substring(1).split(FS);
+			this.url = hash[0];
+			this.selection = [hash[1].split(FS2), hash[2], hash[3], hash[4]];
+		} else {
+			this.url = arg1 ? arg1 : '';
+			this.selection = selection ? selection : [[], 1, DATE_MIN, DATE_MAX];
+		}
+		this.load = function() {
+			acquire_request();
+			select_tags(this.selection[0]);
+			select_dates(this.selection[2], this.selection[3]);
+			if (this.url)
+				load_url(this.url);
+			else
+				load_selection(this.selection);
+		};
+		this.toString = function() {
+			return this.url + FS + this.selection[0].join(FS2) + FS + this.selection.slice(1).join(FS);
+		};
+		this.set = function() {
+			window.location.hash = hash = this;
+			if (IFRAME) $("#iFrame").attr("src", "/echo/" + this);
+		};
 	}
 
-	function go_back(event) {
-		if (event) {
-			if (event.ctrlKey || event.shiftKey)
-				return;
-			event.preventDefault();
-		}
-		if (history.length >= 2) {
-			history.pop();
-			var previous = history[history.length-1];
-			acquire_request();
-			if (previous instanceof Array) {
-				select_tags(previous[0]);
-				select_dates(previous[2], previous[3]);
-				load_selection(previous);
-			} else {
-				activelink = $("#back_button a").addClass("active");
-				load_url(previous);
-			}
-		}
+	if (window.location.pathname != "/") {
+		history.push(new State(window.location.pathname, current_selection()));
+		$(".results").hide();
+		$(".embed").show();
 	}
 
 	if (window.location.hash) {
-		load_hash(window.location.hash);
+		new State(window.location.hash).load();
 	} else {
-		// required for full ie8 support:
-		window.location.hash = serialize(history[0]);
+		if (window.location.pathname != "/")
+			window.location.hash = new State(window.location.pathname, current_selection());
+		else
+			window.location.hash = new State();
 	}
 
 	var hash = window.location.hash.substring(1);
 	setInterval(function() {
-		if (window.location.hash.substring(1) != hash) {
-			if (window.location.hash.substring(1)) {
-				autoclick = true;
-				load_hash(window.location.hash);
-				hash = window.location.hash.substring(1);
-			}
+		var state;
+		if (window.location.hash.substring(1) != hash && window.location.hash.substring(1)) {
+			manual_click = false;
+			state = new State(window.location.hash);
+			hash = state.toString();
+			state.load();
+		} else if (IFRAME && window["iFrame"].document.body.innerHTML != hash) {
+			state = new State("#" + window["iFrame"].document.body.innerHTML);
+			hash = state.toString();
+			state.load();
 		}
 	}, 100);
 
@@ -84,43 +91,13 @@ $(document).ready(function() {
 		acquire_request();
 		activelink = $(this).addClass("active");
 		url = relative($(this).attr("href"));
-		history.push(url);
 		load_url(url);
-	}
-
-	// with the #
-	function load_hash(hash) {
-		var target = hash ? deserialize(hash.substring(1)) : [[],1,DATE_MIN,DATE_MAX];
-		acquire_request();
-		history.push(target);
-		if (target instanceof Array) {
-			select_tags(target[0]);
-			select_dates(target[2], target[3]);
-			load_selection(target);
-		} else {
-			load_url(target);
-		}
 	}
 
 	function update(page) {
 		acquire_request();
 		__redraw_showall();
-		var min = DATE_MIN, max = DATE_MAX;
-		var selected_dates = $("#dates .activedate").map(function() {
-				return $(this).attr('id').substring(3); // ym_
-			}).get();
-		if (selected_dates.length > 0) {
-			min = Math.min.apply(null, selected_dates);
-			max = Math.max.apply(null, selected_dates);
-			select_dates(min, max);
-		}
-		var selectedtags = $("#tags li").filter(".activetag").not("#alltags")
-			.map(function() {
-					return $(this).attr("id").substring(4); // tag_
-				}).get();
-		var selection = [selectedtags, page, min, max];
-		load_selection(selection);
-		history.push(selection);
+		load_selection(current_selection(page));
 	}
 
 	$("#paginator .pagelink").click(click_page);
@@ -159,7 +136,6 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
-	$("#back_button a").click(go_back);
 	grab_links();
 
 	$("#dates h3").click(function(event) {
@@ -212,8 +188,8 @@ $(document).ready(function() {
 
 	// url = /path/from/root
 	function load_url(url) {
-		if (!autoclick)
-			window.location.hash = hash = url;
+		if (manual_click)
+			new State(url, current_selection()).set();
 		request = $.ajax({
 			type: "GET",
 			url: "/ajax/embed" + url,
@@ -227,7 +203,6 @@ $(document).ready(function() {
 				grab_links();
 				$(".results").hide();
 				$(".embed").show();
-				update_backbutton();
 				release_request();
 			}
 		});
@@ -235,8 +210,8 @@ $(document).ready(function() {
 
 	// data = [tags, page, datemin, datemax]
 	function load_selection(data) {
-		if (!autoclick)
-			window.location.hash = hash = serialize(data);
+		if (manual_click)
+			new State(null, data).set();
 		var responseData = cached[data];
 		if (responseData) {
 			__update_tags(responseData['tags']);
@@ -319,15 +294,14 @@ $(document).ready(function() {
 
 	// call at end of dom update
 	function release_request() {
-		window.status = null;
+		window.status = "Done";
 		request = null;
 		if (activelink)
 			activelink.removeClass("active");
 		activelink = null;
-		if (!autoclick) {
+		if (manual_click)
 			window.scroll(0,0);
-		}
-		autoclick = false;
+		manual_click = true;
 	}
 
 	function __redraw_showall() {
@@ -335,22 +309,6 @@ $(document).ready(function() {
 			$("#tags #alltags").addClass("activetag");
 		else
 			$("#tags #alltags").removeClass("activetag");
-	}
-
-	function update_backbutton() {
-		if (history.length >= 2) {
-			var item = history[history.length-2];
-			if (item instanceof Array) {
-				if (item[0].length > 0)
-					$("#back_button a").html("Back to [" + item[0] + "]");
-				else
-					$("#back_button a").html("Back to front page");
-				$("#back_button a").attr("href", "#back");
-			} else {
-				$("#back_button a").html("Back to " + item);
-				$("#back_button a").attr("href", item);
-			}
-		}
 	}
 
 	function __update_tags(taginfo) {
@@ -395,11 +353,9 @@ $(document).ready(function() {
 		grab_links();
 		$(".embed").hide();
 		$(".results").show();
-		if (visible.length === 0) {
-			update_backbutton();
+		if (visible.length === 0)
 			$("#none-visible").show();
-			$("#back_button").show();
-		} else
+		else
 			$("#none-visible").hide();
 	}
 
@@ -408,11 +364,11 @@ $(document).ready(function() {
 		if (pages['num_pages'] > 1) {
 			for (var i = 1; i <= pages['num_pages']; i++) {
 				if (i == pages['this_page'])
-					$("#paginator").append(" <li>" + i + "</li>");
+					$("#paginator").append(" <li id=\"thispage\">" + i + "</li>");
 				else
 					$("#paginator").append(" <li id=\"n_"
 					+ i + "\" class=\"pagelink\"><a href=\"#"
-					+ serialize([data[0],i,data[2],data[3]])
+					+ new State(null, [data[0],i,data[2],data[3]])
 					+ "\">"
 					+ i + "</a></li>");
 			}
@@ -428,16 +384,22 @@ $(document).ready(function() {
 		return url;
 	}
 
-	// without the #
-	function deserialize(hash) {
-		if (!(hash instanceof Array) && hash.substring(0,1) != "/") {
-			hash = hash.split(",");
-			hash[0] = hash[0].split(";");
+	function current_selection(page) {
+		if (!page)
+			page = Number($("#thispage").text());
+		var min = DATE_MIN, max = DATE_MAX;
+		var selected_dates = $("#dates .activedate").map(function() {
+				return $(this).attr('id').substring(3); // ym_
+			}).get();
+		if (selected_dates.length > 0) {
+			min = Math.min.apply(null, selected_dates);
+			max = Math.max.apply(null, selected_dates);
+			select_dates(min, max); // ensure ui consistency
 		}
-		return hash;
-	}
-
-	function serialize(selection) {
-		return selection[0].join(";") + "," + selection.slice(1);
+		var selectedtags = $("#tags li").filter(".activetag").not("#alltags")
+			.map(function() {
+					return $(this).attr("id").substring(4); // tag_
+				}).get();
+		return [selectedtags, page, min, max];
 	}
 });

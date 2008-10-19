@@ -7,7 +7,7 @@ from datetime import date
 from archive.models import Issue
 from nexus.cover.models import InfoPage
 
-def __visible(x):
+def visible(x):
     return x.filter(date__lte=date.today())
 
 class Year(list):
@@ -21,7 +21,7 @@ class Year(list):
 def issue_gallery(request):
     """Thumbnail gallery of front pages."""
     MEDIA_URL = settings.MEDIA_URL
-    issues = __visible(Issue.objects)
+    issues = visible(Issue.objects)
     FOOTER = InfoPage.objects.all();
     common_css = MEDIA_URL
     years = [Year(date.year, issues.filter(date__year=date.year))

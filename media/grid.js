@@ -233,12 +233,12 @@ $(document).ready(function() {
 	};
 	State.acquire_request = function() {
 		if (State.request) {
-			dump("Aborted request " + request + "\n");
+			dump("Aborted request " + State.request + "\n");
 			State.request.abort();
 			State.request = null;
 		}
 		if (State.request2) {
-			dump("Aborted secondary request " + request + "\n");
+			dump("Aborted secondary request " + State.request + "\n");
 			State.request2.abort();
 			State.request2 = null;
 		}

@@ -4,8 +4,7 @@ $(document).ready(function() {
 	if (window.location.pathname != "/")
 		location.replace("/#" + window.location.pathname);
 
-    if ($.browser.msie)
-        function dump() {}
+	if (!dump) function dump() {}
 
 	var DATE_MIN = 100001;
 	var DATE_MAX = 300001;
@@ -49,17 +48,16 @@ $(document).ready(function() {
 					url = url.substring(url.indexOf("/"));
 				}
 			}
-			if (change_hash || IFRAME) { // ignore on IE6/7
+			if (change_hash || IFRAME) { // always do this on IE6/7
 				window.location.hash = State.hash = this.toString();
 				if (IFRAME) {
-					window["iFrame"].document.body.innerHTML = this;
-					$("#iFrame").attr("src", "/echo/" + this);
+					var doc = document.getElementById("iFrame").contentWindow.document;
+					doc.open();
+					doc.write(this);
+					doc.close();
 				}
-			} else {
+			} else
 				State.hash = window.location.hash.substring(1);
-				if (IFRAME)
-					window["iFrame"].document.body.innerHTML = this;
-			}
 			State.select_tags(selection[0]);
 			State.select_dates(selection[2], selection[3]);
 			if (url) {
@@ -161,6 +159,7 @@ $(document).ready(function() {
 		} else {
 			var have_articles = $("#results li")
 				.not("#IE6_PLACEHOLDER")
+				.not("#none-visible")
 				.map(function() {
 						return $(this).attr("id").substring(4); // art_
 					}).get();
@@ -403,7 +402,6 @@ $(document).ready(function() {
 
 	$(document).mouseup(function(event) {
 		if (selecting_dates) {
-            dump("FAFAFAFAFAFAFAAAAAAAAAAA\n");
 			selecting_dates = false;
 			State.current().enter();
 		}

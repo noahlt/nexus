@@ -1,6 +1,7 @@
 # Create your views here.
 
 from django.shortcuts import render_to_response, get_object_or_404
+from django.http import Http404
 from django.conf import settings
 from datetime import date
 from archive.models import Issue
@@ -31,5 +32,17 @@ def page_gallery(request, issue):
     """Previews of each page in the selected issue."""
     MEDIA_URL = settings.MEDIA_URL
     issue = get_object_or_404(Issue, date=issue)
+    FOOTER = InfoPage.objects.all();
+    return render_to_response("issue.html", locals())
+
+def current_page_gallery(request):
+    """Previews of each page in the selected issue."""
+    MEDIA_URL = settings.MEDIA_URL
+    for x in Issue.objects.all():
+        if x.current():
+            issue = x;
+            break
+    if not issue:
+        raise Http404
     FOOTER = InfoPage.objects.all();
     return render_to_response("issue.html", locals())

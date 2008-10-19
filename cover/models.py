@@ -201,3 +201,18 @@ class InfoPage(models.Model):
 class InfoPageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('link_name',)}
     list_display = ('title', 'link_name', 'order')
+
+class SideBarLink(models.Model):
+    link_name = models.CharField(max_length=100);
+    link_target = models.CharField(max_length=300);
+    order = models.IntegerField(default=0, help_text="Order of display in sidebar.")
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return "%s -> %s" % (self.link_name, self.link_target)
+
+class SideBarLinkAdmin(admin.ModelAdmin):
+    list_display = ('link_name', 'link_target', 'order')
+

@@ -20,15 +20,16 @@
     <li class="activetag" id="alltags"><a href="#">(Show All)</a></li>
     {% for tag in tags %}
     <li id="tag_{{ tag.slug }}"><a class="not_embeddable" href="/tag/{{ tag.slug }}">
-        <span >
+        <span>
         {{ tag.name }}
         </span>
     </a></li>
     {% endfor %}
   </ul>
   <ul id="gridtypes">
-    <li><a class="embeddable" href="/archive/{{ current_issue.date }}"><span>Current Issue</span></a></li>
-    <li><a class="embeddable" href="/archive"><span>Issue Archive</span></a></li>
+	{% for link in sidelinks %}
+    <li><a class="embeddable" href="{{ link.link_target }}">{{ link.link_name }}</a></li>
+	{% endfor %}
   </ul>
   <ul id="dates" title="drag to select a date range">
 	<!--[if lt IE 7]>

@@ -270,10 +270,6 @@ ul#dates, ul#gridtypes {
   text-align: center;
 }
 
-#gridtypes span {
-  color: white;
-}
-
 #tags {
   float: left;
 }
@@ -457,7 +453,12 @@ a.active {
   background-color: #ddd;
 }
 
+#gridtypes a {
+  color: white;
+}
+
 #gridtypes a.active {
+  color: gray !important;
   background-color: transparent;
 }
 

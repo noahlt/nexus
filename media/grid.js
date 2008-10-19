@@ -1,5 +1,12 @@
 $(document).ready(function() {
 
+	// redirect to hash id if possible for better functionality
+	if (window.location.pathname != "/")
+		location.replace("/#" + window.location.pathname);
+
+    if ($.browser.msie)
+        function dump() {}
+
 	var DATE_MIN = 100001;
 	var DATE_MAX = 300001;
 	var TAG_NORMAL = $("#alltags").width();
@@ -11,6 +18,7 @@ $(document).ready(function() {
 	// takes (#serializedstate) or (/path/to/url, [[tags],page,dmin,dmax])
 	// for the second any nulls will be replaced by default values
 	function State(arg1, sel) {
+        dump("New state created: " + arg1 + " " + sel + "\n");
 		change_hash = true;
 		if (arg1 && arg1.charAt(0) == "#") {
 			var hash = arg1.substring(1).split(FS);
@@ -20,15 +28,18 @@ $(document).ready(function() {
 			var date_min = hash[3] ? hash[3] : DATE_MIN;
 			var date_max = hash[4] ? hash[4] : DATE_MAX;
 			selection = [tags, page, date_min, date_max];
+			dump("Deserialization: " + arg1 + "\n");
 		} else {
 			url = arg1 ? arg1 : '';
 			selection = sel ? sel : EMPTY_SELECTION;
 		}
 		this.page = function(num) {
+            dump("Set page " + num + "\n");
 			selection[1] = num;
 			return this;
 		};
 		this.enter = function(link) {
+            dump("Entering: " + (link ? link.attr("href") : 'null') + "\n");
 			State.acquire_request();
 			if (link) {
 				State.activelink = link.addClass("active");
@@ -51,17 +62,20 @@ $(document).ready(function() {
 			}
 			State.select_tags(selection[0]);
 			State.select_dates(selection[2], selection[3]);
-			if (url)
+			if (url) {
 				State.load_url(url);
-			else
+				State.load_selection(selection, true);
+			} else
 				State.load_selection(selection);
 		};
 		this.toString = function() {
 			var tags = (selection && selection[0]) ? selection[0].join(FS2) : '';
 			var sel = selection ? selection.slice(1).join(FS) : '';
+			dump("Serialization: " + url + FS + tags + FS + sel + "\n");
 			return url + FS + tags + FS + sel;
 		};
 		this.keep_hash = function() {
+            dump("Hash change inhibited.\n");
 			change_hash = false;
 			return this;
 		};
@@ -72,13 +86,16 @@ $(document).ready(function() {
 	State.cached = new Object();
 	State.activelink = null;
 	State.hash = window.location.hash.substring(1);
-	State.increment_threshold = function() {
+	State.check_and_incr = function() {
+        if (State.disabled)
+            throw "ProbablyStuckInLoop";
 		var dt = new Date().getTime() - State.init_ms;
-		if (State.request_count++ / (3+(dt/1000)) > 1)
+		if (State.request_count++ / (3+(dt/1000)) > 1) {
 			alert("This script appears to be stuck in an infinite loop.\n("
 			+ State.request_count + " requests in " + (dt/1000)
 			+ " seconds)\n\nPlease report this bug.");
-		State.disabled = true;
+            State.disabled = true;
+        }
 	};
 	State.current = function() {
 		var page = Number($("#thispage").text());
@@ -98,6 +115,7 @@ $(document).ready(function() {
 		return new State(null, [selectedtags, page, min, max]);
 	};
 	State.load_url = function(url) {
+        dump("GET " + url + "\n");
 		State.request = $.ajax({
 			type: "GET",
 			url: "/ajax/embed" + url,
@@ -116,23 +134,29 @@ $(document).ready(function() {
 		});
 	};
 	// data = [tags, page, datemin, datemax]
-	State.load_selection = function(selection) {
+	State.load_selection = function(selection, just_url_update) {
 		var hit = State.cached[selection];
+        dump("getJSON\n");
 		function load(data) {
 			State.read_json_tags(data['tags']);
 			State.read_json_dates(data['dates']);
-			State.read_json_results(data['results']);
-			State.read_json_paginator(data['pages'], selection);
+			if (!just_url_update) {
+				State.read_json_results(data['results']);
+				State.read_json_paginator(data['pages'], selection);
+			}
 			if (!hit) {
 				data['results']['new'] = null;
 				State.cached[selection] = data;
 			}
-			State.grab_links();
-			$(".embed").hide();
-			$(".results").show();
-			State.release_request();
+			if (!just_url_update) {
+				State.grab_links();
+				$(".embed").hide();
+				$(".results").show();
+				State.release_request();
+			}
 		}
 		if (hit) {
+			dump("Cache hit!\n");
 			load(hit);
 		} else {
 			var have_articles = $("#results li")
@@ -140,6 +164,11 @@ $(document).ready(function() {
 				.map(function() {
 						return $(this).attr("id").substring(4); // art_
 					}).get();
+			if (just_url_update)
+			State.request2 = $.getJSON("/ajax/paginator",
+				{"tags": selection[0], "page": selection[1], "have_articles": have_articles,
+				 "date_min": selection[2], "date_max": selection[3]}, load);
+			else
 			State.request = $.getJSON("/ajax/paginator",
 				{"tags": selection[0], "page": selection[1], "have_articles": have_articles,
 				 "date_min": selection[2], "date_max": selection[3]}, load);
@@ -204,8 +233,14 @@ $(document).ready(function() {
 	};
 	State.acquire_request = function() {
 		if (State.request) {
+			dump("Aborted request " + request + "\n");
 			State.request.abort();
 			State.request = null;
+		}
+		if (State.request2) {
+			dump("Aborted secondary request " + request + "\n");
+			State.request2.abort();
+			State.request2 = null;
 		}
 		if (State.activelink) {
 			State.activelink.removeClass("active");
@@ -215,8 +250,10 @@ $(document).ready(function() {
 	};
 	// call at end of dom update
 	State.release_request = function() {
+        dump("\n");
 		window.status = "Done";
 		State.request = null;
+		State.request2 = null;
 		if (State.activelink)
 			State.activelink.removeClass("active");
 		State.activelink = null;
@@ -258,19 +295,19 @@ $(document).ready(function() {
 		return [added_some,removed_some];
 	};
 	State.grab_links = function() {
-		$(".embeddable").click(function(event) {
+		$(".embeddable").unbind().click(function(event) {
 			if (event.ctrlKey || event.shiftKey)
 				return;
 			event.preventDefault();
 			State.current().enter($(this));
 			window.scroll(0,0);
 		});
-		$("#paginator .pagelink").click(function(event) {
+		$("#paginator .pagelink").unbind().click(function(event) {
 			event.preventDefault();
 			State.current().page($(this).attr("id").substring(2)).enter();
 			window.scroll(0,0);
 		});
-		$("#goto_top").click(function() {
+		$("#goto_top").unbind().click(function() {
 			window.scroll(0,0);
 		});
 	};
@@ -281,22 +318,16 @@ $(document).ready(function() {
 	$("#tags").disableTextSelect();
 	$("#dates").disableTextSelect();
 	State.grab_links();
+
 	if (window.location.hash.length > 1) // permalink and not lone '#'
 		new State(window.location.hash).enter();
 
-	// XXX backspace-disabling redirect ok only
-	// because this runs for new windows
-	if (window.location.pathname != "/")
-		window.location = "/#" + window.location.pathname;
-
 	setInterval(function() {
-		if (State.disabled)
-			return; // polling has exceeeded threshold
 		if (window.location.hash.substring(1) != State.hash) {
-			State.increment_threshold();
+			State.check_and_incr();
 			new State(window.location.hash).keep_hash().enter();
 		} else if (IFRAME && window["iFrame"].document.body.innerHTML != State.hash) {
-			State.increment_threshold(); // no keep_hash:
+			State.check_and_incr(); // no keep_hash:
 			new State("#" + window["iFrame"].document.body.innerHTML).enter();
 		}
 	}, 100);
@@ -370,6 +401,7 @@ $(document).ready(function() {
 
 	$(document).mouseup(function(event) {
 		if (selecting_dates) {
+            dump("FAFAFAFAFAFAFAAAAAAAAAAA\n");
 			selecting_dates = false;
 			State.current().enter();
 		}

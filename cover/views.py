@@ -2,7 +2,7 @@
 import re
 import simplejson as json
 
-from cover.models import Article, Tag, Image, Author, InfoPage, Title
+from cover.models import *
 from datetime import date, timedelta
 from django.conf import settings
 from django.core.paginator import Paginator
@@ -25,7 +25,8 @@ def what_school_year(date):
 
 def frontpage(request, content=None):
     MEDIA_URL = settings.MEDIA_URL
-    FOOTER = InfoPage.objects.all();
+    FOOTER = InfoPage.objects.all()
+    sidelinks = SideBarLink.objects.all()
     tags = [ tag for tag in Tag.objects.all() if __visible(tag.article_set).count() > 0 ]
     tags.sort(key=lambda tag: __visible(tag.article_set).count(), reverse=True)
     if not content:

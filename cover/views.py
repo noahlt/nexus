@@ -23,6 +23,10 @@ def what_school_year(date):
         return date.year
     return date.year + 1
 
+def staticpage(request, slug):
+    obj = get_object_or_404(StaticPage, slug=slug)
+    return HttpResponse(obj.html)
+
 def frontpage(request, content=None):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all()

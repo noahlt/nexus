@@ -295,7 +295,9 @@ $(document).ready(function() {
 		return [added_some,removed_some];
 	};
 	State.grab_links = function() {
-		$(".embeddable").unbind().click(function(event) {
+		$("a").filter(".embeddable").unbind().filter(function() {
+			return $(this).attr("href").charAt(0) == "/";
+		}).click(function(event) {
 			if (event.ctrlKey || event.shiftKey)
 				return;
 			event.preventDefault();

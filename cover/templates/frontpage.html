@@ -28,7 +28,7 @@
   </ul>
   <ul id="gridtypes">
 	{% for link in sidelinks %}
-    <li><a class="embeddable" href="{{ link.link_target }}">{{ link.link_name }}</a></li>
+    <li><a class="embeddable" href="{{ link.link_target }}">{{ link.link_name }}{% if link.external %} <img src="/site_media/external.gif">{% endif %}</a></li>
 	{% endfor %}
   </ul>
   <ul id="dates" title="drag to select a date range">

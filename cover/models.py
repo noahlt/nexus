@@ -193,7 +193,7 @@ class InfoPage(models.Model):
     fulltext = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return "%s -> %s" % (self.link_name, self.title)
+        return "/info/%s -> %s" % (self.link_name, self.title)
 
     class Meta:
         ordering = ['order']
@@ -202,10 +202,20 @@ class InfoPageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('link_name',)}
     list_display = ('title', 'link_name', 'order')
 
+class StaticPage(models.Model):
+    slug = models.CharField(max_length=20)
+    html = models.TextField()
+
+    def __str__(self):
+        return "/static/%s" % self.slug
+
 class SideBarLink(models.Model):
     link_name = models.CharField(max_length=100);
     link_target = models.CharField(max_length=300);
     order = models.IntegerField(default=0, help_text="Order of display in sidebar.")
+
+    def external(self):
+        return self.link_target[0] != '/'
 
     class Meta:
         ordering = ['order']

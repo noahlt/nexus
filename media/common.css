@@ -326,6 +326,7 @@ ul#dates, ul#gridtypes {
 
 .goto_top {
   text-align: right;
+  cursor: pointer;
 }
 
 #content {

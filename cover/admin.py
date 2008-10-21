@@ -1,5 +1,5 @@
 from django.contrib import admin
-from cover.models import *
+from models import *
 
 admin.site.register(Title, TitleAdmin)
 admin.site.register(Author, AuthorAdmin)

@@ -9,6 +9,12 @@ JOIN_PATH = 'cache/pdf_joins/'
 THUMBS_PATH = 'cache/pdf_thumbs/'
 BURST_PATH = 'pdf_burst/'
 
+def nameof(path):
+    """Returns file basename stripped of file extension."""
+    base = basename(path)
+    index = base.rfind('.')
+    return base[:index] if index > 0 else base
+
 # This is only 2-3x slower than evince for short pdfs.
 # However, do not ***EVER*** feed it multi-page pdfs if you fear the OOM killer.
 def __imagemagick_thumbnailer(input, output, size):
@@ -49,7 +55,7 @@ def burst_pdf(input):
     output_dir = settings.MEDIA_ROOT + BURST_PATH
     if not exists(output_dir):
         makedirs(output_dir)
-    base = basename(input)[0:-4]
+    base = nameof(input)
     output_format = '%s+%%03d.pdf' % (output_dir + base)
     call(('pdftk', input, 'burst', 'output', output_format))
     try: # pdftk insists on spitting this out
@@ -95,7 +101,7 @@ def pdf_to_thumbnail(input, size):
     Takes an absolute path to a pdf as input.
     Tries very hard to return something sane."""
     suffix = '@%i.png' % size
-    name = basename(input)[0:-4]
+    name = nameof(input)
     path = THUMBS_PATH + name + suffix
     output = settings.MEDIA_ROOT + path
     url = settings.MEDIA_URL + path

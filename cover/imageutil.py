@@ -3,6 +3,7 @@ import re
 
 from os.path import basename, exists, getmtime, dirname
 from os import makedirs
+from nexus.archive.pdfutil import nameof
 from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
@@ -13,7 +14,7 @@ THUMBS_PATH = 'cache/image_thumbs/'
 
 def resize(input, max_size):
     name = '@%ix%i.png' % max_size
-    name = basename(input)[0:-4] + name
+    name = nameof(input) + name
     relpath = THUMBS_PATH + name
     output_file = settings.MEDIA_ROOT + relpath
     output_url = settings.MEDIA_URL + relpath

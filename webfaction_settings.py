@@ -14,7 +14,7 @@ MANAGERS = ADMINS
 DATABASE_ENGINE = 'postgresql'
 DATABASE_NAME = 'nexus'
 DATABASE_USER = 'nexus'
-DATABASE_PASSWORD = open('/home/nexus/etc/DATABASE_PASSWORD').read()
+DATABASE_PASSWORD = open('/home/nexus/.DATABASE_PASSWORD').read()
 DATABASE_HOST = ''
 DATABASE_PORT = ''
 TIME_ZONE = 'America/Los_Angeles'
@@ -23,8 +23,8 @@ SITE_ID = 1
 USE_I18N = True
 MEDIA_ROOT = '/home/nexus/webapps/nexus_media/'
 MEDIA_URL = '/media/'
-ADMIN_MEDIA_PREFIX = '/media/admin/'
-SECRET_KEY = open('/home/nexus/etc/SECRET_KEY').read()
+ADMIN_MEDIA_PREFIX = '/admin_media/'
+SECRET_KEY = open('/home/nexus/.SECRET_KEY').read()
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',

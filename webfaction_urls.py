@@ -42,9 +42,3 @@ urlpatterns = patterns('',
     (r'^archive/current/$', wrap(current_page_gallery)),
     (r'^archive/(\d{4}-\d{2}-\d{2})/$', wrap(page_gallery)),
 )
-
-# TODO try making static apps work later
-if settings.DEBUG:
-    urlpatterns += patterns('',
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-    )

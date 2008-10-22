@@ -15,9 +15,12 @@ def nameof(path):
     index = base.rfind('.')
     return base[:index] if index > 0 else base
 
+def mktemp(x):
+    return dirname(x) + "/swp-" + basename(x)
+
 # This is only 2-3x slower than evince for short pdfs.
 # However, do not ***EVER*** feed it multi-page pdfs if you fear the OOM killer.
-def __imagemagick_thumbnailer(input, output, size):
+def __pythonmagick_thumbnailer(input, output, size):
     """Imagemagick backend for thumbnailing a PDF."""
     input, output = input.encode(), output.encode() # c++ signatures hate unicode
     pdf = PythonMagick.Image(input)
@@ -25,19 +28,34 @@ def __imagemagick_thumbnailer(input, output, size):
     pdf.scale('%ix%i' % (pdf.size().width()*scale, pdf.size().height()*scale))
     pdf.write(output)
 
-def __evince_thumbnailer(input, output, size):
-    """Evince backend for thumbnailing a PDF."""
-    call(('evince-thumbnailer', '-s', str(size), input, output))
-    image = Image.open(output) # resize AGAIN to produce consistent sizes
+# almost identical to pythonmagick thumbnailer
+def __imagemagick_thumbnailer(input, output, size):
+    """Imagemagick backend for thumbnailing a PDF."""
+    swap = mktemp(output)
+    call(('convert', input, swap))
+    image = Image.open(swap) # resize AGAIN to produce consistent sizes
     image.thumbnail((size,size), Image.ANTIALIAS)
     image.save(output, 'PNG')
+    remove(swap)
+
+def __evince_thumbnailer(input, output, size):
+    """Evince backend for thumbnailing a PDF."""
+    swap = mktemp(output)
+    call(('evince-thumbnailer', '-s', str(size), input, swap))
+    image = Image.open(swap) # resize AGAIN to produce consistent sizes
+    image.thumbnail((size,size), Image.ANTIALIAS)
+    image.save(output, 'PNG')
+    remove(swap)
 
 try:
     call(('evince-thumbnailer', devnull, devnull))
     __thumbnail_backend = __evince_thumbnailer
 except OSError:
-    import PythonMagick
-    __thumbnail_backend = __imagemagick_thumbnailer
+    try:
+        import PythonMagick
+        __thumbnail_backend = __pythonmagick_thumbnailer
+    except ImportError:
+        __thumbnail_backend = __imagemagick_thumbnailer
 
 def __pdftk_burst(input, output_dir):
     base = nameof(input)

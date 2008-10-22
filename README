@@ -4,5 +4,5 @@ Dependencies:
 	python-simplejson
 	python-markdown
 	python-pysqlite2 (or similar if not using sqlite)
-	evince OR python-magic (evince faster)
-	pdftk OR python-pypdf (pdftk faster)
+	evince OR python-magic OR just imagemagick (evince much faster)
+	pdftk OR python-pypdf (both sufficiently fast; pdftk faster)

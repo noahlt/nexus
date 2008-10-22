@@ -42,3 +42,9 @@ urlpatterns = patterns('',
     (r'^archive/current/$', wrap(current_page_gallery)),
     (r'^archive/(\d{4}-\d{2}-\d{2})/$', wrap(page_gallery)),
 )
+
+# TODO get static apps working
+urlpatterns += patterns('',
+(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/home/nexus/webapps/site_media'}),
+(r'^admin_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/home/nexus/webapps/admin_media'}),
+)

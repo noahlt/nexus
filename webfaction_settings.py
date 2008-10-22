@@ -1,6 +1,6 @@
 import os
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 CACHE_BACKEND = 'dummy:///'
 #CACHE_BACKEND = 'file:///home/nexus/django_cache'
@@ -21,7 +21,7 @@ TIME_ZONE = 'America/Los_Angeles'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
 USE_I18N = True
-MEDIA_ROOT = '/home/nexus/webapps/nexus_media/'
+MEDIA_ROOT = '/home/nexus/webapps/site_media/'
 MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/admin_media/'
 SECRET_KEY = open('/home/nexus/.SECRET_KEY').read()

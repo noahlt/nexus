@@ -1,0 +1,61 @@
+import os
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+CACHE_BACKEND = 'dummy:///'
+#CACHE_BACKEND = 'file:///home/nexus/var/django_cache'
+
+ADMINS = (
+    # ('Your Name', 'your_email@domain.com'),
+)
+
+MANAGERS = ADMINS
+
+DATABASE_ENGINE = 'postgresql'
+DATABASE_NAME = 'nexus'
+DATABASE_USER = 'nexus'
+DATABASE_PASSWORD = open('/home/nexus/etc/DATABASE_PASSWORD').read()
+DATABASE_HOST = ''
+DATABASE_PORT = ''
+TIME_ZONE = 'America/Los_Angeles'
+LANGUAGE_CODE = 'en-us'
+SITE_ID = 1
+USE_I18N = True
+MEDIA_ROOT = '/home/nexus/webapps/nexus_media/'
+MEDIA_URL = '/media/'
+ADMIN_MEDIA_PREFIX = '/media/admin/'
+SECRET_KEY = open('/home/nexus/etc/SECRET_KEY').read()
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.load_template_source',
+    'django.template.loaders.app_directories.load_template_source',
+    'django.template.loaders.eggs.load_template_source',
+)
+
+MIDDLEWARE_CLASSES = (
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.doc.XViewMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
+)
+
+ROOT_URLCONF = 'nexus.webfaction_urls'
+
+TEMPLATE_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'archive/templates').replace('\\','/'),
+    os.path.join(os.path.dirname(__file__), 'cover/templates').replace('\\','/'),
+    os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
+)
+
+INSTALLED_APPS = (
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.webdesign',
+    'django.contrib.markup',
+    'nexus.cover',
+    'nexus.archive',
+)

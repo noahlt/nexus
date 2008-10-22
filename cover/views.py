@@ -127,7 +127,7 @@ def tag_data(articles, selected_tags, min_date, max_date):
                 alltags[tag] = 1
     total = articles.count()
     ret = [(tag.slug, tag in selected_tags or alltags[tag] != total) for tag in alltags.keys()]
-    cache.set(key)
+    cache.set(key, ret)
     return ret
 
 def dates_of(articles, tags):

@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from os.path import basename
@@ -6,6 +7,13 @@ from pdfutil import pdf_to_thumbnail, burst_pdf, validate_pdf, joined_pdfs
 from datetime import date
 
 PDF_PATH = 'pdf_orig/'
+FILE_PATH = 'upload/'
+
+class File(models.Model):
+    file = models.FileField(upload_to=FILE_PATH)
+
+    def __str__(self):
+        return "%s%s" % (settings.MEDIA_URL, self.file)
 
 class Page(models.Model):
     pdf = models.FileField(upload_to=PDF_PATH)

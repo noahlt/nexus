@@ -361,8 +361,8 @@ $(document).ready(function() {
 
 	$("#dates h3").click(function(event) {
         event.preventDefault();
-		var min = ($(this).text() - 1) + "08";
-		var max = $(this).text() + "07";
+		var min = ($(this).text().substring(5) - 1) + "08";
+		var max = $(this).text().substring(5) + "07"; // year_
 		var some_newly_selected = false;
 		if (!State.select_dates(min, max)[0])
 			$("#dates li").removeClass("activedate");

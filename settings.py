@@ -5,6 +5,7 @@ import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 CACHE_BACKEND = 'dummy:///'
+#CACHE_BACKEND = 'file:///tmp/django_cache'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),

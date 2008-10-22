@@ -3,7 +3,7 @@ from django.conf import settings
 from os.path import basename, dirname, exists, getmtime
 from os import makedirs, remove, devnull
 from django.forms import ValidationError
-from subprocess import call
+from subprocess import call, PIPE
 
 JOIN_PATH = 'cache/pdf_joins/'
 THUMBS_PATH = 'cache/pdf_thumbs/'
@@ -20,7 +20,6 @@ def nameof(path):
 def __imagemagick_thumbnailer(input, output, size):
     """Imagemagick backend for thumbnailing a PDF."""
     input, output = input.encode(), output.encode() # c++ signatures hate unicode
-    import PythonMagick
     pdf = PythonMagick.Image(input)
     scale = size / float(max(pdf.size().height(), pdf.size().width()))
     pdf.scale('%ix%i' % (pdf.size().width()*scale, pdf.size().height()*scale))
@@ -37,24 +36,10 @@ try:
     call(('evince-thumbnailer', devnull, devnull))
     __thumbnail_backend = __evince_thumbnailer
 except OSError:
+    import PythonMagick
     __thumbnail_backend = __imagemagick_thumbnailer
 
-def validate_pdf(in_memory_uploaded_file):
-    ext_ok = in_memory_uploaded_file.name.endswith('.pdf')
-    magic_ok = in_memory_uploaded_file.chunks().next().startswith('%PDF')
-    if magic_ok and not ext_ok:
-        raise ValidationError("Please rename that file so it has a .pdf extension")
-    if not magic_ok and ext_ok:
-        raise ValidationError("That file is only pretending to be a PDF.")
-    elif not magic_ok and not ext_ok:
-        raise ValidationError("That is not a PDF file.")
-
-def burst_pdf(input):
-    """Creates new files for all input pages and returns their relative paths.
-    Takes an absolute path to a pdf as input."""
-    output_dir = settings.MEDIA_ROOT + BURST_PATH
-    if not exists(output_dir):
-        makedirs(output_dir)
+def __pdftk_burst(input, output_dir):
     base = nameof(input)
     output_format = '%s+%%03d.pdf' % (output_dir + base)
     call(('pdftk', input, 'burst', 'output', output_format))
@@ -73,6 +58,67 @@ def burst_pdf(input):
         i += 1
     return results
 
+def __pypdf_burst(input, output_dir):
+    base = nameof(input)
+    reader = PdfFileReader(file(input, 'rb'))
+    results = []
+    i = 0
+    while i < reader.getNumPages():
+        writer = PdfFileWriter()
+        writer.addPage(reader.getPage(i))
+        path = '%s+%03d.pdf' % (base, i+1)
+        outputStream = file(output_dir + path, 'wb')
+        writer.write(outputStream)
+        outputStream.close()
+        results.append(BURST_PATH + path)
+        i += 1
+    return results
+
+def __pdftk_join(inputs, output):
+    try:
+        call(['pdftk'] + inputs + ['cat', 'output', output])
+    except EnvironmentError:
+        pass
+
+def __pypdf_join(inputs, output):
+    writer = PdfFileWriter()
+    outputStream = file(output, 'wb')
+    for input in inputs:
+        reader = PdfFileReader(file(input, 'rb'))
+        i = 0
+        while i < reader.getNumPages():
+            writer.addPage(reader.getPage(i))
+            i += 1
+    writer.write(outputStream)
+    outputStream.close()
+
+try:
+    call('pdftk', stdout=PIPE)
+    __join_backend = __pdftk_join
+    __burst_backend = __pdftk_burst
+except OSError:
+    from pyPdf import PdfFileWriter, PdfFileReader
+    __join_backend = __pypdf_join
+    __burst_backend = __pypdf_burst
+
+def validate_pdf(in_memory_uploaded_file):
+    ext_ok = in_memory_uploaded_file.name.endswith('.pdf')
+    magic_ok = in_memory_uploaded_file.chunks().next().startswith('%PDF')
+    if magic_ok and not ext_ok:
+        raise ValidationError("Please rename that file so it has a .pdf extension")
+    if not magic_ok and ext_ok:
+        raise ValidationError("That file is only pretending to be a PDF.")
+    elif not magic_ok and not ext_ok:
+        raise ValidationError("That is not a PDF file.")
+
+def burst_pdf(input):
+    """Creates new files for all input pages and returns their relative paths.
+    Takes an absolute path to a pdf as input."""
+    output_dir = settings.MEDIA_ROOT + BURST_PATH
+    if not exists(output_dir):
+        makedirs(output_dir)
+    return __burst_backend(input, output_dir)
+
 # it takes only a few seconds to join hundreds of pages
 def joined_pdfs(input_models):
     """Returns url to cached union of the inputs, generating one if not available.
@@ -90,10 +136,7 @@ def joined_pdfs(input_models):
     if not exists(dirname(output)):
         makedirs(dirname(output))
     inputs = [model.pdf.path for model in input_models]
-    try:
-        call(['pdftk'] + inputs + ['cat', 'output', output])
-    except EnvironmentError:
-        pass
+    __join_backend(inputs, output)
     return url
 
 def pdf_to_thumbnail(input, size):

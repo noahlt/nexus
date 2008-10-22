@@ -112,7 +112,8 @@ def authorpage(request, slug):
     return render_to_response('author.html', locals())
 
 def tag_data(articles, selected_tags, min_date, max_date):
-    cached = cache.get(str((selected_tags, min_date, max_date)))
+    key = 'tag_data' + str((selected_tags, min_date, max_date))
+    cached = cache.get(key)
     if cached:
         return cached
     alltags = {}
@@ -124,15 +125,16 @@ def tag_data(articles, selected_tags, min_date, max_date):
                 alltags[tag] = 1
     total = articles.count()
     ret = [(tag.slug, tag in selected_tags or alltags[tag] != total) for tag in alltags.keys()]
-    cache.set(str((selected_tags, min_date, max_date)), ret)
+    cache.set(key)
     return ret
 
 def dates_of(articles, tags):
-    cached = cache.get(str(tags))
+    key = 'date_of' + str(tags)
+    cached = cache.get(key)
     if cached:
         return cached
     ret = list(set([article.date.strftime('%Y%m') for article in articles.all()]))
-    cache.set(str(tags), ret)
+    cache.set(key, ret)
     return ret
 
 def parse_date(input):
@@ -154,11 +156,12 @@ def wrap(function):
     return wrapped
 
 def snippet(article):
-    cached = cache.get(str(article))
+    key = 'snippet' + str(article)
+    cached = cache.get(key)
     if cached:
         return cached
     ret = get_template('article_snippet.html').render(Context({'article': article}))
-    cache.set(str(article), ret)
+    cache.set(key, ret)
     return ret
 
 def paginate(request):

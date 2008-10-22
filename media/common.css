@@ -155,6 +155,7 @@ h2 {
 }
 
 #embedded_content h2 {
+  overflow: hidden;
   margin: 0;
   padding: 0;
 }
@@ -312,6 +313,7 @@ ul#dates, ul#gridtypes {
   border: 1px solid #bbb;
   border-top: 0;
   color: #222;
+  overflow: hidden;
 }
 
 #results, #paginator, #back_button {
@@ -491,6 +493,7 @@ a.active {
 
 .yearblock {
   margin-bottom: 1em;
+  overflow:hidden;
 }
 
 .shadow {

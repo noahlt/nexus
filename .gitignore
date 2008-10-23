@@ -2,6 +2,7 @@
 *.db
 *.pyc
 *.pyo
+*.swp
 *~
 .hidden
 .project

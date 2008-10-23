@@ -24,7 +24,7 @@ class Page(models.Model):
         self.calculate_thumbnail_url()
 
     def calculate_thumbnail_url(self):
-        return pdf_to_thumbnail(self.pdf.path, 430)
+        return pdf_to_thumbnail(self.pdf.path, 400)
 
     def __str__(self):
         try:
@@ -81,7 +81,7 @@ class Issue(models.Model):
         try:
             the_actual_pdf = self.pdf_set.all()[0]
             the_page = the_actual_pdf.page_set.all()[0]
-            return pdf_to_thumbnail(the_page.pdf.path, 275)
+            return pdf_to_thumbnail(the_page.pdf.path, 256)
         except IndexError: # someone deleted all the pages
             return None
 

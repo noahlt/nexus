@@ -488,7 +488,8 @@ a.active {
 
 .yearblock {
   margin-bottom: 1em;
-  overflow:hidden;
+  overflow: hidden;
+  height: 100%;
 }
 
 .shadow {

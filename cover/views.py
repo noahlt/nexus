@@ -15,6 +15,12 @@ from models import *
 
 PAGE_SIZE = 10
 
+class SchoolYear(list):
+    def __init__(self, year):
+        self.year = year;
+    def __str__(self):
+        return '%s-%s' % (self.year-1, self.year)
+
 def visible(x):
     return x.filter(date__lte=date.today())
 
@@ -39,21 +45,12 @@ def frontpage(request, content=None):
         current_issue = visible(Issue.objects)[0]
     except IndexError:
         current_issue = False
-    # `dates` looks like this:
-    #   [[2009, date, date, date], [2008, date, date, date]]
-    class Schoolyear(list):
-        def __init__(self, year, dates):
-            self.year = year
-            self.dates = dates
-        def __str__(self):
-            return '%s-%s' % (self.year-1, self.year)
     dates = []
     for date in visible(Article.objects).dates('date', 'month', order='DESC'):
         year = what_school_year(date)
         if not dates or dates[-1].year != year:
-            dates.append(Schoolyear(year, [date]))
-        else:
-            dates[-1].dates.append(date)
+            dates.append(SchoolYear(year))
+        dates[-1].append(date)
     return HttpResponse(get_template('frontpage.html').render(Context(locals())))
 
 def imageview(request, slug):

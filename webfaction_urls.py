@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root),
 
     (r'^$', frontpage),
-    (r'^echo/(.*)', lambda request,x: HttpResponse(x)),
+    (r'^null/', lambda x: HttpResponse('')),
     (r'^ajax/embed/(\d{4})/(\d{2})/([-_a-z0-9]+)/$', articlepage),
     (r'^ajax/embed/author/([-_a-z0-9]+)$', authorpage),
     (r'^ajax/embed/image/([-_a-z0-9]+)/$', imageview),

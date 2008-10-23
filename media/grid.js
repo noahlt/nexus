@@ -325,7 +325,7 @@ $(document).ready(function() {
 		if (window.location.hash.substring(1) != State.hash) {
 			State.check_and_incr();
 			new State(window.location.hash).keep_hash().enter();
-		} else if (IFRAME && window["iFrame"].document.body.innerHTML != State.hash) {
+		} else if (IFRAME && window["iFrame"].document.body && window["iFrame"].document.body.innerHTML != State.hash) {
 			State.check_and_incr(); // no keep_hash:
 			new State("#" + window["iFrame"].document.body.innerHTML).enter();
 		}

@@ -30,7 +30,7 @@ def frontpage(request, content=None):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all()
     sidelinks = SideBarLink.objects.all()
-    tags = [ tag for tag in Tag.objects.all() if visible(tag.article_set).count() > 0 ]
+    tags = [ tag for tag in Tag.objects.all()[0:20] if visible(tag.article_set).count() > 0 ]
     tags.sort(key=lambda tag: visible(tag.article_set).count(), reverse=True)
     if not content:
         paginator = Paginator(visible(Article.objects), PAGE_SIZE)
@@ -45,6 +45,8 @@ def frontpage(request, content=None):
         def __init__(self, year, dates):
             self.year = year
             self.dates = dates
+        def __str__(self):
+            return '%s-%s' % (self.year-1, self.year)
     dates = []
     for date in visible(Article.objects).dates('date', 'month', order='DESC'):
         year = what_school_year(date)
@@ -125,7 +127,7 @@ def tag_data(articles, selected_tags, min_date, max_date):
                 alltags[tag] = 1
     total = articles.count()
     ret = [(tag.slug, tag in selected_tags or alltags[tag] != total) for tag in alltags.keys()]
-    cache.set(key)
+    cache.set(key, ret)
     return ret
 
 def dates_of(articles, tags):

@@ -3,20 +3,9 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404
 from django.conf import settings
-from datetime import date
 from models import Issue
 from nexus.cover.models import InfoPage
-
-def visible(x):
-    return x.filter(date__lte=date.today())
-
-class Year(list):
-    def __init__(self, year, issues):
-        self.year = year
-        self.extend(issues)
-
-    def __str__(self):
-        return super.__str__(self)
+from nexus.cover.views import visible, what_school_year, SchoolYear
 
 def issue_gallery(request):
     """Thumbnail gallery of front pages."""
@@ -24,8 +13,12 @@ def issue_gallery(request):
     issues = visible(Issue.objects)
     FOOTER = InfoPage.objects.all();
     common_css = MEDIA_URL
-    years = [Year(date.year, issues.filter(date__year=date.year))
-            for date in issues.dates('date', 'year')]
+    years = []
+    for issue in issues:
+        year = what_school_year(issue.date)
+        if not years or years[-1].year != year:
+            years.append(SchoolYear(year))
+        years[-1].append(issue)
     return render_to_response("gallery.html", locals())
 
 def page_gallery(request, issue):

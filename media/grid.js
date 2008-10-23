@@ -50,7 +50,7 @@ $(document).ready(function() {
 			}
 			if (change_hash || IFRAME) { // always do this on IE6/7
 				window.location.hash = State.hash = this.toString();
-				if (IFRAME) {
+				if (change_hash && IFRAME) {
 					var doc = document.getElementById("iFrame").contentWindow.document;
 					doc.open();
 					doc.write(this);
@@ -88,7 +88,7 @@ $(document).ready(function() {
         if (State.disabled)
             throw "ProbablyStuckInLoop";
 		var dt = new Date().getTime() - State.init_ms;
-		if (State.request_count++ / (3+(dt/1000)) > 1) {
+		if (State.request_count++ / (10+(dt/1000)) > 1) {
 			alert("This script appears to be stuck in an infinite loop.\n("
 			+ State.request_count + " requests in " + (dt/1000)
 			+ " seconds)\n\nPlease report this bug.");
@@ -326,8 +326,8 @@ $(document).ready(function() {
 			State.check_and_incr();
 			new State(window.location.hash).keep_hash().enter();
 		} else if (IFRAME && window["iFrame"].document.body && window["iFrame"].document.body.innerHTML != State.hash) {
-			State.check_and_incr(); // no keep_hash:
-			new State("#" + window["iFrame"].document.body.innerHTML).enter();
+			State.check_and_incr();
+			new State("#" + window["iFrame"].document.body.innerHTML).keep_hash().enter();
 		}
 	}, 100);
 

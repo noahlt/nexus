@@ -9,7 +9,7 @@ from django.template import Context
 from django.template.loader import get_template
 
 THUMB_MAX_SIZE = (100,100)
-ARTICLE_MAX_SIZE = (590,2048)
+ARTICLE_MAX_SIZE = (530,2048)
 THUMBS_PATH = 'cache/image_thumbs/'
 
 def resize(input, max_size):

@@ -179,10 +179,7 @@ h3 {
   margin-right: 2em;
   padding: 0 1em 0 0;
   border: 0;
-  max-width: 1013px;
-  /* IE6 below */
-  width: auto !important;
-  width: 1013px;
+  width: 980px;
 }
 
 #grid li {
@@ -289,8 +286,9 @@ ul#dates, ul#gridtypes {
   float: right;
   clear: right;
   position: relative;
-  left: 2em;
+  left: -1em;
   margin-top: 1em;
+  margin-right: 0;
 }
 
 #signed {
@@ -307,8 +305,8 @@ ul#dates, ul#gridtypes {
 }
 
 #centercolumn {
-  margin-left: 205px;
-  margin-right: 168px;
+  margin-left: 191px;
+  width: 580px;
   background-color: white;
   border: 1px solid #bbb;
   border-top: 0;
@@ -351,10 +349,7 @@ ul#dates, ul#gridtypes {
   padding-left: 1em;
   padding-right: 1em;
   clear: both;
-  max-width: 1030px;
-  /* IE6 below */
-  width: auto !important;
-  width: 1030px;
+  width: 960px;
 }
 
 #footer a {
@@ -387,7 +382,7 @@ ul#dates, ul#gridtypes {
 }
 
 #tags, #dates, #gridtypes {
-  width: 184px;
+  width: 170px;
 }
 
 .useless {

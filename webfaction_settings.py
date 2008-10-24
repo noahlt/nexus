@@ -2,8 +2,8 @@ import os
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-CACHE_BACKEND = 'dummy:///'
-#CACHE_BACKEND = 'file:///home/nexus/django_cache'
+#CACHE_BACKEND = 'dummy:///'
+CACHE_BACKEND = 'file:///home/nexus/django_cache'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -40,7 +40,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
-ROOT_URLCONF = 'nexus.webfaction_urls'
+ROOT_URLCONF = 'nexus.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'archive/templates').replace('\\','/'),

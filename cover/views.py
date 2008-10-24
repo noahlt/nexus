@@ -10,6 +10,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context, Template
 from django.template.loader import get_template
+from django.views.decorators.cache import never_cache
 from imageutil import ImageFormatter
 from models import *
 
@@ -153,6 +154,12 @@ def wrap(function):
     def wrapped(*args):
         return frontpage(args[0], function(*args).content)
     return wrapped
+
+def test(function):
+    @never_cache
+    def minimal_wrap(*args):
+        return render_to_response('minimal.html', Context({'MEDIA_URL':settings.MEDIA_URL,'content':function(*args).content}))
+    return minimal_wrap
 
 def snippet(article):
     key = 'snippet' + str(article)

@@ -1,0 +1,14 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html> <head>
+<title>The Nexus</title>
+<link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css">
+<link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css">
+</head>
+
+<body>
+<div id="grid">
+  <div id="centercolumn">
+  <div id="embedded_content" class="embed">{% if content %}{{ content|safe }}{% endif %}</div>
+  </div>
+</body> </html>

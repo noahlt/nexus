@@ -42,7 +42,19 @@ urlpatterns = patterns('',
     (r'^archive/$', wrap(issue_gallery)),
     (r'^archive/current/$', wrap(current_page_gallery)),
     (r'^archive/(\d{4}-\d{2}-\d{2})/$', wrap(page_gallery)),
+
+    (r'^test/(\d{4})/(\d{2})/([-_a-z0-9]+).*$', test(articlepage)),
+    (r'^test/image/([-_a-z0-9]+).*$', test(imageview)),
+    (r'^test/tag/([-_a-z0-9]+).*$', test(tagpage)),
+    (r'^test/author/([-_a-z0-9]+).*$', test(authorpage)),
+    (r'^test/info/([-_a-z0-9]+).*$', test(infopage)),
+    (r'^test/info/staff.*$', test(staff_auto_infopage)),
+    (r'^test/static/([-_a-z0-9]+).*$', test(staticpage)),
+    (r'^test/archive/(\d{4}-\d{2}-\d{2}).*$', test(page_gallery)),
+    (r'^test/archive/current.*$', test(current_page_gallery)),
+    (r'^test/archive.*$', test(issue_gallery)),
 )
-urlpatterns += patterns('',
-    (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-)
+if settings.DEBUG: # not in production!
+    urlpatterns += patterns('',
+        (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    )

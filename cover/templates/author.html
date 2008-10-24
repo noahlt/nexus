@@ -1,4 +1,5 @@
 {% extends "basic.html" %}
+{% load markup %}
 
 {% block content %}
 <h2>{{ author }}
@@ -13,6 +14,7 @@
 	</span>
 </h2>
 	{% if author.article_set.all %}
+		{{ author.bio|markdown }}
 		<ul id="sub_results" style="margin:0">
 			{% for article in author.article_set.all %}
             {% if article.current %}

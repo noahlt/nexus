@@ -1,9 +1,5 @@
 $(document).ready(function() {
 
-	// redirect to hash id if possible for better functionality
-	if (window.location.pathname != "/")
-		location.replace("/#" + window.location.pathname);
-
 	if (!dump) function dump() {}
 
 	var DATE_MIN = 100001;
@@ -310,6 +306,10 @@ $(document).ready(function() {
 			window.scroll(0,0);
 		});
 	};
+
+	// redirect to hash id if possible for better functionality
+	if (window.location.pathname != "/")
+		location.replace("/#" + new State(window.location.pathname));
 
 	var selecting_dates = false;
 	var down = false;

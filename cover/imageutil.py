@@ -13,7 +13,7 @@ ARTICLE_MAX_SIZE = (530,2048)
 THUMBS_PATH = 'cache/image_thumbs/'
 
 def resize(input, max_size):
-    name = '@%ix%i.png' % max_size
+    name = '@%ix%i.jpg' % max_size
     name = nameof(input) + name
     relpath = THUMBS_PATH + name
     output_file = settings.MEDIA_ROOT + relpath
@@ -24,7 +24,7 @@ def resize(input, max_size):
         image = Image.open(input)
         image = image.convert('RGBA')
         image.thumbnail(max_size, Image.ANTIALIAS)
-        image.save(output_file)
+        image.save(output_file, 'JPEG', quality=85)
     return output_url
 
 class ImageFormatter():

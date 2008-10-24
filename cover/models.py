@@ -1,3 +1,4 @@
+import re
 from datetime import date
 from django import forms
 from django.conf import settings
@@ -6,6 +7,7 @@ from django.db import models
 from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
 from nexus.archive.models import Issue
 
+NEWLINE = re.compile('([^\n])\n([^\n])')
 IMAGE_PATH = 'image_orig/'
 ARTICLE_TEMPLATE = """{% extends "article.html" %}
 
@@ -159,6 +161,9 @@ class Article(models.Model):
     custom_template = models.ForeignKey(
         CustomArticleTemplate, blank=True, null=True)
 
+    def text(self):
+        return NEWLINE.sub(r'\1  \n\2', self.fulltext)
+
     def current(self):
         return self.date <= date.today()
 
@@ -191,6 +196,9 @@ class InfoPage(models.Model):
     order = models.IntegerField(default=0, help_text="Order of display in footer.")
     show_in_footer = models.BooleanField(default=True)
     fulltext = models.TextField(blank=True, null=True)
+
+    def text(self):
+        return NEWLINE.sub(r'\1  \n\2', self.fulltext)
 
     def __str__(self):
         return "/info/%s -> %s" % (self.link_name, self.title)

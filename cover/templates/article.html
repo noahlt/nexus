@@ -16,7 +16,7 @@
 
 {% block content %}
 	<br style="font-size: 5pt">
-    {{ article.fulltext|markdown }}
+    {{ article.text|markdown }}
 {% endblock %}
 
 {% block extra %}
@@ -27,7 +27,7 @@
 	{% if article.printed %}
 		<p>
 			Article printed
-			<a href="/archive/{{ article.printed.date }}">
+			<a class="embeddable" href="/archive/{{ article.printed.date }}">
 				{{ article.printed.date|date:"F d, Y" }}.
 			</a>
 		</p>

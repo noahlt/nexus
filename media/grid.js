@@ -321,11 +321,17 @@ $(document).ready(function() {
 	if (window.location.hash.length > 1) // permalink and not lone '#'
 		new State(window.location.hash).enter();
 
+	function different(framehtml, hash) {
+		if (framehtml == hash || (!framehtml && hash == new State()))
+			return false;
+		return true;
+	}
+
 	setInterval(function() {
 		if (window.location.hash.substring(1) != State.hash) {
 			State.check_and_incr();
 			new State(window.location.hash).keep_hash().enter();
-		} else if (IFRAME && window["iFrame"].document.body && window["iFrame"].document.body.innerHTML != State.hash) {
+		} else if (IFRAME && window["iFrame"].document.body && different(window["iFrame"].document.body.innerHTML, State.hash)) {
 			State.check_and_incr();
 			new State("#" + window["iFrame"].document.body.innerHTML).keep_hash().enter();
 		}

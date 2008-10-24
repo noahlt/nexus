@@ -52,7 +52,6 @@ noscript {
 .beta {
   font-size: 12pt;
   text-transform: uppercase;
-  letter-spacing: 0;
   position: relative;
   top: 9pt;
   left: 5pt;
@@ -72,7 +71,6 @@ noscript {
   font-family: sans;
   text-transform: lowercase;
   font-size: 9pt;
-  letter-spacing: 0;
   font-weight: normal;
   font-style: italic;
 }
@@ -80,7 +78,6 @@ noscript {
 .subauthor {
   font-family: sans;
   font-size: 10pt;
-  letter-spacing: 0;
   font-weight: normal;
 }
 
@@ -141,7 +138,6 @@ h2 {
   font-family: helvetica;
   font-size: 16pt;
   font-weight: bold;
-  letter-spacing: 1pt;
   text-align: center;
   padding-top: 1em;
   margin-bottom: .5em;
@@ -162,21 +158,19 @@ h3 {
   font-family: helvetica;
   font-size: 14pt;
   font-weight: bold;
-  letter-spacing: 1pt;
   text-align: left;
   padding-top: .5em;
+  letter-spacing: 1px;
 }
 
 #grid {
-  background-repeat: repeat-y;
-  margin-right: 2em;
-  padding: 0 1em 0 0;
+  padding: 0;
   border: 0;
   width: 980px;
 }
 
 #grid li {
-  border:1px solid #BBB;
+  border: 1px solid #BBB;
   font-size: 12pt;
   padding: 0.3em;
 }
@@ -298,7 +292,8 @@ ul#dates, ul#gridtypes {
 }
 
 #centercolumn {
-  margin-left: 191px;
+  position: relative;
+  left: 24px;
   width: 580px;
   background-color: white;
   border: 1px solid #bbb;
@@ -338,11 +333,11 @@ ul#dates, ul#gridtypes {
   text-align: center;
   padding-bottom: 2em;
   font-size: 8pt;
-  letter-spacing: 3pt;
+  letter-spacing: 2.5pt;
   padding-left: 1em;
   padding-right: 1em;
   clear: both;
-  width: 960px;
+  width: 958px;
 }
 
 #footer a {
@@ -371,7 +366,6 @@ ul#dates, ul#gridtypes {
 
 #results h3 {
   font-weight: bold;
-  letter-spacing: .2em;
 }
 
 #tags, #dates, #gridtypes {

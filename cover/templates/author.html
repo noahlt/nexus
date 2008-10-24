@@ -13,8 +13,10 @@
 		{% endif %}
 	</span>
 </h2>
+	{% if author.bio %}
+	{{ author.bio|markdown }}
+	{% endif %}
 	{% if author.article_set.all %}
-		{{ author.bio|markdown }}
 		<ul id="sub_results" style="margin:0">
 			{% for article in author.article_set.all %}
             {% if article.current %}

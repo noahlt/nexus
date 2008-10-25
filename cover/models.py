@@ -32,14 +32,18 @@ Most anything outside the block tags will be ignored.
 
 class Title(models.Model):
     title = models.CharField(max_length=30, help_text="Staff Writer, Photographer, etc.")
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         return "%s" % self.title
 
+    class Meta:
+        ordering = ('order',)
+
 class TitleAdmin(admin.ModelAdmin):
     def active_authors(obj):
         return ', '.join([str(x) for x in obj.author_set.all() if not x.retired])
-    list_display = ('title', active_authors)
+    list_display = ('title', 'order', active_authors)
 
 class Author(models.Model):
     name = models.CharField(max_length=75)

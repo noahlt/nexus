@@ -7,6 +7,26 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery-disable-text-select.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">
+google.load('search', '1.0');
+function OnLoad() {
+  var searchControl = new google.search.SearchControl();
+  var siteSearch = new google.search.WebSearch();
+  siteSearch.setSiteRestriction("http://nexus.webfactional.com");
+  siteSearch.setUserDefinedLabel("The Nexus");
+  var wvSearch = new google.search.WebSearch();
+  wvSearch.setSiteRestriction("http://www.powayusd.com");
+  wvSearch.setUserDefinedLabel("Poway Unified School District");
+  options = new google.search.SearcherOptions();
+  options.setRoot(document.getElementById("search_results"));
+  options.setExpandMode(google.search.SearchControl.EXPAND_MODE_OPEN);
+  searchControl.addSearcher(siteSearch, options);
+  searchControl.addSearcher(wvSearch, options);
+  searchControl.draw(document.getElementById("searchcontrol"));
+}
+google.setOnLoadCallback(OnLoad, true);
+</script>
 <!--[if lt IE 7]>
 <style type="text/css">
 #centercolumn {
@@ -55,6 +75,8 @@
     <!--[if lt IE 8]>
     <iframe style="display:none" id='iFrame' src='/null'></iframe>
 	<![endif]-->
+  <div style="margin-left: 280px; margin-top: 10px; margin-bottom: -25px;" id="searchcontrol"></div>
+  <div id="search_results" style="width:100%"></div>
   <ul id="results" class="results">
 	<!--[if lt IE 7]>
 	<li id="IE6_PLACEHOLDER" style="display: inline !important; padding: 0 !important;"></li>

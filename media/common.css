@@ -311,7 +311,7 @@ ul#dates, ul#gridtypes {
   overflow: hidden;
 }
 
-#results, #paginator, #back_button {
+#results, #paginator, #back_button, #search_results {
   overflow: hidden;
   padding: 1em;
   padding-left: 1.2em;

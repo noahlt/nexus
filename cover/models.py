@@ -32,6 +32,7 @@ Most anything outside the block tags will be ignored.
 
 class Title(models.Model):
     title = models.CharField(max_length=30, help_text="Staff Writer, Photographer, etc.")
+    plural_form = models.CharField(max_length=33, blank=True, null=True)
     order = models.IntegerField(default=0)
 
     def __str__(self):

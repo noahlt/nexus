@@ -70,7 +70,7 @@ def staff_auto_infopage(request):
     for title in Title.objects.all():
         authors_for_title = [ [author, []] for author in pool.filter(title=title) ]
         if authors_for_title:
-            titles.append((title, authors_for_title))
+            titles.append((title.plural_form if len(authors_for_title) > 1 and title.plural_form else title, authors_for_title))
             for author in authors_for_title:
                 for group in author[0].grouping.all():
                     if group.nexus_staff:

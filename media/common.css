@@ -1,3 +1,32 @@
+#search_results .gs-webResult .gs-visibleUrl-short {
+  display: none;
+}
+#search_results .gs-webResult .gs-visibleUrl-long {
+  display: block;
+}
+#search_results .gs-snippet {
+  width: 550px;
+}
+#search_results a.gs-title, #search_results .gs-title b {
+}
+#search_results {
+  overflow: hidden;
+  padding-left: 1.5em;
+  padding-right: 1em;
+  margin-bottom: -1em;
+}
+#searchcontrol {
+  margin-left: 280px;
+  margin-top: 10px;
+  margin-bottom: -25px;
+}
+#top_title {
+  padding-top: 5px !important;
+}
+#results {
+  padding-top: 10px !important;
+}
+
 body, h1, h2, h3, h4, h5, h6, p, img, ul, li {
   margin: 0;
   padding: 0;
@@ -311,7 +340,7 @@ ul#dates, ul#gridtypes {
   overflow: hidden;
 }
 
-#results, #paginator, #back_button, #search_results {
+#results, #paginator, #back_button {
   overflow: hidden;
   padding: 1em;
   padding-left: 1.2em;

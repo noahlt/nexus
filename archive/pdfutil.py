@@ -34,6 +34,7 @@ def __imagemagick_thumbnailer(input, output, size):
     swap = mktemp(output)
     call(('convert', input, swap))
     image = Image.open(swap) # resize AGAIN to produce consistent sizes
+    image = image.convert('RGBA')
     image.thumbnail((size,size), Image.ANTIALIAS)
     image.save(output, 'JPEG', quality=85)
     remove(swap)
@@ -43,6 +44,7 @@ def __evince_thumbnailer(input, output, size):
     swap = mktemp(output)
     call(('evince-thumbnailer', '-s', str(size), input, swap))
     image = Image.open(swap) # resize AGAIN to produce consistent sizes
+    image = image.convert('RGBA')
     image.thumbnail((size,size), Image.ANTIALIAS)
     image.save(output, 'JPEG', quality=85)
     remove(swap)

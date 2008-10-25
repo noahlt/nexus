@@ -9,12 +9,10 @@
 	<a href="{{ issue.calculate_join_url }}">Download the complete issue.</a>
 	<div class=alist>
 	{% for article in issue.article_set.all %}
-	{% if article.current %}
-		{% include "articlelink.html" %}<br>
-	{% endif %}{% endfor %}
+	{% include "articlelink.html" %}<br>
+	{% endfor %}
 	</div>
 {% spaceless %}
-    {% if issue.current %}
     {% for pdf in issue.pdf_set.all %}
         {% for page in pdf.page_set.all %}
 		<div class="shadow"><div class="s1"><div class="s2"><div class="s3"><div class="s4">
@@ -24,6 +22,5 @@
 		</div></div></div></div></div>
         {% endfor %}
     {% endfor %}
-    {% endif %}
 {% endspaceless %}
 {% endblock %}

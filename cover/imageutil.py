@@ -1,7 +1,7 @@
 import Image
 import re
 
-from os.path import basename, exists, getmtime, dirname
+from os.path import exists, getmtime, dirname
 from os import makedirs
 from nexus.archive.pdfutil import nameof
 from django.conf import settings
@@ -9,7 +9,8 @@ from django.template import Context
 from django.template.loader import get_template
 
 THUMB_MAX_SIZE = (100,100)
-ARTICLE_MAX_SIZE = (530,2048)
+ARTICLE_MAX_SIZE = (530,2048) # remember to sync with images.css
+SMALL_MAX_SIZE = (255,2048) # remeber to sync with images.css
 THUMBS_PATH = 'cache/image_thumbs/'
 
 def resize(input, max_size):
@@ -26,6 +27,14 @@ def resize(input, max_size):
         image.thumbnail(max_size, Image.ANTIALIAS)
         image.save(output_file, 'JPEG', quality=85)
     return output_url
+
+def get_right_size(obj, classes):
+    if 'small' in classes:
+        return obj.small_size()
+    elif 'thumb' in classes:
+        return obj.thumbnail_size()
+    else:
+        return obj.article_size()
 
 class ImageFormatter():
     IMAGE_TEMPLATE = 'image.html'
@@ -49,7 +58,7 @@ class ImageFormatter():
                     any_not_staff = True
             return template.render(Context({
                 'any_not_staff': any_not_staff,
-                'image': obj.thumbnail_size() if 'thumb' in classes else obj.article_size(),
+                'image': get_right_size(obj, classes),
                 'slug': obj.slug, 'authors': obj.authors.all(), 'caption': obj.caption,
                 'viewlink': viewlink, 'classes': ' '.join(classes)
             }))

@@ -4,7 +4,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
-from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE
+from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE, SMALL_MAX_SIZE
 from nexus.archive.models import Issue
 
 NEWLINE = re.compile('([^\n])\n([^\n])')
@@ -109,10 +109,14 @@ class Image(models.Model):
     def save(self):
         super(Image, self).save()
         self.thumbnail_size()
+        self.small_size()
         self.article_size()
 
     def thumbnail_size(self):
         return resize(self.image.path, THUMB_MAX_SIZE)
+
+    def small_size(self):
+        return resize(self.image.path, SMALL_MAX_SIZE)
 
     def article_size(self):
         return resize(self.image.path, ARTICLE_MAX_SIZE)

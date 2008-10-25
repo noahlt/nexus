@@ -12,7 +12,7 @@
 
 .image-default img {
 	border: none;
-	width: 530px;
+	width: 530px; /* remember to sync with imageutil */
 }
 
 .small {
@@ -25,7 +25,7 @@
 }
 
 .small img {
-	width: 255px;
+	width: 255px; /* remember to sync with imageutil */
 	border: none;
 }
 

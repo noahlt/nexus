@@ -4,12 +4,12 @@
 {% block content %}
     {{ block.super }}
     {% for title, authors in titles %}
-        <h3>{{ title }}</h3>
+        <h4>{{ title }}</h4>
         {% for author, groups in authors %}
         <ul style="padding-left: 1em">
-            <li style="border:0"><a class="embeddable" href="/author/{{ author.slug }}">
+            <li style="border:0;padding:1px"><a class="embeddable" href="/author/{{ author.slug }}">
             {{ author }}</a>
-			{% for n in groups %}<a href='#note{{ n }}'><sup>{{ n }}</sup></a>{% endfor %}
+			{% for n in groups %}<sup>{{ n }}</sup>{% endfor %}
             </li>
         </ul>
         {% endfor %}

@@ -79,18 +79,17 @@ def __pdftk_burst(input, output_dir):
     return results
 
 def __pypdf_burst(input, output_dir):
-    base = nameof(input)
-    reader = PdfFileReader(file(input, 'rb'))
+    # XXX avoid memory leaks
+    call((dirname(__file__) + '/pypdf_burst', input, output_dir))
     results = []
-    i = 0
-    while i < reader.getNumPages():
-        writer = PdfFileWriter()
-        writer.addPage(reader.getPage(i))
-        path = '%s+%03d.pdf' % (base, i+1)
-        outputStream = file(output_dir + path, 'wb')
-        writer.write(outputStream)
-        outputStream.close()
-        results.append(output_dir + path)
+    i = 1 # TODO read results from stdout instead
+    base = nameof(input)
+    while True:
+        path = '%s+%03d.pdf' % (base, i)
+        if exists(output_dir + path):
+            results.append(output_dir + path)
+        else:
+            break
         i += 1
     return results
 
@@ -101,23 +100,14 @@ def __pdftk_join(inputs, output):
         pass
 
 def __pypdf_join(inputs, output):
-    writer = PdfFileWriter()
-    outputStream = file(output, 'wb')
-    for input in inputs:
-        reader = PdfFileReader(file(input, 'rb'))
-        i = 0
-        while i < reader.getNumPages():
-            writer.addPage(reader.getPage(i))
-            i += 1
-    writer.write(outputStream)
-    outputStream.close()
+    # XXX avoid memory leaks
+    call((dirname(__file__) + '/pypdf_join', output) + inputs)
 
 try:
     call('pdftk', stdout=PIPE)
     __join_backend = __pdftk_join
     __burst_backend = __pdftk_burst
 except OSError:
-    from pyPdf import PdfFileWriter, PdfFileReader
     __join_backend = __pypdf_join
     __burst_backend = __pypdf_burst
 

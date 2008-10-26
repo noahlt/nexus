@@ -24,7 +24,7 @@ def __pythonmagick_thumbnailer(input, output, size):
     """Imagemagick backend for thumbnailing a PDF."""
     input, output = input.encode(), output.encode() # c++ signatures hate unicode
     pdf = PythonMagick.Image(input)
-    scale = size / float(max(pdf.size().height(), pdf.size().width()))
+    scale = size / float(pdf.size().width())
     pdf.scale('%ix%i' % (pdf.size().width()*scale, pdf.size().height()*scale))
     pdf.write(output)
 
@@ -35,7 +35,7 @@ def __imagemagick_thumbnailer(input, output, size):
     call(('convert', input, swap))
     image = Image.open(swap) # resize AGAIN to produce consistent sizes
     image = image.convert('RGBA')
-    image.thumbnail((size,size), Image.ANTIALIAS)
+    image.thumbnail((size,2048), Image.ANTIALIAS)
     image.save(output, 'JPEG', quality=85)
     remove(swap)
 
@@ -45,7 +45,7 @@ def __evince_thumbnailer(input, output, size):
     call(('evince-thumbnailer', '-s', str(size), input, swap))
     image = Image.open(swap) # resize AGAIN to produce consistent sizes
     image = image.convert('RGBA')
-    image.thumbnail((size,size), Image.ANTIALIAS)
+    image.thumbnail((size,2048), Image.ANTIALIAS)
     image.save(output, 'JPEG', quality=85)
     remove(swap)
 
@@ -72,7 +72,7 @@ def __pdftk_burst(input, output_dir):
     while True:
         path = '%s+%03d.pdf' % (base, i)
         if exists(output_dir + path):
-            results.append(BURST_PATH + path)
+            results.append(output_dir + path)
         else:
             break
         i += 1
@@ -90,7 +90,7 @@ def __pypdf_burst(input, output_dir):
         outputStream = file(output_dir + path, 'wb')
         writer.write(outputStream)
         outputStream.close()
-        results.append(BURST_PATH + path)
+        results.append(output_dir + path)
         i += 1
     return results
 

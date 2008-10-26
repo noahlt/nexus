@@ -519,7 +519,7 @@ a.active {
 
 .shadow {
   float: left;
-  margin: 1em .5em .5em .5em;
+  margin: 10px 6px 6px 6px;
 }
 
 .shadow .s2,

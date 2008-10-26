@@ -109,6 +109,7 @@ class Image(models.Model):
     authors = models.ManyToManyField(Author)
     date = models.DateField(blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
+    lossless = models.BooleanField("Use lossless compression", help_text="For detailed or computer generated images. Will result in larger file sizes for photographic images.", default=False)
     priority = models.IntegerField("Preview priority", default=0)
 
     def save(self):
@@ -118,13 +119,13 @@ class Image(models.Model):
         self.article_size()
 
     def thumbnail_size(self):
-        return resize(self.image.path, THUMB_MAX_SIZE)
+        return resize(self.image.path, THUMB_MAX_SIZE, self.lossless)
 
     def small_size(self):
-        return resize(self.image.path, SMALL_MAX_SIZE)
+        return resize(self.image.path, SMALL_MAX_SIZE, self.lossless)
 
     def article_size(self):
-        return resize(self.image.path, ARTICLE_MAX_SIZE)
+        return resize(self.image.path, ARTICLE_MAX_SIZE, self.lossless)
 
     class Meta:
         ordering = ['-priority']

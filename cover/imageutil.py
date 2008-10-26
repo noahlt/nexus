@@ -13,8 +13,11 @@ ARTICLE_MAX_SIZE = (530,2048) # remember to sync with images.css
 SMALL_MAX_SIZE = (255,2048) # remeber to sync with images.css
 THUMBS_PATH = 'cache/image_thumbs/'
 
-def resize(input, max_size):
-    name = '@%ix%i.jpg' % max_size
+def resize(input, max_size, hq):
+    if hq:
+        name = '@%ix%i.png' % max_size
+    else:
+        name = '@%ix%i.jpg' % max_size
     name = nameof(input) + name
     relpath = THUMBS_PATH + name
     output_file = settings.MEDIA_ROOT + relpath
@@ -24,8 +27,12 @@ def resize(input, max_size):
     if not exists(output_file) or getmtime(output_file) < getmtime(input):
         image = Image.open(input)
         image = image.convert('RGBA')
-        image.thumbnail(max_size, Image.ANTIALIAS)
-        image.save(output_file, 'JPEG', quality=85)
+        if hq:
+            image.thumbnail(max_size, Image.BICUBIC)
+            image.save(output_file, 'PNG')
+        else:
+            image.thumbnail(max_size, Image.ANTIALIAS)
+            image.save(output_file, 'JPEG', quality=85)
     return output_url
 
 def get_right_size(obj, classes):

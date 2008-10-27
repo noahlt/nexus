@@ -130,7 +130,7 @@ def burst_pdf(input):
     return __burst_backend(input, output_dir)
 
 # it takes only a few seconds to join hundreds of pages
-def joined_pdfs(input_models):
+def joined_pdfs(input_models, id):
     """Returns url to cached union of the inputs, generating one if not available.
     Takes a list of PDF models as input."""
     maxtime = 0
@@ -138,7 +138,7 @@ def joined_pdfs(input_models):
         time = getmtime(model.pdf.path)
         if time > maxtime:
             maxtime = time
-    path = JOIN_PATH + '%s.pdf' % maxtime
+    path = JOIN_PATH + '%s.pdf' % id
     output = settings.MEDIA_ROOT + path
     url = settings.MEDIA_URL + path
     if exists(output) and getmtime(output) > maxtime:

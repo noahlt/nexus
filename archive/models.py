@@ -89,7 +89,7 @@ class Issue(models.Model):
         return self.date <= date.today()
 
     def calculate_join_url(self):
-        return joined_pdfs(self.pdf_set.all())
+        return joined_pdfs(self.pdf_set.all(), self.id)
 
     def __str__(self):
         return "%s" % self.date

@@ -72,7 +72,7 @@ def __pdftk_burst(input, output_dir):
     while True:
         path = '%s+%03d.pdf' % (base, i)
         if exists(output_dir + path):
-            results.append(output_dir + path)
+            results.append(path)
         else:
             break
         i += 1
@@ -87,7 +87,7 @@ def __pypdf_burst(input, output_dir):
     while True:
         path = '%s+%03d.pdf' % (base, i)
         if exists(output_dir + path):
-            results.append(output_dir + path)
+            results.append(path)
         else:
             break
         i += 1
@@ -127,7 +127,7 @@ def burst_pdf(input):
     output_dir = settings.MEDIA_ROOT + BURST_PATH
     if not exists(output_dir):
         makedirs(output_dir)
-    return __burst_backend(input, output_dir)
+    return [BURST_PATH + path for path in __burst_backend(input, output_dir)]
 
 # it takes only a few seconds to join hundreds of pages
 def joined_pdfs(input_models, id):

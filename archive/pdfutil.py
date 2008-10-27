@@ -101,7 +101,7 @@ def __pdftk_join(inputs, output):
 
 def __pypdf_join(inputs, output):
     # XXX avoid memory leaks
-    call((dirname(__file__) + '/pypdf_join', output) + inputs)
+    call([dirname(__file__) + '/pypdf_join', output] + inputs)
 
 try:
     call('pdftk', stdout=PIPE)

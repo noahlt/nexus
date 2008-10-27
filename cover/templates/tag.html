@@ -8,7 +8,7 @@
             {% if article.current %}
                 {% if not article.image_centric %}
                     <li><h3>{% include "articlelink.html" %}</h3>
-                        {{ article.snippet }}
+                        {{ article.auto_snippet }}
                     </li>
                 {% endif %}
             {% endif %}

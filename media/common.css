@@ -82,6 +82,7 @@ noscript {
   font-size: 12pt;
   text-transform: uppercase;
   position: relative;
+  display: none;
   top: 9pt;
   left: 5pt;
 }

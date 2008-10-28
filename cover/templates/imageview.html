@@ -2,16 +2,7 @@
 
 {% block content %}
 <h3>Image by {% with obj.authors.all as authors %}{% include "authorlinks.html" %}{% endwith %}{% if obj.date %} in {{ obj.date }}{% endif %}</h3>
-		{% if obj.tags.all %}
-			<h3>Tags:</h3>
-			<span class="info">
-				{% with obj.tags.all as tags %}
-				{% include "taglinks.html" %}
-				{% endwith %}
-			</span>
-		{% endif %}
 		{% if obj.article_set.all %}
-            <br>
             <h3>Referenced in article{% ifnotequal obj.article_set.count 1 %}s{% endifnotequal %}:</h3>
             <ul class="info">
                 {% for article in obj.article_set.all %}
@@ -26,4 +17,12 @@
         {% endif %}
         <br>
 		<a href="{{ obj.image.url }}"><img alt="{{ obj.image.slug }}" style="width: expression(this.width > 530 ? 530 : true ); max-width: 530px" src="{{ obj.image.url }}"></a>
+{% endblock %}
+
+{% block extra %}
+	{% if obj.tags.all %}
+	<p>
+	Tags: {% with obj.tags.all as tags %}{% include "taglinks.html" %}{% endwith %}
+	</p>
+	{% endif %}
 {% endblock %}

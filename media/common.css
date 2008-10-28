@@ -27,6 +27,10 @@
   padding-top: 10px !important;
 }
 
+#tags li, #dates li, #gridtypes li {
+  padding: .3em;
+}
+
 body, h1, h2, h3, h4, h5, h6, p, img, ul, li {
   margin: 0;
   padding: 0;
@@ -35,7 +39,6 @@ body, h1, h2, h3, h4, h5, h6, p, img, ul, li {
   font-weight: inherit;
   font-style: inherit;
   font-size: 100%;
-  font-family: inherit;
   vertical-align: baseline;
 }
 
@@ -70,7 +73,12 @@ sup {
 }
 
 p {
-  padding: .5em;
+  padding-top: .5em;
+  padding-bottom: .5em;
+}
+
+#text_content p {
+  font-family: Georgia, Helvetica, serif;
 }
 
 noscript {
@@ -85,11 +93,6 @@ noscript {
   display: none;
   top: 9pt;
   left: 5pt;
-}
-
-.info {
-  line-height: 1.5em;
-  margin-left: 1em;
 }
 
 .alist {
@@ -211,7 +214,6 @@ h4 {
 #grid li {
   border: 1px solid #BBB;
   font-size: 12pt;
-  padding: 0.3em;
 }
 
 #dates li {
@@ -324,6 +326,7 @@ ul#dates, ul#gridtypes {
 }
 
 #extra {
+  border-top: 1px solid #bbb;
   padding: 1em;
   clear: both;
   overflow: hidden;
@@ -341,10 +344,10 @@ ul#dates, ul#gridtypes {
   overflow: hidden;
 }
 
-#results, #paginator, #back_button {
+#results, #paginator, #back_button, #content {
   overflow: hidden;
-  padding: 1em;
-  padding-left: 1.2em;
+  padding: 1.5em;
+  padding-left: 1.7em;
 }
 
 .goto_top {
@@ -353,8 +356,6 @@ ul#dates, ul#gridtypes {
 }
 
 #content {
-  padding: 1.5em;
-  padding-left: 1.7em;
   overflow: hidden;
   margin: 0;
 }

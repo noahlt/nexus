@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from os.path import basename
-from pdfutil import pdf_to_thumbnail, burst_pdf, validate_pdf, joined_pdfs
+from pdfutil import pdf_to_thumbnail, validate_pdf, joined_pdfs
 from datetime import date
 
 PDF_PATH = 'pdf_orig/'
@@ -15,39 +15,17 @@ class File(models.Model):
     def __str__(self):
         return "%s%s" % (settings.MEDIA_URL, self.file)
 
-class Page(models.Model):
-    pdf = models.FileField(upload_to=PDF_PATH)
-    parent = models.ForeignKey('PDF')
-
-    def save(self):
-        super(Page, self).save()
-        self.calculate_thumbnail_url()
-
-    def calculate_thumbnail_url(self):
-        return pdf_to_thumbnail(self.pdf.path, 250)
-
-    def __str__(self):
-        try:
-            return "%s" % basename(self.pdf.path)
-        except ValueError:
-            return "[corrupted file]"
-
-    class Meta:
-        ordering = ['pdf']
-
 class PDF(models.Model):
     order = models.IntegerField(default=0)
     pdf = models.FileField(upload_to=PDF_PATH)
     parent = models.ForeignKey('Issue')
 
+    def calculate_thumbnail_url(self):
+        return pdf_to_thumbnail(self.pdf.path, 250)
+
     def save(self):
         super(PDF, self).save()
-        for page in self.page_set.all():
-            page.delete()
-        for page in burst_pdf(self.pdf.path):
-            s = Page(pdf=page, parent=self)
-            s.save()
-            self.page_set.add(s)
+        self.calculate_thumbnail_url()
 
     def __str__(self):
         try:
@@ -80,8 +58,7 @@ class Issue(models.Model):
     def calculate_thumbnail_url(self):
         try:
             the_actual_pdf = self.pdf_set.all()[0]
-            the_page = the_actual_pdf.page_set.all()[0]
-            return pdf_to_thumbnail(the_page.pdf.path, 160)
+            return pdf_to_thumbnail(the_actual_pdf.pdf.path, 160)
         except IndexError: # someone deleted all the pages
             return None
 

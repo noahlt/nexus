@@ -13,14 +13,12 @@
 	{% endfor %}
 	</div>
 {% spaceless %}
-    {% for pdf in issue.pdf_set.all %}
-        {% for page in pdf.page_set.all %}
+    {% for doc in issue.pdf_set.all %}
 		<div class="shadow"><div class="s1"><div class="s2"><div class="s3"><div class="s4">
-            <a href="{{ page.pdf.url }}">
-				<img alt="{{ page.pdf }}" src="{{ page.calculate_thumbnail_url }}">
+            <a href="{{ doc.pdf.url }}">
+				<img alt="{{ doc.pdf }}" src="{{ doc.calculate_thumbnail_url }}">
             </a>
 		</div></div></div></div></div>
-        {% endfor %}
     {% endfor %}
 {% endspaceless %}
 {% endblock %}

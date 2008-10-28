@@ -7,7 +7,6 @@ from subprocess import call, PIPE
 
 JOIN_PATH = 'cache/pdf_joins/'
 THUMBS_PATH = 'cache/pdf_thumbs/'
-BURST_PATH = 'pdf_burst/'
 
 def nameof(path):
     """Returns file basename stripped of file extension."""
@@ -36,7 +35,7 @@ def __imagemagick_thumbnailer(input, output, size):
     image = Image.open(swap) # resize AGAIN to produce consistent sizes
     image = image.convert('RGBA')
     image.thumbnail((size,2048), Image.ANTIALIAS)
-    image.save(output, 'JPEG', quality=85)
+    image.save(output, 'JPEG', quality=95)
     remove(swap)
 
 def __evince_thumbnailer(input, output, size):
@@ -46,7 +45,7 @@ def __evince_thumbnailer(input, output, size):
     image = Image.open(swap) # resize AGAIN to produce consistent sizes
     image = image.convert('RGBA')
     image.thumbnail((size,2048), Image.ANTIALIAS)
-    image.save(output, 'JPEG', quality=85)
+    image.save(output, 'JPEG', quality=95)
     remove(swap)
 
 try:
@@ -58,40 +57,6 @@ except OSError:
         __thumbnail_backend = __pythonmagick_thumbnailer
     except ImportError:
         __thumbnail_backend = __imagemagick_thumbnailer
-
-def __pdftk_burst(input, output_dir):
-    base = nameof(input)
-    output_format = '%s+%%03d.pdf' % (output_dir + base)
-    call(('pdftk', input, 'burst', 'output', output_format))
-    try: # pdftk insists on spitting this out
-        remove('doc_data.txt')
-    except OSError:
-        pass
-    results = []
-    i = 1 # go and count up what pdftk did:
-    while True:
-        path = '%s+%03d.pdf' % (base, i)
-        if exists(output_dir + path):
-            results.append(path)
-        else:
-            break
-        i += 1
-    return results
-
-def __pypdf_burst(input, output_dir):
-    # XXX avoid memory leaks
-    call((dirname(__file__) + '/pypdf_burst', input, output_dir))
-    results = []
-    i = 1 # TODO read results from stdout instead
-    base = nameof(input)
-    while True:
-        path = '%s+%03d.pdf' % (base, i)
-        if exists(output_dir + path):
-            results.append(path)
-        else:
-            break
-        i += 1
-    return results
 
 def __pdftk_join(inputs, output):
     try:
@@ -106,10 +71,8 @@ def __pypdf_join(inputs, output):
 try:
     call('pdftk', stdout=PIPE)
     __join_backend = __pdftk_join
-    __burst_backend = __pdftk_burst
 except OSError:
     __join_backend = __pypdf_join
-    __burst_backend = __pypdf_burst
 
 def validate_pdf(in_memory_uploaded_file):
     ext_ok = in_memory_uploaded_file.name.endswith('.pdf')
@@ -120,14 +83,6 @@ def validate_pdf(in_memory_uploaded_file):
         raise ValidationError("That file is only pretending to be a PDF.")
     elif not magic_ok and not ext_ok:
         raise ValidationError("That is not a PDF file.")
-
-def burst_pdf(input):
-    """Creates new files for all input pages and returns their relative paths.
-    Takes an absolute path to a pdf as input."""
-    output_dir = settings.MEDIA_ROOT + BURST_PATH
-    if not exists(output_dir):
-        makedirs(output_dir)
-    return [BURST_PATH + path for path in __burst_backend(input, output_dir)]
 
 # it takes only a few seconds to join hundreds of pages
 def joined_pdfs(input_models, id):

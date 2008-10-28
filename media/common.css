@@ -154,7 +154,7 @@ h1, h1 a {
   padding-left: 4pt;
   padding-top: 8pt;
   padding-bottom: 0;
-  background-color: #0070ad;
+  background-color: #007cb0;
   color: white;
   height: 1.5em;
   margin-bottom: 0;
@@ -302,7 +302,7 @@ ul#dates, ul#gridtypes {
   background-color: #222;
   color: #FFF;
   border: 1px solid #666;
-  border-left: 1px solid #0070ad;
+  border-left: 1px solid #007cb0;
   cursor: pointer;
 }
 
@@ -446,14 +446,14 @@ ul#dates, ul#gridtypes {
 }
 
 #tags li.activetag {
-  background-color: #0070ad;
+  background-color: #007cb0;
   border: 1px solid #07d;
   color: white;
 }
 
 #tags li#alltags {
-  background-color: #0070ad;
-  border: 1px solid #0070ad;
+  background-color: #007cb0;
+  border: 1px solid #007cb0;
   color: white;
 }
 

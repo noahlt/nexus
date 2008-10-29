@@ -363,6 +363,7 @@ ul#dates, ul#gridtypes {
 #results li, #sub_results li {
   border: none;
   font-size: 11pt;
+  padding-bottom: 1em;
   overflow: hidden;
 }
 

@@ -2,7 +2,7 @@
 {% load markup %}
 
 {% block subtitle %}
-	{% block article_title %}{{ article.title }}{% endblock %}
+	{% block article_title %}{{ article.title|safe }}{% endblock %}
 	<br>
 	<span class="subauthor">
 		{% block article_subtitle %}

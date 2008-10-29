@@ -191,7 +191,16 @@ class Article(models.Model):
     class Meta:
         ordering = ['-date', '-printed']
 
+class ArticleAdminForm(forms.ModelForm):
+    def clean_title(self):
+        try:
+            self.cleaned_data['title'].encode()
+        except:
+            return self.cleaned_data['title'].encode('ascii', 'xmlcharrefreplace')
+        return self.cleaned_data['title']
+
 class ArticleAdmin(admin.ModelAdmin):
+    form = ArticleAdminForm
     prepopulated_fields = {'slug': ('title',)}
     def tags(obj):
         return ', '.join([tag.name for tag in obj.tags.all()])

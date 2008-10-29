@@ -95,6 +95,9 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     def num_articles(obj):
@@ -130,7 +133,7 @@ class Image(models.Model):
         return resize(self.image.path, ARTICLE_MAX_SIZE, self.lossless)
 
     class Meta:
-        ordering = ['-priority']
+        ordering = ['slug', '-priority']
 
     def __str__(self):
         return self.slug

@@ -416,10 +416,6 @@ ul#dates, ul#gridtypes {
   border: 0;
 }
 
-#tags li.useless:hover, li.useless:hover {
-  cursor: default;
-}
-
 #tags li.useless, li.useless {
   border: 1px solid #333;
 }
@@ -434,6 +430,7 @@ ul#dates, ul#gridtypes {
 }
 
 #tags li.useless:hover {
+  cursor: default;
   filter: alpha(opacity=100);
   opacity: 1;
 }

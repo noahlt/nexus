@@ -418,4 +418,17 @@ $(document).ready(function() {
 			State.current().enter();
 		}
 	});
+
+	if ($("#IE6_PLACEHOLDER").size() > 0) {
+		$('#tags li').animate({'width':'+=0'}); // hover only works after this...
+		$('#tags li').hover(function() {
+			if (!$(this).hasClass("useless"))
+				$(this).css('filter','alpha(opacity=80)');
+			else
+				$(this).css('cursor','default');
+		}, function() {
+			$(this).css('filter','alpha(opacity=100)');
+			$(this).css('cursor','pointer');
+		});
+	}
 });

@@ -86,6 +86,7 @@ class AuthorAdmin(admin.ModelAdmin):
     list_display = ('name', 'year', 'title', grouped_with, num_articles, num_images, 'nexus_staff')
     list_filter = ('title', 'year', 'retired')
     search_fields = ('name',)
+    filter_horizontal = ('grouping',)
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
@@ -145,6 +146,7 @@ class ImageAdmin(admin.ModelAdmin):
     list_filter = ('date', 'tags')
     list_display = ('slug', author, tags, article_list)
     search_fields = ('slug', 'caption')
+    filter_horizontal = ('authors', 'tags')
 
 class CustomArticleTemplate(models.Model):
     name = models.CharField(max_length=50)
@@ -214,6 +216,7 @@ class ArticleAdmin(admin.ModelAdmin):
     list_display = ('title', tags, visible, url, template)
     list_filter = ('date', 'printed', 'authors')
     search_fields = ('title', 'snippet', 'date')
+    filter_horizontal = ('authors','tags','images')
 
 class InfoPage(models.Model):
     title = models.CharField(max_length=100)

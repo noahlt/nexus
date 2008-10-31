@@ -6,27 +6,39 @@ $(document).ready(function() {
 	var DATE_MAX = 300001;
 	var TAG_NORMAL = $("#alltags").width();
 	var TAG_EXPANDED = TAG_NORMAL + 13;
-	var FS = ".", FS2 = ","; // remember to change in paginator/frontpage template too
+	var FS = ",", FS2 = ".";
 	var IFRAME = $("iframe").size() > 0;
-	var EMPTY_SELECTION = [[], 1, DATE_MIN, DATE_MAX];
 
 	// takes (#serializedstate) or (/path/to/url, [[tags],page,dmin,dmax])
 	// for the second any nulls will be replaced by default values
 	function State(arg1, sel) {
         dump("New state created: " + arg1 + " " + sel + "\n");
 		change_hash = true;
+		url = '';
+		selection = [[], 1, DATE_MIN, DATE_MAX];
 		if (arg1 && arg1.charAt(0) == "#") {
-			var hash = arg1.substring(1).split(FS);
-			url = hash[0];
-			var tags = hash[1] ? hash[1].split(FS2) : '';
-			var page = hash[2] ? hash[2] : 1;
-			var date_min = hash[3] ? hash[3] : DATE_MIN;
-			var date_max = hash[4] ? hash[4] : DATE_MAX;
-			selection = [tags, page, date_min, date_max];
 			dump("Deserialization: " + arg1 + "\n");
+			var args = arg1.substring(1).split(FS);
+			for (var i in args) {
+				var x = args[i];
+				if (x.substring(0,1) == '/')
+					url = x;
+				else if (x.substring(0,5) == 'tags=')
+					selection[0] = x.substring(5).split(FS2);
+				else if (x.substring(0,5) == 'page=')
+					selection[1] = x.substring(5);
+				else if (x.substring(0,6) == 'month=')
+					selection[2] = selection[3] = x.substring(6);
+				else if (x.substring(0,4) == 'min=')
+					selection[2] = x.substring(4);
+				else if (x.substring(0,4) == 'max=')
+					selection[3] = x.substring(4);
+			}
 		} else {
-			url = arg1 ? arg1 : '';
-			selection = sel ? sel : EMPTY_SELECTION;
+			if (url)
+				url = arg1;
+			if (sel)
+				selection = sel;
 		}
 		this.page = function(num) {
             dump("Set page " + num + "\n");
@@ -63,10 +75,25 @@ $(document).ready(function() {
 				State.load_selection(selection);
 		};
 		this.toString = function() {
-			var tags = (selection && selection[0]) ? selection[0].join(FS2) : '';
-			var sel = selection ? selection.slice(1).join(FS) : '';
-			dump("Serialization: " + url + FS + tags + FS + sel + "\n");
-			return url + FS + tags + FS + sel;
+			var output = [];
+			if (url)
+				output[output.length] = url;
+			if (selection[0] && selection[0].length > 0)
+				output[output.length] = "tags=" + selection[0].join(FS2);
+			if (selection[1] != 1)
+				output[output.length] = "page=" + selection[1];
+			if (selection[2] == selection[3]) {
+				output[output.length] = "month=" + selection[2];
+			} else {
+				if (selection[2] != DATE_MIN)
+					output[output.length] = "min=" + selection[2];
+				if (selection[3] != DATE_MAX)
+					output[output.length] = "max=" + selection[3];
+			}
+			if (output.length == 0)
+				return '#';
+			else
+				return output.join(FS);
 		};
 		this.keep_hash = function() {
             dump("Hash change inhibited.\n");
@@ -353,7 +380,7 @@ $(document).ready(function() {
 			$("#tags .activetag").not("#alltags").removeClass("activetag");
 		tagslug = $(this).attr("id");
 		$(this).removeClass("useless").toggleClass("activetag");
-		State.current().enter();
+		State.current().page(1).enter();
 		State.scrollup();
 	});
 

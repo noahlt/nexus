@@ -17,6 +17,39 @@ from models import *
 PAGE_SIZE = 10
 METADATA_CACHE_SECONDS = 3600 * 12
 
+def register_voter(poll, meta):
+    if not poll.active:
+        return False
+    ip = meta.get('HTTP_X_FORWARDED_FOR', meta.get('REMOTE_ADDR'))
+    try:
+        voter = Voter.objects.get(ip=ip)
+    except:
+        voter = Voter(ip=ip)
+        voter.save()
+    try:
+        voter.polls.get(id=poll.id)
+        return False
+    except:
+        voter.polls.add(poll)
+        voter.save()
+        return True
+
+def poll_results(request):
+    if 'choice' not in request.GET:
+        raise Http404
+    choice = get_object_or_404(Choice, id=request.GET['choice'])
+    poll = choice.parent
+    ticket = register_voter(poll, request.META)
+    if ticket:
+        choice.count += 1
+        choice.save()
+    ret = {'counted': ticket, 'poll_id': poll.id, 'question': poll.question, 'answer':[(c.name,c.count) for c in poll.choice_set.all()]}
+    return HttpResponse(json.dumps(ret), mimetype='application/json')
+
+def pollpage(request):
+    polls = Poll.objects.all()
+    return render_to_response('polls.html', locals())
+
 class SchoolYear(list):
     def __init__(self, year):
         self.year = year;

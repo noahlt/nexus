@@ -140,7 +140,7 @@ $(document).ready(function() {
 				$("#embedded_content").html(xhr.responseText);
 			},
 			complete: function() {
-				State.grab_links();
+				grab_links();
 				$(".results").hide();
 				$(".embed").show();
 				State.release_request();
@@ -163,7 +163,7 @@ $(document).ready(function() {
 				State.cached[selection] = data;
 			}
 			if (!just_url_update) {
-				State.grab_links();
+				grab_links();
 				$(".embed").hide();
 				$(".results").show();
 				State.release_request();
@@ -294,7 +294,30 @@ $(document).ready(function() {
 			$("#dates li li").removeClass("activedate");
 		return [added_some,removed_some];
 	};
-	State.grab_links = function() {
+
+	function submit_poll(choice_id) {
+		$.getJSON("/ajax/poll", {"choice": choice_id}, function(r) {
+			var div = $("#poll_" + r['poll_id']);
+			var render = '<div>';
+			if (!r['counted'])
+				render += "Sorry, you can only vote once.<br>";
+			for (var i in r['answer']) {
+				var tuple = r['answer'][i];
+				render += tuple[0] + ": " + tuple[1] + "<br>"
+			}
+			render += "</div>";
+			div.html(render);
+		});
+	}
+
+	function grab_links() {
+		$("a").filter(".poll").unbind().click(function(event) {
+			if (event.ctrlKey || event.shiftKey)
+				return;
+			event.preventDefault();
+			var choice_id = $(this).attr("id").substring(7); // choice_
+			var ret = submit_poll(choice_id);
+		});
 		$("a").filter(".embeddable").unbind().click(function(event) {
 			if (event.ctrlKey || event.shiftKey)
 				return;
@@ -312,7 +335,7 @@ $(document).ready(function() {
 		$("#goto_top").unbind().click(function() {
 			window.scroll(0,0);
 		});
-	};
+	}
 
 	// redirect to hash id if possible for better functionality
 	if (window.location.pathname != "/")
@@ -323,7 +346,7 @@ $(document).ready(function() {
 	$("#tags #alltags").width(TAG_EXPANDED);
 	$("#tags").disableTextSelect();
 	$("#dates").disableTextSelect();
-	State.grab_links();
+	grab_links();
 
 	if (window.location.hash.length > 1) // permalink and not lone '#'
 		new State(window.location.hash).enter();

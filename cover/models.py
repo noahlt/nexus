@@ -278,3 +278,40 @@ class SideBarLink(models.Model):
 class SideBarLinkAdmin(admin.ModelAdmin):
     list_display = ('link_name', 'link_target', 'order')
 
+class Choice(models.Model):
+    count = models.IntegerField(default=0)
+    order = models.IntegerField(default=0)
+    name = models.CharField(max_length=100)
+    parent = models.ForeignKey('Poll')
+
+    def __str__(self):
+        return "%s: %i" % (self.name, self.count)
+
+    class Meta:
+        ordering = ('order',)
+
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    exclude = ['count',]
+    extra = 5
+
+class Poll(models.Model):
+    question = models.CharField(max_length=300)
+    active = models.BooleanField(default=True)
+    date = models.DateField(default=date.today())
+
+    def __str__(self):
+        return self.question
+
+    class Meta:
+        ordering = ('-active','date')
+
+class Voter(models.Model):
+    ip = models.CharField(max_length=30)
+    polls = models.ManyToManyField(Poll)
+
+class PollAdmin(admin.ModelAdmin):
+    inlines = [ChoiceInline]
+    def choices(obj):
+        return ', '.join([str(c) for c in obj.choice_set.all()])
+    list_display = ('question', choices, 'active')

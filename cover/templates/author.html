@@ -1,18 +1,19 @@
 {% extends "basic.html" %}
 {% load markup %}
 
-{% block content %}
-<h2>{{ author }}
-	<span class="subtitle">
-		{% if author.title %}
-			<br>
-			{% if author.retired %}
-				former
-			{% endif %}
-			{{ author.title }}
+{% block subtitle %}
+{{ author }}
+<span class="subtitle">
+	{% if author.title %}
+		<br>
+		{% if author.retired %}
+			former
 		{% endif %}
-	</span>
-</h2>
+		{{ author.title }}
+	{% endif %}
+</span>
+{% endblock %}
+{% block content %}
 	{% if author.bio %}
 	{{ author.bio|markdown }}
 	{% endif %}

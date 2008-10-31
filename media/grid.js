@@ -451,8 +451,11 @@ $(document).ready(function() {
 		$('#tags li').hover(function() {
 			if (!$(this).hasClass("useless"))
 				$(this).css('filter','alpha(opacity=80)');
+			else
+				$(this).css('cursor','default');
 		}, function() {
 			$(this).css('filter','alpha(opacity=100)');
+			$(this).css('cursor','pointer');
 		});
 	}
 });

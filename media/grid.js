@@ -65,7 +65,7 @@ $(document).ready(function() {
 					doc.close();
 				}
 			} else
-				State.hash = window.location.hash.substring(1);
+				State.hash = window.location.hash;
 			State.select_tags(selection[0]);
 			State.select_dates(selection[2], selection[3]);
 			if (url) {
@@ -90,10 +90,7 @@ $(document).ready(function() {
 				if (selection[3] != DATE_MAX)
 					output[output.length] = "max=" + selection[3];
 			}
-			if (output.length == 0)
-				return '#';
-			else
-				return output.join(FS);
+			return '#' + output.join(FS);
 		};
 		this.keep_hash = function() {
             dump("Hash change inhibited.\n");
@@ -107,15 +104,16 @@ $(document).ready(function() {
 	State.request_count = 0;
 	State.cached = new Object();
 	State.activelink = null;
-	State.hash = window.location.hash.substring(1);
-	State.check_and_incr = function() {
+	State.hash = window.location.hash;
+	State.check_and_incr = function(a,b) {
         if (State.disabled)
             throw "ProbablyStuckInLoop";
 		var dt = new Date().getTime() - State.init_ms;
-		if (State.request_count++ / (10+(dt/1000)) > 1) {
+		if (State.request_count++ / (1+(dt/1000)) > 1) {
 			alert("This script appears to be stuck in an infinite loop.\n("
 			+ State.request_count + " requests in " + (dt/1000)
 			+ " seconds)\n\nPlease report this bug.");
+			alert("DEBUG: " + a + " vs " + b);
             State.disabled = true;
         }
 	};
@@ -167,7 +165,7 @@ $(document).ready(function() {
 			State.read_json_dates(data['dates']);
 			if (!just_url_update) {
 				State.read_json_results(data['results']);
-				State.read_json_paginator(data['pages'], selection);
+				$("#paginator").html(data['pages']);
 			}
 			if (!hit) {
 				data['results']['new'] = null;
@@ -260,7 +258,7 @@ $(document).ready(function() {
 	State.acquire_request = function() {
 		if (State.request) {
 			dump("Aborted request " + State.request + "\n");
-			State.scrollup = false;
+			State.scroll_flag = false;
 			State.request.abort();
 			State.request = null;
 		}
@@ -344,7 +342,7 @@ $(document).ready(function() {
 
 	// redirect to hash id if possible for better functionality
 	if (window.location.pathname != "/")
-		location.replace("/#" + new State(window.location.pathname));
+		location.replace("/" + new State(window.location.pathname));
 
 	var selecting_dates = false;
 	var down = false;
@@ -356,19 +354,18 @@ $(document).ready(function() {
 	if (window.location.hash.length > 1) // permalink and not lone '#'
 		new State(window.location.hash).enter();
 
-	function different(framehtml, hash) {
-		if (framehtml == hash || (!framehtml && hash == new State()))
-			return false;
-		return true;
+	// hashes
+	function different(a, b) {
+		return a != b && !((!a || a == '#') && (!b || b == '#'));
 	}
 
 	setInterval(function() {
-		if (window.location.hash.substring(1) != State.hash) {
-			State.check_and_incr();
+		if (different(window.location.hash, State.hash)) {
+			State.check_and_incr(window.location.hash, State.hash);
 			new State(window.location.hash).keep_hash().enter();
 		} else if (IFRAME && window["iFrame"].document.body && different(window["iFrame"].document.body.innerHTML, State.hash)) {
-			State.check_and_incr();
-			new State("#" + window["iFrame"].document.body.innerHTML).keep_hash().enter();
+			State.check_and_incr(window["iFrame"].document.body.innerHTML, State.hash);
+			new State(window["iFrame"].document.body.innerHTML).keep_hash().enter();
 		}
 	}, 100);
 
@@ -390,7 +387,7 @@ $(document).ready(function() {
 		selecting_dates = false;
 		$("#tags li").removeClass("useless");
 		$("#tags .activetag").removeClass("activetag");
-		State.current().enter();
+		State.current().page(1).enter();
 		State.scrollup();
 	});
 
@@ -407,7 +404,7 @@ $(document).ready(function() {
 		var some_newly_selected = false;
 		if (!State.select_dates(min, max)[0])
 			$("#dates li").removeClass("activedate");
-		State.current().enter();
+		State.current().page(1).enter();
 	});
 
 	$("#dates li li").mousedown(function() {
@@ -435,14 +432,14 @@ $(document).ready(function() {
 		}
 		if (selecting_dates) {
 			selecting_dates = false;
-			State.current().enter();
+			State.current().page(1).enter();
 		}
 	});
 
 	$(document).mouseup(function(event) {
 		if (selecting_dates) {
 			selecting_dates = false;
-			State.current().enter();
+			State.current().page(1).enter();
 		}
 	});
 

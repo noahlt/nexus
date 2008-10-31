@@ -93,15 +93,7 @@ google.setOnLoadCallback(OnLoad, true);
   </ul>
   <div id="embedded_content" class="embed">{% if content %}{{ content|safe }}{% endif %}</div>
 	<ul id="paginator" class="results">
-    {% ifnotequal 1 paginator.num_pages %}
-	{% for n in paginator.page_range %}
-		{% ifequal n 1 %}
-			<li id="thispage">{{ n }}</li>
-		{% else %}
-			<li class="pagelink" id="n_{{ n }}"><a href="#page={{ n }}">{{ n }}</a></li>
-		{% endifequal %}
-	{% endfor %}
-    {% endifnotequal %}
+	{% include "paginator.html" %}
 	</ul>
     </div>
 

@@ -1,0 +1,10 @@
+{% ifnotequal 1 paginator.num_pages %}
+{% for n in paginator.page_range %}
+	{% ifequal n page %}
+		<li id="thispage">{{ n }}</li>
+	{% else %}
+		<li class="pagelink" id="n_{{ n }}"><a href="#page={{ n }}">{{ n }}</a></li>
+	{% endifequal %}
+	&nbsp;
+{% endfor %}
+{% endifnotequal %}

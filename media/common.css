@@ -256,14 +256,8 @@ ul#dates, ul#gridtypes {
 
 #paginator li {
   display: inline;
-  border: 1px solid white;
+  border: none;
   font-size: 10pt;
-  padding-left: 2px;
-  padding-right: 2px;
-}
-
-#paginator li.pagelink:hover {
-  border: 1px solid #305cb6;
 }
 
 .pagelink {

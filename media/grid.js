@@ -35,7 +35,7 @@ $(document).ready(function() {
 					selection[3] = x.substring(4);
 			}
 		} else {
-			if (url)
+			if (arg1)
 				url = arg1;
 			if (sel)
 				selection = sel;

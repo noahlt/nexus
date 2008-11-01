@@ -211,12 +211,10 @@ class ArticleAdmin(admin.ModelAdmin):
         return ', '.join([tag.name for tag in obj.tags.all()])
     def visible(obj):
         return obj.current()
-    def url(obj):
-        return "/%s/%s" % (obj.date.strftime("%Y/%m"), obj.slug)
     def template(obj):
         return obj.custom_template if obj.custom_template else ''
     visible.boolean = True
-    list_display = ('title', tags, visible, url, template)
+    list_display = ('title', 'printed', tags, visible, template)
     list_filter = ('date', 'printed', 'authors')
     search_fields = ('title', 'snippet', 'date')
     filter_horizontal = ('authors','tags','images')

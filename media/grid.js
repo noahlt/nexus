@@ -1,7 +1,5 @@
 $(document).ready(function() {
 
-	if (!dump) function dump() {}
-
 	var DATE_MIN = 100001;
 	var DATE_MAX = 300001;
 	var TAG_NORMAL = $("#alltags").width();
@@ -12,12 +10,10 @@ $(document).ready(function() {
 	// takes (#serializedstate) or (/path/to/url, [[tags],page,dmin,dmax])
 	// for the second any nulls will be replaced by default values
 	function State(arg1, sel) {
-        dump("New state created: " + arg1 + " " + sel + "\n");
 		change_hash = true;
 		url = '';
 		selection = [[], 1, DATE_MIN, DATE_MAX];
 		if (arg1 && arg1.charAt(0) == "#") {
-			dump("Deserialization: " + arg1 + "\n");
 			var args = arg1.substring(1).split(FS);
 			for (var i in args) {
 				var x = args[i];
@@ -41,12 +37,10 @@ $(document).ready(function() {
 				selection = sel;
 		}
 		this.page = function(num) {
-            dump("Set page " + num + "\n");
 			selection[1] = num;
 			return this;
 		};
 		this.enter = function(link) {
-            dump("Entering: " + (link ? link.attr("href") : 'null') + "\n");
 			State.acquire_request();
 			if (link) {
 				State.activelink = link.addClass("active");
@@ -93,7 +87,6 @@ $(document).ready(function() {
 			return '#' + output.join(FS);
 		};
 		this.keep_hash = function() {
-            dump("Hash change inhibited.\n");
 			change_hash = false;
 			return this;
 		};
@@ -121,8 +114,6 @@ $(document).ready(function() {
 		State.scroll_flag = true;
 	};
 	State.current = function() {
-		var page = Number($("#thispage").text());
-		if (!page) page = 1;
 		var min = DATE_MIN, max = DATE_MAX;
 		var selected_dates = $("#dates .activedate").map(function() {
 				return $(this).attr('id').substring(3); // ym_
@@ -135,10 +126,9 @@ $(document).ready(function() {
 			.map(function() {
 					return $(this).attr("id").substring(4); // tag_
 				}).get();
-		return new State(null, [selectedtags, page, min, max]);
+		return new State(null, [selectedtags, 1, min, max]);
 	};
 	State.load_url = function(url) {
-        dump("GET " + url + "\n");
 		State.request = $.ajax({
 			type: "GET",
 			url: "/ajax/embed" + url,
@@ -159,7 +149,6 @@ $(document).ready(function() {
 	// data = [tags, page, datemin, datemax]
 	State.load_selection = function(selection, just_url_update) {
 		var hit = State.cached[selection];
-        dump("getJSON\n");
 		function load(data) {
 			State.read_json_tags(data['tags']);
 			State.read_json_dates(data['dates']);
@@ -179,7 +168,6 @@ $(document).ready(function() {
 			}
 		}
 		if (hit) {
-			dump("Cache hit!\n");
 			load(hit);
 		} else {
 			var have_articles = $("#results li")
@@ -240,30 +228,13 @@ $(document).ready(function() {
 		else
 			$("#none-visible").hide();
 	};
-	State.read_json_paginator = function(pages, data) {
-		$("#paginator").empty();
-		if (pages['num_pages'] > 1) {
-			for (var i = 1; i <= pages['num_pages']; i++) {
-				if (i == pages['this_page'])
-					$("#paginator").append(" <li id=\"thispage\">" + i + "</li>");
-				else
-					$("#paginator").append(" <li id=\"n_"
-					+ i + "\" class=\"pagelink\"><a href=\"#"
-					+ new State(null, [data[0],i,data[2],data[3]])
-					+ "\">"
-					+ i + "</a></li>");
-			}
-		}
-	};
 	State.acquire_request = function() {
 		if (State.request) {
-			dump("Aborted request " + State.request + "\n");
 			State.scroll_flag = false;
 			State.request.abort();
 			State.request = null;
 		}
 		if (State.request2) {
-			dump("Aborted secondary request " + State.request + "\n");
 			State.request2.abort();
 			State.request2 = null;
 		}
@@ -275,7 +246,6 @@ $(document).ready(function() {
 	};
 	// call at end of dom update
 	State.release_request = function() {
-        dump("\n");
 		window.status = "Done";
 		State.request = null;
 		State.request2 = null;
@@ -377,7 +347,7 @@ $(document).ready(function() {
 			$("#tags .activetag").not("#alltags").removeClass("activetag");
 		tagslug = $(this).attr("id");
 		$(this).removeClass("useless").toggleClass("activetag");
-		State.current().page(1).enter();
+		State.current().enter();
 		State.scrollup();
 	});
 
@@ -387,7 +357,7 @@ $(document).ready(function() {
 		selecting_dates = false;
 		$("#tags li").removeClass("useless");
 		$("#tags .activetag").removeClass("activetag");
-		State.current().page(1).enter();
+		State.current().enter();
 		State.scrollup();
 	});
 
@@ -404,7 +374,7 @@ $(document).ready(function() {
 		var some_newly_selected = false;
 		if (!State.select_dates(min, max)[0])
 			$("#dates li").removeClass("activedate");
-		State.current().page(1).enter();
+		State.current().enter();
 	});
 
 	$("#dates li li").mousedown(function() {
@@ -432,14 +402,14 @@ $(document).ready(function() {
 		}
 		if (selecting_dates) {
 			selecting_dates = false;
-			State.current().page(1).enter();
+			State.current().enter();
 		}
 	});
 
 	$(document).mouseup(function(event) {
 		if (selecting_dates) {
 			selecting_dates = false;
-			State.current().page(1).enter();
+			State.current().enter();
 		}
 	});
 

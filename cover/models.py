@@ -8,7 +8,7 @@ from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE, SMALL_MAX_SIZE
 from nexus.archive.models import Issue
 
 NEWLINE = re.compile('([^\n])\n([^\n])')
-PARAGRAPH = re.compile(r'\n[A-Z][^\n]+\n')
+PARAGRAPH = re.compile(r'[A-Z][^\n]+\n')
 IMAGE_PATH = 'image_orig/'
 ARTICLE_TEMPLATE = """{% extends "article.html" %}
 
@@ -183,7 +183,7 @@ class Article(models.Model):
         if self.snippet:
             return self.snippet
         match = PARAGRAPH.search(self.fulltext)
-        return match.group()[1:-1] if match else ''
+        return match.group()[:-1] if match else ''
 
     def text(self):
         return NEWLINE.sub(r'\1  \n\2', self.fulltext)

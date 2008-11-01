@@ -48,12 +48,20 @@ def frontpage(request, content=None):
         current_issue = visible(Issue.objects)[0]
     except IndexError:
         current_issue = False
-    dates = []
-    for date in visible(Article.objects).dates('date', 'month', order='DESC'):
-        year = what_school_year(date)
-        if not dates or dates[-1].year != year:
-            dates.append(SchoolYear(year))
-        dates[-1].append(date)
+    key = 'frontpage_dates_key'
+    try:
+        key += '%s' % visible(Article.objects)[0]
+    except IndexError:
+        pass
+    dates = cache.get(key)
+    if not dates:
+        dates = []
+        for date in visible(Article.objects).dates('date', 'month', order='DESC'):
+            year = what_school_year(date)
+            if not dates or dates[-1].year != year:
+                dates.append(SchoolYear(year))
+            dates[-1].append(date)
+        cache.set(key, dates, METADATA_CACHE_SECONDS)
     return HttpResponse(get_template('frontpage.html').render(Context(locals())))
 
 def imageview(request, slug):

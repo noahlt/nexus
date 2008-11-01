@@ -260,6 +260,10 @@ ul#dates, ul#gridtypes {
   font-size: 10pt;
 }
 
+#thispage {
+  font-weight: bold;
+}
+
 .pagelink {
   cursor: pointer;
 }

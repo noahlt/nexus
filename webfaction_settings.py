@@ -2,8 +2,7 @@ import os
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-#CACHE_BACKEND = 'dummy:///'
-CACHE_BACKEND = 'file:///home/nexus/django_cache'
+CACHE_BACKEND = 'file:///home/nexus/django_cache?timeout=900'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),

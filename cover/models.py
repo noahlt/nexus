@@ -173,6 +173,7 @@ class Article(models.Model):
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
     image_centric = models.BooleanField(help_text="Shows a large image preview.")
+    never_published = models.BooleanField(default=False, help_text="Here to make sure you don't forget the 'printed' field.")
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
     custom_template = models.ForeignKey(
@@ -203,6 +204,13 @@ class ArticleAdminForm(forms.ModelForm):
         except:
             return self.cleaned_data['title'].encode('ascii', 'xmlcharrefreplace')
         return self.cleaned_data['title']
+    def clean_printed(self):
+        p = self.cleaned_data['printed']
+        if not p and not self.cleaned_data['never_published']:
+            raise forms.ValidationError("Check 'never published' if this article was never printed.");
+        if p and self.cleaned_data['never_published']:
+            raise forms.ValidationError("Uncheck 'never published' if this article was printed.");
+        return p
 
 class ArticleAdmin(admin.ModelAdmin):
     form = ArticleAdminForm

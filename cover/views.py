@@ -15,6 +15,7 @@ from imageutil import ImageFormatter
 from models import *
 
 PAGE_SIZE = 10
+METADATA_CACHE_SECONDS = 3600 * 12
 
 class SchoolYear(list):
     def __init__(self, year):
@@ -126,7 +127,7 @@ def tag_data(articles, selected_tags, min_date, max_date):
                 alltags[tag] = 1
     total = articles.count()
     ret = [(tag.slug, tag in selected_tags or alltags[tag] != total) for tag in alltags.keys()]
-    cache.set(key, ret)
+    cache.set(key, ret, METADATA_CACHE_SECONDS)
     return ret
 
 def dates_of(articles, tags):
@@ -135,7 +136,7 @@ def dates_of(articles, tags):
     if cached:
         return cached
     ret = list(set([article.date.strftime('%Y%m') for article in articles.all()]))
-    cache.set(key, ret)
+    cache.set(key, ret, METADATA_CACHE_SECONDS)
     return ret
 
 def parse_date(input):

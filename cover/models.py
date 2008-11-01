@@ -195,7 +195,7 @@ class Article(models.Model):
         return "%s" % self.title
 
     class Meta:
-        ordering = ['-date', '-printed']
+        ordering = ['-date', '-printed', '-id']
 
 class ArticleAdminForm(forms.ModelForm):
     def clean_title(self):

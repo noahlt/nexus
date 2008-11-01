@@ -543,3 +543,8 @@ a.active {
   background: #ffffff;
   border: 1px solid #848284;
 }
+
+.page_end {
+  color: #ccc;
+  font-size: 10pt;
+}

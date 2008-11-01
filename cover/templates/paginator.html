@@ -1,10 +1,21 @@
 {% ifnotequal 1 paginator.num_pages %}
+{% if pobj.has_previous %}
+    <li class="pagelink" id="n_{{ pobj.previous_page_number }}"><a href="#page={{ pobj.previous_page_number }}">Prev</a></li>
+{% else %}
+<span class="page_end">Prev</span>
+{% endif %}
+&nbsp;
 {% for n in paginator.page_range %}
-	{% ifequal n page %}
+	{% ifequal n pobj.number %}
 		<li id="thispage">{{ n }}</li>
 	{% else %}
 		<li class="pagelink" id="n_{{ n }}"><a href="#page={{ n }}">{{ n }}</a></li>
 	{% endifequal %}
 	&nbsp;
 {% endfor %}
+{% if pobj.has_next %}
+    <li class="pagelink" id="n_{{ pobj.next_page_number }}"><a href="#page={{ pobj.next_page_number }}">Next</a></li>
+{% else %}
+<span class="page_end">Next</span>
+{% endif %}
 {% endifnotequal %}

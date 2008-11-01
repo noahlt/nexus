@@ -5,7 +5,7 @@ import simplejson as json
 from datetime import date, timedelta
 from django.conf import settings
 from django.core.cache import cache
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context, Template
@@ -41,9 +41,9 @@ def frontpage(request, content=None):
     tags = [ tag for tag in Tag.objects.all()[0:20] if visible(tag.article_set).count() > 0 ]
     tags.sort(key=lambda tag: visible(tag.article_set).count(), reverse=True)
     if not content:
-        page = 1
         paginator = Paginator(visible(Article.objects), PAGE_SIZE)
-        articles = paginator.page(1).object_list
+        pobj = paginator.page(1)
+        articles = pobj.object_list
     try:
         current_issue = visible(Issue.objects)[0]
     except IndexError:
@@ -183,8 +183,12 @@ def paginate(request):
     dates = dates_of(articles, tags) # BEFORE date filtering
     articles = articles.filter(date__range=[min_date, max_date])
     paginator = Paginator(articles, PAGE_SIZE)
-    page = int(request.GET.get('page',1)) # int for json
-    object_list = paginator.page(page).object_list
+    try:
+        pobj = paginator.page(request.GET.get('page',1))
+        object_list = pobj.object_list
+    except (EmptyPage, InvalidPage):
+        pobj = paginator.page(paginator.num_pages)
+        object_list = pobj.object_list
     results = [snippet(article) for article in object_list if article.slug not in have_articles]
     r = {'results': {'new': results, 'all': [ article.slug for article in object_list ]},
          'tags': tag_data(articles, tags, min_date, max_date), 'dates': dates,

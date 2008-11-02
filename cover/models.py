@@ -224,7 +224,7 @@ class ArticleAdmin(admin.ModelAdmin):
     visible.boolean = True
     list_display = ('title', 'printed', tags, visible, template)
     list_filter = ('date', 'printed', 'authors')
-    search_fields = ('title', 'snippet', 'date')
+    search_fields = ('title', 'slug', 'date')
     filter_horizontal = ('authors','tags','images')
 
 class InfoPage(models.Model):

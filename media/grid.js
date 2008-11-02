@@ -351,6 +351,8 @@ $(document).ready(function() {
 		if ($(this).hasClass("useless") && !$(this).hasClass("activetag"))
 			$("#tags .activetag").not("#alltags").removeClass("activetag");
 		tagslug = $(this).attr("id");
+		if ($(".embed").is(":visible"))
+			$(this).removeClass("activetag");
 		$(this).removeClass("useless").toggleClass("activetag");
 		State.current().enter();
 		State.scrollup();

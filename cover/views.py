@@ -107,7 +107,7 @@ def staff_auto_infopage(request):
             titles.append((title.plural_form if len(authors_for_title) > 1 and title.plural_form else title, authors_for_title))
             for author in authors_for_title:
                 for group in author[0].grouping.all():
-                    if group.nexus_staff:
+                    if group.nexus_staff and not group.retired:
                         if group not in groups:
                             groups.append(group)
                         author[1].append(groups.index(group) + 1)

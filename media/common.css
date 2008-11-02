@@ -11,14 +11,16 @@
 }
 #search_results {
   overflow: hidden;
-  padding-left: 1.5em;
+  padding-left: 1.7em;
   padding-right: 1em;
+  padding-top: .5em;
   margin-bottom: -1em;
 }
 #searchcontrol {
   margin-left: 280px;
+  float: left;
   margin-top: 10px;
-  margin-bottom: -25px;
+  margin-bottom: -20px;
 }
 #top_title {
   padding-top: 5px !important;
@@ -254,27 +256,12 @@ ul#dates, ul#gridtypes {
   border-bottom: 1px solid gray;
 }
 
-#paginator li {
-  display: inline;
-  border: none;
-  font-size: 10pt;
-}
-
 #thispage {
   font-weight: bold;
 }
 
 .pagelink {
   cursor: pointer;
-}
-
-#paginator a:hover {
-  text-decoration: none;
-}
-
-#paginator {
-  text-align: center;
-  margin-bottom: 2em; /* ie7 */
 }
 
 #gridtypes li {
@@ -342,7 +329,7 @@ ul#dates, ul#gridtypes {
   overflow: hidden;
 }
 
-#results, #paginator, #back_button, #content {
+#results, #bottom_paginator, #content {
   overflow: hidden;
   padding: 1.5em;
   padding-left: 1.7em;
@@ -544,7 +531,20 @@ a.active {
   border: 1px solid #848284;
 }
 
-.page_end {
-  color: #ccc;
+.paginator {
   font-size: 10pt;
+}
+
+#top_paginator {
+  position: absolute;
+  top: 1.2em;
+  left: 1.7em;
+}
+
+.paginate-current, .paginate-first, .paginate-last, .paginate-next, .paginate-prev {
+  font-weight: bold;
+}
+
+.page-end {
+  color: #ccc;
 }

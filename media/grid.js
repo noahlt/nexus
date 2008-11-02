@@ -44,7 +44,8 @@ $(document).ready(function() {
 			State.acquire_request();
 			if (link) {
 				State.activelink = link.addClass("active");
-				url = link.attr("href");
+				if (link.hasClass("embeddable"))
+					url = link.attr("href");
 				if (url && url.match("http://")) { // make relative
 					url = url.substring(7);
 					url = url.substring(url.indexOf("/"));
@@ -74,7 +75,7 @@ $(document).ready(function() {
 				output[output.length] = url;
 			if (selection[0] && selection[0].length > 0)
 				output[output.length] = "tags=" + selection[0].join(FS2);
-			if (selection[1] != 1)
+			if (!url) // prevents browser from reading lone '#'
 				output[output.length] = "page=" + selection[1];
 			if (selection[2] == selection[3]) {
 				output[output.length] = "month=" + selection[2];
@@ -154,7 +155,7 @@ $(document).ready(function() {
 			State.read_json_dates(data['dates']);
 			if (!just_url_update) {
 				State.read_json_results(data['results']);
-				$("#paginator").html(data['pages']);
+				$(".paginator").html(data['pages']);
 			}
 			if (!hit) {
 				data['results']['new'] = null;
@@ -300,9 +301,9 @@ $(document).ready(function() {
 			State.current().enter($(this));
 			State.scrollup();
 		});
-		$("#paginator .pagelink").unbind().click(function(event) {
+		$(".paginator .pagelink").unbind().click(function(event) {
 			event.preventDefault();
-			State.current().page($(this).attr("id").substring(2)).enter();
+			State.current().page($(this).attr("id").substring(2)).enter($("#" + $(this).attr("id") + " a"));
 			State.scrollup();
 		});
 		$("#goto_top").unbind().click(function() {
@@ -325,8 +326,9 @@ $(document).ready(function() {
 		new State(window.location.hash).enter();
 
 	// hashes
+	EMPTY = new State().toString()
 	function different(a, b) {
-		return a != b && !((!a || a == '#') && (!b || b == '#'));
+		return a != b && !((!a || a == EMPTY) && (!b || b == EMPTY));
 	}
 
 	setInterval(function() {

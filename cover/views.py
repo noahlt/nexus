@@ -26,6 +26,9 @@ class SchoolYear(list):
 def visible(x):
     return x.filter(date__lte=date.today())
 
+def pagesof(page, pages, adjacent_pages = 2):
+    return [n for n in range(page - adjacent_pages, page + adjacent_pages + 1) if n > 0 and n <= pages]
+
 def what_school_year(date):
     if date.month <= 7:
         return date.year
@@ -42,8 +45,15 @@ def frontpage(request, content=None):
     tags.sort(key=lambda tag: visible(tag.article_set).count(), reverse=True)
     if not content:
         paginator = Paginator(visible(Article.objects), PAGE_SIZE)
-        pobj = paginator.page(1)
-        articles = pobj.object_list
+        articles = paginator.page(1).object_list
+        page = 1
+        pages = paginator.num_pages
+        is_paginated = (pages > 1)
+        page_numbers = pagesof(page, pages)
+        next = 2
+        previous = None
+        has_next = True
+        has_previous = False
     try:
         current_issue = visible(Issue.objects)[0]
     except IndexError:
@@ -181,6 +191,8 @@ def snippet(article):
     return ret
 
 def paginate(request):
+    import time
+    time.sleep(1)
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
     have_articles = request.GET.getlist('have_articles')
     min_date = parse_date(request.GET.get('date_min'))
@@ -191,12 +203,18 @@ def paginate(request):
     dates = dates_of(articles, tags) # BEFORE date filtering
     articles = articles.filter(date__range=[min_date, max_date])
     paginator = Paginator(articles, PAGE_SIZE)
+    page = int(request.GET.get('page',1))
+    pages = paginator.num_pages
+    is_paginated = (pages > 1)
+    page_numbers = pagesof(page, pages)
+    next = page + 1
+    previous = page - 1
+    has_next = (page < pages)
+    has_previous = (page > 1)
     try:
-        pobj = paginator.page(request.GET.get('page',1))
-        object_list = pobj.object_list
+        object_list = paginator.page(page).object_list
     except (EmptyPage, InvalidPage):
-        pobj = paginator.page(paginator.num_pages)
-        object_list = pobj.object_list
+        object_list = paginator.page(paginator.num_pages).object_list
     results = [snippet(article) for article in object_list if article.slug not in have_articles]
     r = {'results': {'new': results, 'all': [ article.slug for article in object_list ]},
          'tags': tag_data(articles, tags, min_date, max_date), 'dates': dates,

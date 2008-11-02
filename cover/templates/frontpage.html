@@ -33,6 +33,14 @@ google.setOnLoadCallback(OnLoad, true);
   position: static;
   margin-left: 191px;
 }
+#searchcontrol {
+  margin-left: 138px;
+  margin-bottom: -10px;
+}
+#top_paginator {
+  left: 220px;
+  top: 95px;
+}
 </style>
 <![endif]-->
 </head>
@@ -76,6 +84,7 @@ google.setOnLoadCallback(OnLoad, true);
     <iframe style="display:none" id='iFrame' src='/null'></iframe>
 	<![endif]-->
   <div id="searchcontrol"></div>
+  <div class="paginator results" id="top_paginator">{% include "paginator.html" %}</div>
   <div id="search_results" style="width:100%"></div>
   <ul id="results" class="results">
 	<!--[if lt IE 7]>
@@ -92,10 +101,10 @@ google.setOnLoadCallback(OnLoad, true);
 	</li>
   </ul>
   <div id="embedded_content" class="embed">{% if content %}{{ content|safe }}{% endif %}</div>
-	<ul id="paginator" class="results">
-	{% include "paginator.html" %}
-	</ul>
-    </div>
+  <div class="paginator results" id="bottom_paginator">
+  {% include "paginator.html" %}
+  </div>
+</div>
 
   <div id="signed">&mdash;el;nt '09</div>  {# don't remove this, it's actually important #}
 </div>

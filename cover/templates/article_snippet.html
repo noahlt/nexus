@@ -3,13 +3,15 @@
   <div class="date">{{ article.date|date:"F d, Y" }}&nbsp;&nbsp;|&nbsp;{% with article.authors.all as authors %}{% include "authorlinks.html" %}{% endwith %}</div>
   {% if article.current %}
       {% if article.images.all %}
+		{% with article.images.all.0 as img %}
         {% if article.image_centric %}
             <a class="embeddable" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">
-                <img class="imgsnippet" alt="article image" src="{{ article.images.all.0.article_size }}">
+                <img class="imgsnippet" alt="{{ img.slug }}" src="{{ img.article_size }}">
             </a>
         {% else %}
-            <a class="embeddable" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}"><img alt="article thumbnail" style="float:right;padding-left:1em;margin-top:-1em" src="{{ article.images.all.0.thumbnail_size }}"></a>
+            <a class="embeddable" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}"><img alt="{{ img.slug }}" style="float:right;padding-left:1em;margin-top:-1em" src="{{ img.thumbnail_size }}"></a>
         {% endif %}
+		{% endwith %}
       {% endif %}
       {{ article.auto_snippet }}
   {% else %}

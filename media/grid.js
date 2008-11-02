@@ -75,8 +75,6 @@ $(document).ready(function() {
 				output[output.length] = url;
 			if (selection[0] && selection[0].length > 0)
 				output[output.length] = "tags=" + selection[0].join(FS2);
-			if (!url) // prevents browser from reading lone '#'
-				output[output.length] = "page=" + selection[1];
 			if (selection[2] == selection[3]) {
 				output[output.length] = "month=" + selection[2];
 			} else {
@@ -85,6 +83,8 @@ $(document).ready(function() {
 				if (selection[3] != DATE_MAX)
 					output[output.length] = "max=" + selection[3];
 			}
+			if (output.length == 0)
+				output[0] = "page=" + selection[1];
 			return '#' + output.join(FS);
 		};
 		this.keep_hash = function() {

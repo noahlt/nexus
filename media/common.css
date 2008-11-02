@@ -18,15 +18,14 @@
 }
 #searchcontrol {
   margin-left: 280px;
-  float: left;
   margin-top: 10px;
-  margin-bottom: -20px;
+  margin-bottom: -25px;
 }
 #top_title {
   padding-top: 5px !important;
 }
 #results {
-  padding-top: 10px !important;
+  padding-top: 20px !important;
 }
 
 #tags li, #dates li, #gridtypes li {

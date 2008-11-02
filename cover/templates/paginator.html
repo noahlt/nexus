@@ -1,25 +1,19 @@
 {% spaceless %}
 {% if is_paginated %}
 {% if has_previous %}
-    <span id="a_1" class="pagelink paginate-first"><a href="#page=1" title="First Page">&laquo;</a></span>&nbsp;
     <span id="b_{{ previous }}" class="paginate-prev pagelink"><a href="#page={{ previous }}" title="Previous Page">prev</a></span>&nbsp;
 {% else %}
-    <span id="a_1" class="paginate-first page-end">&laquo;</span>&nbsp;
     <span id="b_{{ previous }}" class="paginate-prev page-end">prev</span>&nbsp;
 {% endif %}
 {% for num in page_numbers %}
   {% ifequal num page %}
-    <span id="n_{{ num }}" class="paginate-current" title="Current Page">{{ num }}</span>&nbsp;
-  {% else %}
-    <span id="n_{{ num }}" class="pagelink"><a href="#page={{ num }}" title="Page {{ num }}">{{ num }}</a></span>&nbsp;
-  {% endifequal %}
+    <span id="n_{{ num }}" class="paginate-current" title="Current Page">{{ num }}</span>{% else %}<span id="n_{{ num }}" class="pagelink"><a href="#page={{ num }}" title="Page {{ num }}">{{ num }}</a></span>{% endifequal %}{% if not forloop.first or not jump_back %}&nbsp;{% endif %}{% ifequal forloop.revcounter0 1 %}{% if jump_forward %}...{% endif %}{% endifequal %}
+  {% if forloop.first and jump_back %}...{% endif %}
 {% endfor %}
 {% if has_next %}
-    <span id="y_{{ next }}" class="paginate-next pagelink"><a href="#page={{ next }}" title="Next Page">next</a></span>&nbsp;
-    <span id="z_{{ pages }}" class="pagelink paginate-last"><a href="#page={{ pages }}" title="Last Page">&raquo;</a></span>
+	<span id="y_{{ next }}" class="paginate-next pagelink"><a href="#page={{ next }}" title="Next Page">next</a></span>&nbsp;
 {% else %}
     <span id="y_{{ next }}" class="paginate-next page-end">next</span>&nbsp;
-    <span id="z_{{ pages }}" class="paginate-last page-end">&raquo;</span>
 {% endif %}
 {% else %}
 &nbsp;

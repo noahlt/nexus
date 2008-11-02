@@ -26,8 +26,21 @@ class SchoolYear(list):
 def visible(x):
     return x.filter(date__lte=date.today())
 
-def pagesof(page, pages, adjacent_pages = 2):
-    return [n for n in range(page - adjacent_pages, page + adjacent_pages + 1) if n > 0 and n <= pages]
+def pagesof(page, pages, adjacent_pages=3):
+    ret = [n for n in range(page - adjacent_pages, page + adjacent_pages + 1) if n > 0 and n <= pages]
+    while len(ret) < adjacent_pages*2+1 and ret[-1] < pages:
+        ret.append(ret[-1]+1)
+    while len(ret) < adjacent_pages*2+1 and ret[0] > 1:
+        ret.insert(0,ret[0]-1)
+    jump_forward = False
+    jump_back = False
+    if ret[0] > 1:
+        jump_back = True
+        ret[0] = 1
+    if ret[-1] < pages:
+        jump_forward = True
+        ret[-1] = pages
+    return (ret,jump_forward,jump_back)
 
 def what_school_year(date):
     if date.month <= 7:
@@ -46,14 +59,15 @@ def frontpage(request, content=None):
     if not content:
         paginator = Paginator(visible(Article.objects), PAGE_SIZE)
         articles = paginator.page(1).object_list
-        page = 1
         pages = paginator.num_pages
-        is_paginated = (pages > 1)
-        page_numbers = pagesof(page, pages)
-        next = 2
-        previous = None
-        has_next = True
-        has_previous = False
+        if pages > 1:
+            page = 1
+            is_paginated = True
+            page_numbers, jump_forward, jump_back = pagesof(page, pages)
+            previous = None
+            next = 2
+            has_next = True
+            has_previous = False
     try:
         current_issue = visible(Issue.objects)[0]
     except IndexError:
@@ -191,8 +205,6 @@ def snippet(article):
     return ret
 
 def paginate(request):
-    import time
-    time.sleep(1)
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
     have_articles = request.GET.getlist('have_articles')
     min_date = parse_date(request.GET.get('date_min'))
@@ -203,18 +215,21 @@ def paginate(request):
     dates = dates_of(articles, tags) # BEFORE date filtering
     articles = articles.filter(date__range=[min_date, max_date])
     paginator = Paginator(articles, PAGE_SIZE)
-    page = int(request.GET.get('page',1))
     pages = paginator.num_pages
-    is_paginated = (pages > 1)
-    page_numbers = pagesof(page, pages)
-    next = page + 1
-    previous = page - 1
-    has_next = (page < pages)
-    has_previous = (page > 1)
+    page = int(request.GET.get('page',1))
     try:
         object_list = paginator.page(page).object_list
     except (EmptyPage, InvalidPage):
-        object_list = paginator.page(paginator.num_pages).object_list
+        page = paginator.num_pages
+        object_list = paginator.page(page).object_list
+    if pages > 1:
+        is_paginated = True
+        page_numbers, jump_forward, jump_back = pagesof(page, pages)
+        next = page + 1
+        previous = page - 1
+        has_next = (page < pages)
+        has_jump = (pages > page_numbers[-1])
+        has_previous = (page > 1)
     results = [snippet(article) for article in object_list if article.slug not in have_articles]
     r = {'results': {'new': results, 'all': [ article.slug for article in object_list ]},
          'tags': tag_data(articles, tags, min_date, max_date), 'dates': dates,

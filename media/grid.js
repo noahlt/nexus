@@ -65,11 +65,11 @@ $(document).ready(function() {
 			State.select_dates(selection[2], selection[3]);
 			if (url) {
 				State.load_url(url);
-				State.load_selection(selection, true);
+				State.load_selection(selection, this.toString(true), true);
 			} else
-				State.load_selection(selection);
+				State.load_selection(selection, this.toString(true));
 		};
-		this.toString = function() {
+		this.toString = function(omit_page) {
 			var output = [];
 			if (url)
 				output[output.length] = url;
@@ -83,8 +83,8 @@ $(document).ready(function() {
 				if (selection[3] != DATE_MAX)
 					output[output.length] = "max=" + selection[3];
 			}
-			if (output.length == 0)
-				output[0] = "page=" + selection[1];
+			if (!omit_page && (output.length == 0 || selection[1] != 1))
+				output[output.length] = "page=" + selection[1];
 			return '#' + output.join(FS);
 		};
 		this.keep_hash = function() {
@@ -148,7 +148,8 @@ $(document).ready(function() {
 		});
 	};
 	// data = [tags, page, datemin, datemax]
-	State.load_selection = function(selection, just_url_update) {
+	// just_url_update means we don't want to hide the embedded content
+	State.load_selection = function(selection, hashstring, just_url_update) {
 		var hit = State.cached[selection];
 		function load(data) {
 			State.read_json_tags(data['tags']);
@@ -180,11 +181,11 @@ $(document).ready(function() {
 			if (just_url_update)
 			State.request2 = $.getJSON("/ajax/paginator",
 				{"tags": selection[0], "page": selection[1], "have_articles": have_articles,
-				 "date_min": selection[2], "date_max": selection[3]}, load);
+				 "date_min": selection[2], "date_max": selection[3], "hash": hashstring}, load);
 			else
 			State.request = $.getJSON("/ajax/paginator",
 				{"tags": selection[0], "page": selection[1], "have_articles": have_articles,
-				 "date_min": selection[2], "date_max": selection[3]}, load);
+				 "date_min": selection[2], "date_max": selection[3], "hash": hashstring}, load);
 		}
 	};
 	State.read_json_tags = function(taginfo) {
@@ -302,6 +303,8 @@ $(document).ready(function() {
 			State.scrollup();
 		});
 		$(".paginator .pagelink").unbind().click(function(event) {
+			if (event.ctrlKey || event.shiftKey)
+				return;
 			event.preventDefault();
 			State.current().page($(this).attr("id").substring(2)).enter($("#" + $(this).attr("id") + " a"));
 			State.scrollup();

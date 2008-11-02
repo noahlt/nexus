@@ -206,6 +206,9 @@ def snippet(article):
 
 def paginate(request):
     tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
+    hash = request.GET.get('hash', '#')
+    if hash != '#':
+        hash += ','
     have_articles = request.GET.getlist('have_articles')
     min_date = parse_date(request.GET.get('date_min'))
     max_date = month_end(parse_date(request.GET.get('date_max')))

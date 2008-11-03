@@ -7,6 +7,7 @@ from subprocess import call, PIPE
 
 JOIN_PATH = 'cache/pdf_joins/'
 THUMBS_PATH = 'cache/pdf_thumbs/'
+NICE = ('nice','-n15') # thumbnailing pdfs eats cpu
 
 def nameof(path):
     """Returns file basename stripped of file extension."""
@@ -17,21 +18,12 @@ def nameof(path):
 def mktemp(x):
     return dirname(x) + "/swp-" + basename(x)
 
-# This is only 2-3x slower than evince for short pdfs.
-# However, do not ***EVER*** feed it multi-page pdfs if you fear the OOM killer.
-def __pythonmagick_thumbnailer(input, output, size):
-    """Imagemagick backend for thumbnailing a PDF."""
-    input, output = input.encode(), output.encode() # c++ signatures hate unicode
-    pdf = PythonMagick.Image(input)
-    scale = size / float(pdf.size().width())
-    pdf.scale('%ix%i' % (pdf.size().width()*scale, pdf.size().height()*scale))
-    pdf.write(output)
-
-# almost identical to pythonmagick thumbnailer
+# Not that much slower than evince especially with large (nexus) pdfs.
+# Historically there were memory problems with multi-page pdfs... not anymore?
 def __imagemagick_thumbnailer(input, output, size):
     """Imagemagick backend for thumbnailing a PDF."""
     swap = mktemp(output)
-    call(('convert', input, swap))
+    call(NICE + ('convert', input, swap))
     image = Image.open(swap) # resize AGAIN to produce consistent sizes
     image = image.convert('RGBA')
     image.thumbnail((size,2048), Image.ANTIALIAS)
@@ -41,7 +33,7 @@ def __imagemagick_thumbnailer(input, output, size):
 def __evince_thumbnailer(input, output, size):
     """Evince backend for thumbnailing a PDF."""
     swap = mktemp(output)
-    call(('evince-thumbnailer', '-s', str(size), input, swap))
+    call(NICE + ('evince-thumbnailer', '-s', str(size), input, swap))
     image = Image.open(swap) # resize AGAIN to produce consistent sizes
     image = image.convert('RGBA')
     image.thumbnail((size,2048), Image.ANTIALIAS)
@@ -52,21 +44,17 @@ try:
     call(('evince-thumbnailer', devnull, devnull))
     __thumbnail_backend = __evince_thumbnailer
 except OSError:
-    try:
-        import PythonMagick
-        __thumbnail_backend = __pythonmagick_thumbnailer
-    except ImportError:
-        __thumbnail_backend = __imagemagick_thumbnailer
+    __thumbnail_backend = __imagemagick_thumbnailer
 
 def __pdftk_join(inputs, output):
     try:
-        call(['pdftk'] + inputs + ['cat', 'output', output])
+        call(('pdftk',) + tuple(inputs) + ('cat', 'output', output))
     except EnvironmentError:
         pass
 
 def __pypdf_join(inputs, output):
     # XXX avoid memory leaks
-    call([dirname(__file__) + '/pypdf_join', output] + inputs)
+    call((dirname(__file__) + '/pypdf_join', output) + tuple(inputs))
 
 try:
     call('pdftk', stdout=PIPE)

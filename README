@@ -5,5 +5,5 @@ Dependencies:
 	python-markdown
 	django_evolution (or disable it)
 	python-pysqlite2 (or similar if not using sqlite)
-	evince OR python-magic OR just imagemagick (evince much faster)
+	evince OR imagemagick (evince faster)
 	pdftk OR python-pypdf (both sufficiently fast; pdftk faster)

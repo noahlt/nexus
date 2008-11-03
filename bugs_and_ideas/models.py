@@ -1,6 +1,16 @@
 from django.db import models
 from django.contrib import admin
 
+FILE_PATH = 'attach/'
+
+class Attachment(models.Model):
+    file = models.FileField(upload_to=FILE_PATH)
+    parent = models.ForeignKey('Item')
+
+class AttachmentInline(admin.TabularInline):
+    model = Attachment
+    extra = 1
+
 class Item(models.Model):
     subject = models.CharField(max_length=200)
     description = models.TextField()
@@ -15,3 +25,4 @@ class Item(models.Model):
 
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('subject', 'status', 'priority')
+    inlines = [AttachmentInline]

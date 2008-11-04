@@ -17,9 +17,21 @@ from models import *
 PAGE_SIZE = 10
 METADATA_CACHE_SECONDS = 3600 * 12
 
-def register_voter(poll, meta):
+def can_vote(poll, meta):
     if not poll.active:
         return False
+    ip = meta.get('HTTP_X_FORWARDED_FOR', meta.get('REMOTE_ADDR'))
+    try:
+        voter = Voter.objects.get(ip=ip)
+    except:
+        return True
+    try:
+        voter.polls.get(id=poll.id)
+        return False
+    except:
+        return True
+
+def register_voter(poll, meta):
     ip = meta.get('HTTP_X_FORWARDED_FOR', meta.get('REMOTE_ADDR'))
     try:
         voter = Voter.objects.get(ip=ip)
@@ -28,27 +40,31 @@ def register_voter(poll, meta):
         voter.save()
     try:
         voter.polls.get(id=poll.id)
-        return False
     except:
         voter.polls.add(poll)
         voter.save()
-        return True
 
 def poll_results(request):
     if 'choice' not in request.GET:
         raise Http404
     choice = get_object_or_404(Choice, id=request.GET['choice'])
     poll = choice.parent
-    ticket = register_voter(poll, request.META)
-    if ticket:
+    if can_vote(poll, request.META):
+        register_voter(poll, request.META)
         choice.count += 1
         choice.save()
-    ret = {'counted': ticket, 'poll_id': poll.id, 'question': poll.question, 'answer':[(c.name,c.count) for c in poll.choice_set.all()]}
+    ret = {'poll_id': poll.id,
+           'html': get_template("poll_core.html").render(Context(locals()))}
     return HttpResponse(json.dumps(ret), mimetype='application/json')
 
+@never_cache
 def pollpage(request):
-    polls = Poll.objects.all()
+    polls = [(poll, can_vote(poll, request.META)) for poll in Poll.objects.all()]
     return render_to_response('polls.html', locals())
+
+def pollhist(request):
+    polls = Poll.objects.all()
+    return render_to_response('poll_history.html', locals())
 
 class SchoolYear(list):
     def __init__(self, year):
@@ -86,6 +102,7 @@ def staticpage(request, slug):
 def frontpage(request, content=None):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all()
+    DEBUG = settings.DEBUG
     sidelinks = SideBarLink.objects.all()
     types = (('tag-3', 
             [ tag for tag in Tag.objects.filter(type=3) if visible(tag.article_set).count() > 0 ]
@@ -226,6 +243,12 @@ def wrap(function):
     def wrapped(*args):
         return frontpage(args[0], function(*args).content)
     return wrapped
+
+def nocache(function):
+    @never_cache
+    def echo(*args):
+        return function(*args)
+    return echo
 
 def test(function):
     @never_cache

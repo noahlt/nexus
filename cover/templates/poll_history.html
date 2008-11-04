@@ -1,0 +1,15 @@
+{% extends "basic.html" %}
+
+{% block subtitle %}Old Polls{% endblock %}
+
+{% block content %}
+	{% for poll in polls %}
+        {% if not poll.active %}
+            {% include "poll.html" %}
+        {% endif %}
+	{% endfor %}
+{% endblock %}
+
+{% block extra %}
+	<a class="embeddable" href="/polls">See current polls.</a>
+{% endblock %}

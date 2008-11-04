@@ -1,0 +1,13 @@
+<h4>{{ poll.question }}{% if not poll.active %}<span class="type"> (closed)</span>{% endif %}</h4>
+{{ poll.date|date:"F d, Y" }}
+{% if poll.active and can_vote %}
+	<p id="poll_{{ poll.id }}" style="padding-left: 10px">
+		{% for choice in poll.choice_set.all %}
+		<a class="poll" href="/ajax/poll?choice={{ choice.id }}" id="choice_{{ choice.id }}">{{ choice.name }}</a><br>
+		{% endfor %}
+	</p>
+{% else %}
+	<p style="padding-left: 10px">
+        {% include "poll_core.html" %}
+	</p>
+{% endif %}

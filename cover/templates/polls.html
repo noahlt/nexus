@@ -1,23 +1,15 @@
 {% extends "basic.html" %}
 
-{% block subtitle %}Polls{% endblock %}
+{% block subtitle %}Current Polls{% endblock %}
 
 {% block content %}
-	{% for poll in polls %}
+	{% for poll, can_vote in polls %}
 		{% if poll.active %}
-		<h4>{{ poll.question }}</h4>
-		<div id="poll_{{ poll.id }}">
-			{% for choice in poll.choice_set.all %}
-			<a class="poll" href="/ajax/poll?choice={{ choice.id }}" id="choice_{{ choice.id }}">{{ choice.name }}</a><br>
-			{% endfor %}
-		</div>
-		{% else %}
-		<h4>{{ poll.question }} (closed)</h4>
-		<div>
-			{% for choice in poll.choice_set.all %}
-			{{ choice.name }}: {{ choice.count }}<br>
-			{% endfor %}
-		</div>
+			{% include "poll.html" %}
 		{% endif %}
 	{% endfor %}
+{% endblock %}
+
+{% block extra %}
+	<a class="embeddable" href="/poll_history">See closed polls.</a>
 {% endblock %}

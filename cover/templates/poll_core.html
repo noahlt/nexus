@@ -1,0 +1,3 @@
+{% for choice in poll.choice_set.all %}
+{{ choice.name }}: {{ choice.count }}<br>
+{% endfor %}

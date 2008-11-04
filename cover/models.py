@@ -184,7 +184,7 @@ class Article(models.Model):
     def auto_snippet(self):
         if self.snippet:
             return self.snippet
-        match = PARAGRAPH.search('\n' + self.fulltext)
+        match = PARAGRAPH.search('\n' + self.fulltext + '\n')
         return match.group()[1:-1] if match else ''
 
     def type(self):
@@ -292,7 +292,6 @@ class Choice(models.Model):
 
 class ChoiceInline(admin.TabularInline):
     model = Choice
-    exclude = ['count',]
     extra = 5
 
 class Poll(models.Model):
@@ -308,7 +307,7 @@ class Poll(models.Model):
 
 class Voter(models.Model):
     ip = models.CharField(max_length=30)
-    polls = models.ManyToManyField(Poll)
+    polls = models.ManyToManyField(Poll, blank=True, null=True)
 
 class PollAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]

@@ -1,5 +1,8 @@
 $(document).ready(function() {
 
+	if (window.location.pathname == "/test")
+		return;
+
 	var DATE_MIN = 100001;
 	var DATE_MAX = 300001;
 	var TAG_NORMAL = $("#alltags").width();
@@ -297,16 +300,7 @@ $(document).ready(function() {
 
 	function submit_poll(choice_id) {
 		$.getJSON("/ajax/poll", {"choice": choice_id}, function(r) {
-			var div = $("#poll_" + r['poll_id']);
-			var render = '<div>';
-			if (!r['counted'])
-				render += "Sorry, you can only vote once.<br>";
-			for (var i in r['answer']) {
-				var tuple = r['answer'][i];
-				render += tuple[0] + ": " + tuple[1] + "<br>"
-			}
-			render += "</div>";
-			div.html(render);
+			$("#poll_" + r['poll_id']).html(r['html'])
 		});
 	}
 
@@ -316,7 +310,7 @@ $(document).ready(function() {
 				return;
 			event.preventDefault();
 			var choice_id = $(this).attr("id").substring(7); // choice_
-			var ret = submit_poll(choice_id);
+			submit_poll(choice_id);
 		});
 		$("a").filter(".embeddable").unbind().click(function(event) {
 			if (event.ctrlKey || event.shiftKey)

@@ -7,7 +7,9 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery-disable-text-select.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
+{% if not DEBUG %}
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+{% endif %}
 <script type="text/javascript">
 google.load('search', '1.0');
 function OnLoad() {

@@ -159,7 +159,8 @@ $(document).ready(function() {
 			State.read_json_dates(data['dates']);
 			if (!just_url_update) {
 				State.read_json_results(data['results']);
-				$(".paginator").html(data['pages']);
+				$("#top_paginator").html(data['pages']);
+				$("#bottom_paginator").html(data['pages2']);
 			}
 			if (!hit) {
 				data['results']['new'] = null;

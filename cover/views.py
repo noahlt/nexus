@@ -123,6 +123,8 @@ def frontpage(request, content=None):
             next = 2
             has_next = True
             has_previous = False
+            # the bottom one
+            page_numbers2, jump_forward2, jump_back2 = pagesof(page, pages, 5)
     try:
         current_issue = visible(Issue.objects)[0]
     except IndexError:
@@ -292,10 +294,12 @@ def paginate(request):
         next = page + 1
         previous = page - 1
         has_next = (page < pages)
-        has_jump = (pages > page_numbers[-1])
         has_previous = (page > 1)
+        # the bottom one
+        page_numbers2, jump_forward2, jump_back2 = pagesof(page, pages, 6)
     results = [snippet(article) for article in object_list if article.slug not in have_articles]
     r = {'results': {'new': results, 'all': [ article.slug for article in object_list ]},
          'tags': tag_data(articles, tags, min_date, max_date), 'dates': dates,
-         'pages': get_template('paginator.html').render(Context(locals()))}
+         'pages': get_template('paginator.html').render(Context(locals())),
+         'pages2': get_template('paginator2.html').render(Context(locals()))}
     return HttpResponse(json.dumps(r), mimetype="application/json")

@@ -13,7 +13,7 @@ class AttachmentInline(admin.TabularInline):
 
 class Item(models.Model):
     subject = models.CharField(max_length=200)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=200, blank=True, null=True)
     priority = models.IntegerField(blank=True, null=True)
 

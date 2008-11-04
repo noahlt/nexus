@@ -13,7 +13,7 @@ google.load('search', '1.0');
 function OnLoad() {
   var searchControl = new google.search.SearchControl();
   var siteSearch = new google.search.WebSearch();
-  siteSearch.setSiteRestriction("http://nexus.webfactional.com");
+  siteSearch.setSiteRestriction("http://wvnexus.com");
   siteSearch.setUserDefinedLabel("The Nexus");
   var wvSearch = new google.search.WebSearch();
   wvSearch.setSiteRestriction("http://www.powayusd.com");
@@ -50,13 +50,15 @@ google.setOnLoadCallback(OnLoad, true);
 <noscript>Javascript is required to filter by tag and date.</noscript>
   <ul id="tags">
     <li class="activetag" id="alltags"><a href="#">(Show All)</a></li>
-    {% for tag in tags %}
-    <li id="tag_{{ tag.slug }}"><a class="not_embeddable" href="/tag/{{ tag.slug }}">
-        <span>
-        {{ tag.name }}
-        </span>
-    </a></li>
-    {% endfor %}
+	{% for type, tags in types %}
+		{% for tag in tags %}
+			<li class="{{ type }}" id="tag_{{ tag.slug }}"><a class="not_embeddable" href="/tag/{{ tag.slug }}">
+				<span>
+				{{ tag.name }}
+				</span>
+			</a></li>
+		{% endfor %}
+	{% endfor %}
   </ul>
   <ul id="gridtypes">
 	{% for link in sidelinks %}

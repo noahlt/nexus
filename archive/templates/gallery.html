@@ -5,7 +5,7 @@
     {% for year in years %}
         <div class="yearblock">
             <h2 class="year">{{ year }}</h2>
-            {% for issue in year %}
+            {% for issue in year reversed %}
 			<div class="shadow"><div class="s1"><div class="s2"><div class="s3"><div class="s4">
                 <a class="page embeddable" href="/archive/{{ issue.date }}">
 					<img alt="Issue {{ issue.date }}." src="{{ issue.calculate_thumbnail_url }}">

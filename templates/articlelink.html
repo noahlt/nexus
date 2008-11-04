@@ -1,1 +1,1 @@
-<a class="embeddable print_link" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{{ article.title|safe }}</a>
+<a class="embeddable print_link" href="/{{ article.date|date:"Y/m" }}/{{ article.slug }}">{% if article.type %}<span class="type">{{ article.type }}: </span>{% endif %}{{ article.title|safe }}</a>

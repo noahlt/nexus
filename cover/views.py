@@ -54,8 +54,13 @@ def frontpage(request, content=None):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all()
     sidelinks = SideBarLink.objects.all()
-    tags = [ tag for tag in Tag.objects.all()[0:20] if visible(tag.article_set).count() > 0 ]
-    tags.sort(key=lambda tag: visible(tag.article_set).count(), reverse=True)
+    types = (('tag-3', 
+            [ tag for tag in Tag.objects.filter(type=3) if visible(tag.article_set).count() > 0 ]
+        ), ('tag-2',
+            [ tag for tag in Tag.objects.filter(type=2) if visible(tag.article_set).count() > 0 ]
+        ), ('tag-1',
+            [ tag for tag in Tag.objects.filter(type=1) if visible(tag.article_set).count() > 0 ]
+        ))
     if not content:
         paginator = Paginator(visible(Article.objects), PAGE_SIZE)
         articles = paginator.page(1).object_list

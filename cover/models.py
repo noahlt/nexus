@@ -10,8 +10,8 @@ from nexus.archive.models import Issue
 NEWLINE = re.compile('([^\n])\n([^\n])')
 PARAGRAPH = re.compile(r'\n[A-Z][^\n]+\n')
 IMAGE_PATH = 'image_orig/'
+NORMAL, CATEGORY, SECTION = (1,2,3)
 ARTICLE_TEMPLATE = """{% extends "article.html" %}
-
 You can modify blocks by adding text/html around the {{ block.super }} part.
 Most anything outside the block tags will be ignored.
 
@@ -91,12 +91,14 @@ class AuthorAdmin(admin.ModelAdmin):
 class Tag(models.Model):
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=30, unique=True)
+    order = models.IntegerField(default=0)
+    type = models.IntegerField(choices=((NORMAL, "Normal"),(CATEGORY, "Category"), (SECTION, "Section")), default=NORMAL)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        ordering = ['name']
+        ordering = ['-type', 'order', 'name']
 
 class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
@@ -104,7 +106,7 @@ class TagAdmin(admin.ModelAdmin):
         return str(obj.article_set.count())
     def num_images(obj):
         return str(obj.image_set.count())
-    list_display = ('name', num_articles, num_images)
+    list_display = ('name', 'type', 'order', num_articles, num_images)
 
 class Image(models.Model):
     image = models.ImageField(upload_to='image_orig/')
@@ -184,6 +186,9 @@ class Article(models.Model):
             return self.snippet
         match = PARAGRAPH.search('\n' + self.fulltext)
         return match.group()[1:-1] if match else ''
+
+    def type(self):
+        return "Opinion" if 'opinion' in str(self.tags.all()).lower() else None
 
     def text(self):
         return NEWLINE.sub(r'\1  \n\2', self.fulltext)

@@ -71,7 +71,6 @@ a:hover {
 sup {
   color: #305cb6;
   font-size: 6pt;
-  font-family: sans;
 }
 
 p {
@@ -190,12 +189,10 @@ h2 {
 }
 
 h3 {
-  font-family: helvetica;
-  font-size: 14pt;
+  font-size: 13pt;
   font-weight: bold;
   text-align: left;
   padding-top: .5em;
-  letter-spacing: 1px;
 }
 
 h4 {
@@ -401,10 +398,6 @@ ul#dates, ul#gridtypes {
   border: 0;
 }
 
-#tags li.useless, li.useless {
-  border: 1px solid #333;
-}
-
 #tags .useless a, .useless a {
   color: #555;
 }
@@ -547,4 +540,20 @@ a.active {
 
 .page-end {
   color: #ccc;
+}
+
+.type {
+  font-weight: normal !important;
+}
+
+#tags li.tag-2 {
+  border-left: 1px solid green;
+}
+
+#tags li.tag-1 {
+  border-left: 1px solid #b07200;
+}
+
+#tags li.useless, li.useless {
+  border: 1px solid #333;
 }

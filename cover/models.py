@@ -10,7 +10,7 @@ from nexus.archive.models import Issue
 NEWLINE = re.compile('([^\n])\n([^\n])')
 PARAGRAPH = re.compile(r'\n[A-Z][^\n]+\n')
 IMAGE_PATH = 'image_orig/'
-NORMAL, CATEGORY, SECTION = (1,2,3)
+L1, L2, L3 = (1,2,3)
 ARTICLE_TEMPLATE = """{% extends "article.html" %}
 You can modify blocks by adding text/html around the {{ block.super }} part.
 Most anything outside the block tags will be ignored.
@@ -92,7 +92,8 @@ class Tag(models.Model):
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=30, unique=True)
     order = models.IntegerField(default=0)
-    type = models.IntegerField(choices=((NORMAL, "Normal"),(CATEGORY, "Category"), (SECTION, "Section")), default=NORMAL)
+    type = models.IntegerField(choices=((L1, "Bottom"),(L2, "Middle"), (L3, "Top")), default=L1)
+    article_prefix = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -106,7 +107,7 @@ class TagAdmin(admin.ModelAdmin):
         return str(obj.article_set.count())
     def num_images(obj):
         return str(obj.image_set.count())
-    list_display = ('name', 'type', 'order', num_articles, num_images)
+    list_display = ('name', 'type', 'article_prefix', 'order', num_articles, num_images)
 
 class Image(models.Model):
     image = models.ImageField(upload_to='image_orig/')
@@ -188,7 +189,9 @@ class Article(models.Model):
         return match.group()[1:-1] if match else ''
 
     def type(self):
-        return "Opinion" if 'opinion' in str(self.tags.all()).lower() else None
+        for tag in self.tags.filter(article_prefix__isnull=False):
+            return tag.article_prefix
+        return None
 
     def text(self):
         return NEWLINE.sub(r'\1  \n\2', self.fulltext)

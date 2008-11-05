@@ -59,11 +59,11 @@ def poll_results(request):
 
 @never_cache
 def pollpage(request):
-    polls = [(poll, can_vote(poll, request.META)) for poll in Poll.objects.all()]
+    polls = [(poll, can_vote(poll, request.META)) for poll in Poll.objects.filter(active=True)]
     return render_to_response('polls.html', locals())
 
 def pollhist(request):
-    polls = Poll.objects.all()
+    polls = Poll.objects.filter(active=False)
     return render_to_response('poll_history.html', locals())
 
 class SchoolYear(list):

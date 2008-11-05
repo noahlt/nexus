@@ -343,8 +343,10 @@ $(document).ready(function() {
 	$("#dates").disableTextSelect();
 	grab_links();
 
-	if (window.location.hash.length > 1) // permalink and not lone '#'
+	if (window.location.hash.length > 1) { // permalink and not lone '#'
+		$(".results").hide();
 		new State(window.location.hash).enter();
+	}
 
 	// hashes
 	EMPTY = new State().toString()

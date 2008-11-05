@@ -4,9 +4,7 @@
 
 {% block content %}
 	{% for poll, can_vote in polls %}
-		{% if poll.active %}
-			{% include "poll.html" %}
-		{% endif %}
+		{% include "poll.html" %}
 	{% endfor %}
 {% endblock %}
 

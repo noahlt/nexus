@@ -169,7 +169,7 @@ $(document).ready(function() {
 			if (!just_url_update) {
 				grab_links();
 				$(".embed").hide();
-				$(".results").show();
+				$(".results").show().css('visibility', 'default');
 				State.release_request();
 			}
 		}
@@ -343,8 +343,10 @@ $(document).ready(function() {
 	$("#dates").disableTextSelect();
 	grab_links();
 
-	if (window.location.hash.length > 1) // permalink and not lone '#'
+	if (window.location.hash.length > 1) { // permalink and not lone '#'
+		$(".results").css('visibility', 'hidden');
 		new State(window.location.hash).enter();
+	}
 
 	// hashes
 	EMPTY = new State().toString()

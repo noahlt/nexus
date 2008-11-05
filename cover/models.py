@@ -93,7 +93,8 @@ class Tag(models.Model):
     slug = models.SlugField(max_length=30, unique=True)
     order = models.IntegerField(default=0)
     type = models.IntegerField(choices=((L1, "Bottom"),(L2, "Middle"), (L3, "Top")), default=L1)
-    article_prefix = models.CharField(max_length=20, blank=True, null=True)
+    article_regex = models.CharField(max_length=50, blank=True, null=True)
+    article_regex_sub = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -107,7 +108,10 @@ class TagAdmin(admin.ModelAdmin):
         return str(obj.article_set.count())
     def num_images(obj):
         return str(obj.image_set.count())
-    list_display = ('name', 'type', 'article_prefix', 'order', num_articles, num_images)
+    def modifies_article_title(obj):
+        return bool(obj.article_regex and obj.article_regex_sub)
+    modifies_article_title.boolean = True
+    list_display = ('name', 'type', modifies_article_title, 'order', num_articles, num_images)
 
 class Image(models.Model):
     image = models.ImageField(upload_to='image_orig/')
@@ -188,10 +192,14 @@ class Article(models.Model):
         match = PARAGRAPH.search('\n' + self.fulltext + '\n')
         return match.group()[1:-1] if match else ''
 
-    def type(self):
-        for tag in self.tags.filter(article_prefix__isnull=False):
-            return tag.article_prefix
-        return None
+    def auto_title(self):
+        # filter() doesn't seem to work with __isnull=False !?
+        for tag in [ tag for tag in self.tags.all() if tag.article_regex and tag.article_regex_sub ]:
+            try:
+                return re.compile(tag.article_regex).sub(tag.article_regex_sub, self.title)
+            except Exception, e:
+                return '%s<br><span class="type" style="font-size:8pt;color:red">Exception applying tag regex: %s</span>' % (self.title, e)
+        return self.title
 
     def text(self):
         return NEWLINE.sub(r'\1  \n\2', self.fulltext)

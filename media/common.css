@@ -422,12 +422,6 @@ ul#dates, ul#gridtypes {
   cursor: default;
 }
 
-#tags li.activetag {
-  background-color: #007cb0;
-  border: 1px solid #07d;
-  color: white;
-}
-
 #tags li#alltags {
   background-color: #007cb0;
   border: 1px solid #007cb0;
@@ -557,4 +551,10 @@ a.active {
 
 #tags li.useless, li.useless {
   border: 1px solid #333;
+}
+
+#tags li.activetag {
+  background-color: #007cb0;
+  border: 1px solid #07d;
+  color: white;
 }

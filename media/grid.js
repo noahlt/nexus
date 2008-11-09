@@ -55,13 +55,16 @@ $(document).ready(function() {
 				}
 			}
 			if (change_hash || IFRAME) { // always do this on IE6/7
-				window.location.hash = State.hash = this.toString();
-				if (change_hash && IFRAME) {
-					var doc = document.getElementById("iFrame").contentWindow.document;
-					doc.open();
-					doc.write(this);
-					doc.close();
-				}
+				var foo = this;
+				State.queued_history = function() {
+					window.location.hash = State.hash = foo.toString();
+					if (change_hash && IFRAME) {
+						var doc = document.getElementById("iFrame").contentWindow.document;
+						doc.open();
+						doc.write(foo);
+						doc.close();
+					}
+				};
 			} else
 				State.hash = window.location.hash;
 			State.select_tags(selection[0]);
@@ -253,6 +256,10 @@ $(document).ready(function() {
 	// call at end of dom update
 	State.release_request = function() {
 		window.status = "Done";
+		if (State.queued_history) {
+			State.queued_history();
+			State.queued_history = null;
+		}
 		State.request = null;
 		State.request2 = null;
 		if (State.activelink)

@@ -89,7 +89,7 @@ $(document).ready(function() {
 				if (selection[3] != DATE_MAX)
 					output[output.length] = "max=" + selection[3];
 			}
-			if (!omit_page && (output.length == 0 || selection[1] != 1))
+			if (!omit_page && (output.length === 0 || selection[1] != 1))
 				output[output.length] = "page=" + selection[1];
 			return '#' + output.join(FS);
 		};
@@ -308,7 +308,7 @@ $(document).ready(function() {
 
 	function submit_poll(choice_id) {
 		$.getJSON("/ajax/poll", {"choice": choice_id}, function(r) {
-			$("#poll_" + r['poll_id']).html(r['html'])
+			$("#poll_" + r['poll_id']).html(r['html']);
 		});
 	}
 
@@ -356,7 +356,7 @@ $(document).ready(function() {
 	}
 
 	// hashes
-	EMPTY = new State().toString()
+	EMPTY = new State().toString();
 	function different(a, b) {
 		return a != b && !((!a || a == EMPTY) && (!b || b == EMPTY));
 	}

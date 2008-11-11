@@ -55,13 +55,13 @@ $(document).ready(function() {
 				}
 			}
 			if (change_hash || IFRAME) { // always do this on IE6/7
-				var foo = this;
+				var new_state_hash = this.toString();
 				State.queued_history = function() {
-					window.location.hash = State.hash = foo.toString();
+					window.location.hash = State.hash = new_state_hash;
 					if (change_hash && IFRAME) {
 						var doc = document.getElementById("iFrame").contentWindow.document;
 						doc.open();
-						doc.write(foo);
+						doc.write(new_state_hash);
 						doc.close();
 					}
 				};

@@ -7,8 +7,6 @@
 #search_results .gs-snippet {
   width: 550px;
 }
-#search_results a.gs-title, #search_results .gs-title b {
-}
 #search_results {
   overflow: hidden;
   padding-left: 1.7em;

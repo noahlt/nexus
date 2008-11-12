@@ -1,4 +1,32 @@
+google.load('search', '1.0');
 $(document).ready(function() {
+	var searchControl;
+	google.setOnLoadCallback(function() {
+		searchControl = new google.search.SearchControl();
+		var siteSearch = new google.search.WebSearch();
+		siteSearch.setSiteRestriction("http://wvnexus.com");
+		siteSearch.setUserDefinedLabel("The Nexus");
+		siteSearch.setQueryAddition("*"); // remove this? test later when better indexed 
+		options = new google.search.SearcherOptions();
+		options.setRoot(document.getElementById("search_results"));
+		options.setExpandMode(google.search.SearchControl.EXPAND_MODE_OPEN);
+		searchControl.addSearcher(siteSearch, options);
+		searchControl.setResultSetSize(google.search.Search.LARGE_RESULTSET);
+		searchControl.draw(document.getElementById("searchcontrol"));
+		searchControl.setSearchCompleteCallback(null, function(searchControl, searcher) {
+			$("a.gs-title").unbind().click(function(event) {
+				if (event.ctrlKey || event.shiftKey)
+					return;
+				if ($(this).attr("href").match(/\.[a-z]+$/)) {
+					$(this).attr("target", null);
+					return; // it's probably non-html
+				}
+				event.preventDefault();
+				State.current().enter($(this));
+				State.scrollup();
+			});
+		});
+	}, true);
 
 	if (window.location.pathname == "/test")
 		return;
@@ -47,8 +75,9 @@ $(document).ready(function() {
 			State.acquire_request();
 			if (link) {
 				State.activelink = link.addClass("active");
-				if (link.hasClass("embeddable"))
-					url = link.attr("href");
+				url = link.attr("href");
+				if (url.substring(0,1) == '#')
+					url = undefined;
 				if (url && url.match("http://")) { // make relative
 					url = url.substring(7);
 					url = url.substring(url.indexOf("/"));
@@ -238,6 +267,8 @@ $(document).ready(function() {
 			$("#none-visible").hide();
 	};
 	State.acquire_request = function() {
+		if (searchControl) // callback hasn't fired yet
+			searchControl.cancelSearch();
 		if (State.request) {
 			State.scroll_flag = false;
 			State.request.abort();
@@ -256,6 +287,8 @@ $(document).ready(function() {
 	// call at end of dom update
 	State.release_request = function() {
 		window.status = "Done";
+		if (searchControl) // callback hasn't fired yet
+			searchControl.clearAllResults();
 		if (State.queued_history) {
 			State.queued_history();
 			State.queued_history = null;

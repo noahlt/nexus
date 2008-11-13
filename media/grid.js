@@ -6,7 +6,6 @@ $(document).ready(function() {
 		var siteSearch = new google.search.WebSearch();
 		siteSearch.setSiteRestriction("http://wvnexus.com");
 		siteSearch.setUserDefinedLabel("The Nexus");
-		siteSearch.setQueryAddition("*"); // remove this? test later when better indexed 
 		options = new google.search.SearcherOptions();
 		options.setRoot(document.getElementById("search_results"));
 		options.setExpandMode(google.search.SearchControl.EXPAND_MODE_OPEN);
@@ -480,7 +479,7 @@ $(document).ready(function() {
 		}
 	});
 
-	if ($("#IE6_PLACEHOLDER").size() > 0) {
+	if ($.browser.msie) {
 		$('#tags li').animate({'width':'+=0'}); // hover only works after this...
 		$('#tags li').hover(function() {
 			if (!$(this).hasClass("useless"))

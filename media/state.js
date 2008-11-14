@@ -24,7 +24,9 @@
  *	[State].enter()
  *		- loads new state, overriding any other enter() operations
  *	[State].page(n)
- *		- sets page to 'n', returns self
+ *		- sets page to 'n'; returns self
+ *	[State].keep_hash()
+ *		- disables history tracking; returns self
  *  [State].toString()
  *		- returns serialized form to be used for reconstruction
  *
@@ -121,7 +123,7 @@ function State(arg1, sel) {
 		if (link) {
 			State.activelink = link.addClass("active");
 			url = link.attr("href");
-			if (url.substring(0,1) == '#')
+			if (url.match(/#/))
 				url = undefined;
 			if (url && url.match("http://")) { // make relative
 				url = url.substring(7);

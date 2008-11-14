@@ -30,6 +30,8 @@ $(document).ready(function() {
 	if (window.location.pathname == "/test")
 		return;
 
+	var title;
+	var counter = 0;
 	var DATE_MIN = 100001;
 	var DATE_MAX = 300001;
 	var TAG_NORMAL = $("#alltags").width();
@@ -86,6 +88,7 @@ $(document).ready(function() {
 				var new_state_hash = this.toString();
 				State.queued_history = function() {
 					window.location.hash = State.hash = new_state_hash;
+					counter++;
 					if (change_hash && IFRAME) {
 						var doc = document.getElementById("iFrame").contentWindow.document;
 						doc.open();
@@ -166,12 +169,15 @@ $(document).ready(function() {
 	State.load_url = function(url) {
 		State.request = $.ajax({
 			type: "GET",
+			dataType: "json",
 			url: "/ajax/embed" + url,
 			success: function(responseData) {
-				$("#embedded_content").html(responseData);
+				$("#embedded_content").html(responseData['html']);
+				title = responseData['title'];
 			},
 			error: function(xhr) {
 				$("#embedded_content").html(xhr.responseText);
+				title = "error";
 			},
 			complete: function() {
 				grab_links();
@@ -189,6 +195,7 @@ $(document).ready(function() {
 			State.read_json_tags(data['tags']);
 			State.read_json_dates(data['dates']);
 			if (!just_url_update) {
+				title = data['title'];
 				State.read_json_results(data['results']);
 				$("#top_paginator").html(data['pages']);
 				$("#bottom_paginator").html(data['pages2']);
@@ -292,6 +299,7 @@ $(document).ready(function() {
 			State.queued_history();
 			State.queued_history = null;
 		}
+		document.title = title;
 		State.request = null;
 		State.request2 = null;
 		if (State.activelink)

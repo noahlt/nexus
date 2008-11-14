@@ -1,11 +1,11 @@
 # Create your views here.
 
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.conf import settings
 from models import Issue
 from nexus.cover.models import InfoPage
-from nexus.cover.views import visible, what_school_year, SchoolYear, title
+from nexus.cover.views import visible, what_school_year, SchoolYear, render_json
 
 def issue_gallery(request):
     """Thumbnail gallery of front pages."""
@@ -19,14 +19,14 @@ def issue_gallery(request):
         if not years or years[-1].year != year:
             years.append(SchoolYear(year))
         years[-1].append(issue)
-    return title(render_to_response("gallery.html", locals()), "Issue Archive")
+    return render_json('Issue Archive', 'gallery.html', locals())
 
 def page_gallery(request, issue):
     """Previews of each page in the selected issue."""
     MEDIA_URL = settings.MEDIA_URL
     issue = get_object_or_404(Issue, date=issue)
     FOOTER = InfoPage.objects.all();
-    return title(render_to_response("issue.html", locals()), str(issue.date))
+    return render_json(issue.date, 'issue.html', locals())
 
 def current_page_gallery(request):
     """Previews of each page in the selected issue."""

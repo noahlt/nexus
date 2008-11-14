@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.views.decorators.cache import never_cache
 from django.http import HttpResponse
 from cover.views import *
 from archive.views import *
@@ -20,7 +21,7 @@ urlpatterns = patterns('',
 
 
     (r'^$', frontpage),
-    (r'^test$', nocache(frontpage)),
+    (r'^test$', never_cache(frontpage)),
     (r'^null/', lambda x: HttpResponse('')),
     (r'^ajax/embed/(\d{4})/(\d{2})/([-_a-zA-Z0-9]+)/$', articlepage),
     (r'^ajax/embed/author/([-_a-zA-Z0-9]+)$', authorpage),

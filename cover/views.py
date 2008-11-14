@@ -17,10 +17,6 @@ from models import *
 PAGE_SIZE = 10
 METADATA_CACHE_SECONDS = 3600 * 12
 
-def title(response, title):
-    response.title = "Nexus | " + title
-    return response
-
 def can_vote(poll, meta):
     if not poll.active:
         return False
@@ -64,11 +60,16 @@ def poll_results(request):
 @never_cache
 def pollpage(request):
     polls = [(poll, can_vote(poll, request.META)) for poll in Poll.objects.filter(active=True)]
-    return title(render_to_response('polls.html', locals()), "Polls")
+    return render_json('Polls', 'polls.html', locals())
+
+def render_json(title, template, vars):
+    return HttpResponse(
+        json.dumps({'html': get_template(template).render(Context(vars)), 'title': 'Nexus | %s' % title})
+    )
 
 def pollhist(request):
     polls = Poll.objects.filter(active=False)
-    return title(render_to_response('poll_history.html', locals()), "Old polls")
+    return render_json('Old polls', 'poll_history.html', locals())
 
 class SchoolYear(list):
     def __init__(self, year):
@@ -101,9 +102,13 @@ def what_school_year(date):
     return date.year + 1
 
 def staticpage(request, slug):
-    return HttpResponse(get_object_or_404(StaticPage, slug=slug).html)
+    obj = get_object_or_404(StaticPage, slug=slug)
+    return HttpResponse(
+        json.dumps({'html': obj.html, 'title': 'Nexus | %s' % obj.title}),
+        mimetype='application/json'
+    )
 
-def frontpage(request, title="The Nexus", content=None):
+def frontpage(request, title='The Nexus', content=None):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all()
     DEBUG = settings.DEBUG
@@ -153,7 +158,7 @@ def imageview(request, slug):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
     obj = get_object_or_404(Image, slug=slug)
-    return title(render_to_response('imageview.html', locals()), "Imageview")
+    return render_json('Image View', 'imageview.html', locals())
 
 def staff_auto_infopage(request):
     MEDIA_URL = settings.MEDIA_URL
@@ -172,13 +177,13 @@ def staff_auto_infopage(request):
                         if group not in groups:
                             groups.append(group)
                         author[1].append(groups.index(group) + 1)
-    return title(render_to_response('staff.html', locals()), info.title)
+    return render_json(info.title, 'staff.html', locals())
 
 def infopage(request, slug):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
     info = get_object_or_404(InfoPage, slug=slug)
-    return title(render_to_response('info.html', locals()), info.title)
+    return render_json(info.title, 'info.html', locals())
 
 def articlepage(request, year, month, slug):
     article = get_object_or_404(Article, slug=slug)
@@ -191,20 +196,20 @@ def articlepage(request, year, month, slug):
          'FOOTER': InfoPage.objects.all()}
     ))
     html = ImageFormatter(html, article.images.all()).format()
-    return title(HttpResponse(html), article.title)
+    return HttpResponse(json.dumps({'html': html, 'title': article.title}), mimetype='application/json')
 
 def tagpage(request, slug):
     FOOTER = InfoPage.objects.all();
     MEDIA_URL = settings.MEDIA_URL
     tag = get_object_or_404(Tag, slug=slug)
-    return title(render_to_response('tag.html', locals()), tag.name)
+    return render_json(tag.name, 'tag.html', locals())
 
 def authorpage(request, slug):
     FOOTER = InfoPage.objects.all();
     MEDIA_URL = settings.MEDIA_URL
     author = get_object_or_404(Author, slug=slug)
     authors = [ x for x in author.grouping.all() ]
-    return title(render_to_response('author.html', locals()), author.name)
+    return render_json(author.name, 'author.html', locals())
 
 def tag_data(articles, selected_tags, min_date, max_date):
     key = 'tag_data' + str((selected_tags, min_date, max_date))
@@ -247,24 +252,15 @@ def month_end(d):
 
 def wrap(function):
     def wrapped(*args):
-        response = function(*args)
-        try:
-            title = response.title
-        except:
-            title = "The Nexus"
-        return frontpage(args[0], title, response.content)
+        response = json.loads(function(*args).content)
+        return frontpage(args[0], response['title'], response['html'])
     return wrapped
-
-def nocache(function):
-    @never_cache
-    def echo(*args):
-        return function(*args)
-    return echo
 
 def test(function):
     @never_cache
     def minimal_wrap(*args):
-        return render_to_response('minimal.html', Context({'MEDIA_URL':settings.MEDIA_URL,'content':function(*args).content}))
+        response = json.loads(function(*args).content)
+        return render_to_response('minimal.html', Context({'MEDIA_URL': settings.MEDIA_URL, 'content': response['html'], 'title': response['title']}))
     return minimal_wrap
 
 def snippet(article):
@@ -310,5 +306,6 @@ def paginate(request):
     r = {'results': {'new': results, 'all': [ article.slug for article in object_list ]},
          'tags': tag_data(articles, tags, min_date, max_date), 'dates': dates,
          'pages': get_template('paginator.html').render(Context(locals())),
-         'pages2': get_template('paginator2.html').render(Context(locals()))}
-    return HttpResponse(json.dumps(r), mimetype="application/json")
+         'pages2': get_template('paginator2.html').render(Context(locals())),
+         'title': 'The Nexus | %i' % page if page > 1 else 'The Nexus'}
+    return HttpResponse(json.dumps(r), mimetype='application/json')

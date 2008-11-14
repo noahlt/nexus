@@ -266,11 +266,15 @@ class InfoPageAdmin(admin.ModelAdmin):
     list_display = ('title', 'link_name', 'order')
 
 class StaticPage(models.Model):
+    title = models.CharField(max_length=100)
     slug = models.CharField(max_length=20)
     html = models.TextField()
 
     def __str__(self):
         return "/static/%s" % self.slug
+
+class StaticAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('title',)}
 
 class SideBarLink(models.Model):
     link_name = models.CharField(max_length=100);

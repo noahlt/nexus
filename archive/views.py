@@ -5,7 +5,7 @@ from django.http import Http404
 from django.conf import settings
 from models import Issue
 from nexus.cover.models import InfoPage
-from nexus.cover.views import visible, what_school_year, SchoolYear
+from nexus.cover.views import visible, what_school_year, SchoolYear, title
 
 def issue_gallery(request):
     """Thumbnail gallery of front pages."""
@@ -19,14 +19,14 @@ def issue_gallery(request):
         if not years or years[-1].year != year:
             years.append(SchoolYear(year))
         years[-1].append(issue)
-    return render_to_response("gallery.html", locals())
+    return title(render_to_response("gallery.html", locals()), "Issue Archive")
 
 def page_gallery(request, issue):
     """Previews of each page in the selected issue."""
     MEDIA_URL = settings.MEDIA_URL
     issue = get_object_or_404(Issue, date=issue)
     FOOTER = InfoPage.objects.all();
-    return render_to_response("issue.html", locals())
+    return title(render_to_response("issue.html", locals()), str(issue.date))
 
 def current_page_gallery(request):
     """Previews of each page in the selected issue."""
@@ -37,5 +37,4 @@ def current_page_gallery(request):
             break
     if not issue:
         raise Http404
-    FOOTER = InfoPage.objects.all();
-    return render_to_response("issue.html", locals())
+    return page_gallery(request, issue.date)

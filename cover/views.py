@@ -17,6 +17,10 @@ from models import *
 PAGE_SIZE = 10
 METADATA_CACHE_SECONDS = 3600 * 12
 
+def title(response, title):
+    response.title = "Nexus | " + title
+    return response
+
 def can_vote(poll, meta):
     if not poll.active:
         return False
@@ -60,11 +64,11 @@ def poll_results(request):
 @never_cache
 def pollpage(request):
     polls = [(poll, can_vote(poll, request.META)) for poll in Poll.objects.filter(active=True)]
-    return render_to_response('polls.html', locals())
+    return title(render_to_response('polls.html', locals()), "Polls")
 
 def pollhist(request):
     polls = Poll.objects.filter(active=False)
-    return render_to_response('poll_history.html', locals())
+    return title(render_to_response('poll_history.html', locals()), "Old polls")
 
 class SchoolYear(list):
     def __init__(self, year):
@@ -99,7 +103,7 @@ def what_school_year(date):
 def staticpage(request, slug):
     return HttpResponse(get_object_or_404(StaticPage, slug=slug).html)
 
-def frontpage(request, content=None):
+def frontpage(request, title="The Nexus", content=None):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all()
     DEBUG = settings.DEBUG
@@ -149,7 +153,7 @@ def imageview(request, slug):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
     obj = get_object_or_404(Image, slug=slug)
-    return render_to_response('imageview.html', locals())
+    return title(render_to_response('imageview.html', locals()), "Imageview")
 
 def staff_auto_infopage(request):
     MEDIA_URL = settings.MEDIA_URL
@@ -158,23 +162,23 @@ def staff_auto_infopage(request):
     pool = Author.objects.filter(retired=False, nexus_staff=True).all()
     titles = []
     groups = []
-    for title in Title.objects.all():
-        authors_for_title = [ [author, []] for author in pool.filter(title=title) ]
+    for t in Title.objects.all():
+        authors_for_title = [ [author, []] for author in pool.filter(title=t) ]
         if authors_for_title:
-            titles.append((title.plural_form if len(authors_for_title) > 1 and title.plural_form else title, authors_for_title))
+            titles.append((t.plural_form if len(authors_for_title) > 1 and t.plural_form else t, authors_for_title))
             for author in authors_for_title:
                 for group in author[0].grouping.all():
                     if group.nexus_staff and not group.retired:
                         if group not in groups:
                             groups.append(group)
                         author[1].append(groups.index(group) + 1)
-    return render_to_response('staff.html', locals())
+    return title(render_to_response('staff.html', locals()), info.title)
 
 def infopage(request, slug):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
     info = get_object_or_404(InfoPage, slug=slug)
-    return render_to_response('info.html', locals())
+    return title(render_to_response('info.html', locals()), info.title)
 
 def articlepage(request, year, month, slug):
     article = get_object_or_404(Article, slug=slug)
@@ -187,20 +191,20 @@ def articlepage(request, year, month, slug):
          'FOOTER': InfoPage.objects.all()}
     ))
     html = ImageFormatter(html, article.images.all()).format()
-    return HttpResponse(html)
+    return title(HttpResponse(html), article.title)
 
 def tagpage(request, slug):
     FOOTER = InfoPage.objects.all();
     MEDIA_URL = settings.MEDIA_URL
     tag = get_object_or_404(Tag, slug=slug)
-    return render_to_response('tag.html', locals())
+    return title(render_to_response('tag.html', locals()), tag.name)
 
 def authorpage(request, slug):
     FOOTER = InfoPage.objects.all();
     MEDIA_URL = settings.MEDIA_URL
     author = get_object_or_404(Author, slug=slug)
     authors = [ x for x in author.grouping.all() ]
-    return render_to_response('author.html', locals())
+    return title(render_to_response('author.html', locals()), author.name)
 
 def tag_data(articles, selected_tags, min_date, max_date):
     key = 'tag_data' + str((selected_tags, min_date, max_date))
@@ -243,7 +247,12 @@ def month_end(d):
 
 def wrap(function):
     def wrapped(*args):
-        return frontpage(args[0], function(*args).content)
+        response = function(*args)
+        try:
+            title = response.title
+        except:
+            title = "The Nexus"
+        return frontpage(args[0], title, response.content)
     return wrapped
 
 def nocache(function):

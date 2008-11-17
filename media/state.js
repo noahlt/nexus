@@ -17,9 +17,9 @@
  * As object:
  *
  *	Construct by passing either of the two:
- *		"#/relative/url/path,page=1,tags=one.two,min=200801,max=200805,month=200805"
+ *		"#/url,page=1,tags=one.two,min=200801,max=200805,month=200805"
  *			(all args optional; url must be first if used)
- *		[[tag,tag], page#, min, max]
+ *		"/url", [[tag,tag], page#, min, max]
  *			(nulls will be replaced by default values)
  *	[State].enter()
  *		- loads new state, overriding any other enter() operations
@@ -29,27 +29,6 @@
  *		- disables history tracking; returns self
  *  [State].toString()
  *		- returns serialized form to be used for reconstruction
- *
- * Uses identifiers:
- *
- *	#IE6_PLACEHOLDER
- *	#alltags
- *	#bottom_paginator
- *	#dates
- *	#embedded_content
- *	#none-visible
- *	#poll
- *	#results
- *	#tags
- *	#top_paginator
- *	.active
- *	.activedate
- *	.activetag
- *	.embed
- *	.month
- *	.results
- *	.useless
- *	.year
  */
 
 google.load('search', '1.0');
@@ -80,6 +59,14 @@ google.setOnLoadCallback(function() {
 	});
 }, true);
 
+function make_relative(url) {
+	if (url.match("http://")) {
+		url = url.substring(7);
+		url = url.substring(url.indexOf("/"));
+	}
+	return url;
+}
+
 var DATE_MIN = 100001;
 var DATE_MAX = 300001;
 var FS = ",", FS2 = ".";
@@ -108,7 +95,7 @@ function State(arg1, sel) {
 		}
 	} else {
 		if (arg1)
-			url = arg1;
+			url = make_relative(arg1);
 		if (sel)
 			selection = sel;
 	}
@@ -123,11 +110,11 @@ function State(arg1, sel) {
 		if (link) {
 			State.activelink = link.addClass("active");
 			url = link.attr("href");
-			if (url.match(/#/))
-				url = undefined;
-			if (url && url.match("http://")) { // make relative
-				url = url.substring(7);
-				url = url.substring(url.indexOf("/"));
+			if (url) {
+				if (url.match(/#/)) // 'embeddable' or search result link
+					url = undefined;
+				else
+					url = make_relative(url);
 			}
 		}
 		if (change_hash || IFRAME) { // always do this on IE6/7

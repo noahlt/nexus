@@ -4,6 +4,8 @@
  *
  *	State.init(tag_width_normal, tag_width_expanded, iframe, ungrab_function)
  *		- run before using any other functions
+ *	State.init_history_monitor()
+ *		- start after any page redirects/loading
  *	State.current()
  *		- returns current state of page with a page number of 1
  *	State.scrollup()
@@ -127,16 +129,13 @@ function State(arg1, sel) {
 			}
 		}
 		if (change_hash || IFRAME) { // always do this on IE6/7
-			var new_state_hash = this.toString();
-			State.queued_history = function() {
-				window.location.hash = State.hash = new_state_hash;
-				if (change_hash && IFRAME) {
-					var doc = document.getElementById("iFrame").contentWindow.document;
-					doc.open();
-					doc.write(new_state_hash);
-					doc.close();
-				}
-			};
+			window.location.hash = State.hash = this.toString();
+			if (change_hash && IFRAME) {
+				var doc = document.getElementById("iFrame").contentWindow.document;
+				doc.open();
+				doc.write(this);
+				doc.close();
+			}
 		} else
 			State.hash = window.location.hash;
 		State.select_tags(selection[0]);
@@ -179,12 +178,13 @@ State.init = function(tag_norm, tag_exp, iframe, grab) {
 	IFRAME = iframe;
 	State.grab_links = grab;
 	State.grab_links();
-	// hashes
+};
+
+State.init_history_monitor = function() {
 	EMPTY = new State().toString();
 	function different(a, b) {
 		return a != b && !((!a || a == EMPTY) && (!b || b == EMPTY));
 	}
-
 	setInterval(function() {
 		if (different(window.location.hash, State.hash)) {
 			State.check_and_incr(window.location.hash, State.hash);
@@ -373,10 +373,6 @@ State.release_request = function() {
 	window.status = "Done";
 	if (google_ok)
 		searchControl.clearAllResults();
-	if (State.queued_history) {
-		State.queued_history();
-		State.queued_history = null;
-	}
 	document.title = State.title;
 	State.request = null;
 	State.request2 = null;

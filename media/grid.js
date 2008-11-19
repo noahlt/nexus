@@ -40,8 +40,10 @@ $(document).ready(function() {
     });
 
 	// redirect to hash id if possible for better functionality
-	if (window.location.pathname != "/")
+	if (window.location.pathname != "/") {
 		location.replace("/" + new State(window.location.pathname));
+		return;
+	}
 
 	var selecting_dates = false;
 	var down = false;
@@ -53,6 +55,8 @@ $(document).ready(function() {
 		$(".results").hide();
 		new State(window.location.hash).enter();
 	}
+
+	State.init_history_monitor();
 
 	$("#tags li").not("#alltags").click(function(event) {
         if (event.ctrlKey || event.shiftKey)

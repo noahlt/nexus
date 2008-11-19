@@ -112,7 +112,6 @@ def frontpage(request, title='The Nexus', content=None, page=1):
     frontpage = True # for paginator.html
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all()
-    DEBUG = settings.DEBUG
     sidelinks = SideBarLink.objects.all()
     types = (('tag-3', 
             [ tag for tag in Tag.objects.filter(type=3) if visible(tag.article_set).count() > 0 ]
@@ -130,7 +129,7 @@ def frontpage(request, title='The Nexus', content=None, page=1):
             is_paginated = True
             page_numbers, jump_forward, jump_back = pagesof(page, pages)
             previous = page - 1
-            next = 2
+            next = page + 1
             has_next = (page < pages)
             has_previous = (page > 1)
             # the bottom one

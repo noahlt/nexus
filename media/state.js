@@ -31,33 +31,37 @@
  *		- returns serialized form to be used for reconstruction
  */
 
-google.load('search', '1.0');
-var searchControl;
-google.setOnLoadCallback(function() {
-	searchControl = new google.search.SearchControl();
-	var siteSearch = new google.search.WebSearch();
-	siteSearch.setSiteRestriction("http://wvnexus.com");
-	siteSearch.setUserDefinedLabel("The Nexus");
-	options = new google.search.SearcherOptions();
-	options.setRoot(document.getElementById("search_results"));
-	options.setExpandMode(google.search.SearchControl.EXPAND_MODE_OPEN);
-	searchControl.addSearcher(siteSearch, options);
-	searchControl.setResultSetSize(google.search.Search.LARGE_RESULTSET);
-	searchControl.draw(document.getElementById("searchcontrol"));
-	searchControl.setSearchCompleteCallback(null, function(searchControl, searcher) {
-		$("a.gs-title").unbind().click(function(event) {
-			if (event.ctrlKey || event.shiftKey)
-				return;
-			if ($(this).attr("href").match(/\.[a-z]+$/)) {
-				$(this).attr("target", null);
-				return; // it's probably non-html
-			}
-			event.preventDefault();
-			State.current().enter($(this));
-			State.scrollup();
+var google_ok = false;
+try {
+	google.load('search', '1.0');
+	var searchControl;
+	google.setOnLoadCallback(function() {
+		searchControl = new google.search.SearchControl();
+		var siteSearch = new google.search.WebSearch();
+		siteSearch.setSiteRestriction("http://wvnexus.com");
+		siteSearch.setUserDefinedLabel("The Nexus");
+		options = new google.search.SearcherOptions();
+		options.setRoot(document.getElementById("search_results"));
+		options.setExpandMode(google.search.SearchControl.EXPAND_MODE_OPEN);
+		searchControl.addSearcher(siteSearch, options);
+		searchControl.setResultSetSize(google.search.Search.LARGE_RESULTSET);
+		searchControl.draw(document.getElementById("searchcontrol"));
+		searchControl.setSearchCompleteCallback(null, function(searchControl, searcher) {
+			$("a.gs-title").unbind().click(function(event) {
+				if (event.ctrlKey || event.shiftKey)
+					return;
+				if ($(this).attr("href").match(/\.[a-z]+$/)) {
+					$(this).attr("target", null);
+					return; // it's probably non-html
+				}
+				event.preventDefault();
+				State.current().enter($(this));
+				State.scrollup();
+			});
 		});
-	});
-}, true);
+		google_ok = true;
+	}, true);
+} catch (e) { } // google_ok will then be false
 
 function make_relative(url) {
 	if (url.match("http://")) {
@@ -94,8 +98,13 @@ function State(arg1, sel) {
 				selection[3] = x.substring(4);
 		}
 	} else {
-		if (arg1)
-			url = make_relative(arg1);
+		if (arg1) {
+			var page_match = arg1.match(/^\/[0-9]+$/);
+			if (page_match)
+				selection[1] = page_match.toString().substring(1);
+			else
+				url = make_relative(arg1);
+		}
 		if (sel)
 			selection = sel;
 	}
@@ -204,7 +213,7 @@ State.check_and_incr = function(a,b) {
 		alert("This script appears to be stuck in an infinite loop.\n("
 		+ State.request_count + " requests in " + (dt/1000)
 		+ " seconds)\n\nPlease report this bug.");
-		alert("DEBUG: " + a + " vs " + b);
+		alert("DEBUG: [" + a + "] vs [" + b + "]");
 		State.disabled = true;
 	}
 };
@@ -341,7 +350,7 @@ State.read_json_results = function(results) {
 };
 
 State.acquire_request = function() {
-	if (searchControl) // callback hasn't fired yet
+	if (google_ok)
 		searchControl.cancelSearch();
 	if (State.request) {
 		State.scroll_flag = false;
@@ -362,7 +371,7 @@ State.acquire_request = function() {
 // call at end of dom update
 State.release_request = function() {
 	window.status = "Done";
-	if (searchControl) // callback hasn't fired yet
+	if (google_ok)
 		searchControl.clearAllResults();
 	if (State.queued_history) {
 		State.queued_history();

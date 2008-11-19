@@ -223,9 +223,11 @@ class ArticleAdminForm(forms.ModelForm):
     def clean_printed(self):
         p = self.cleaned_data['printed']
         if not p and not self.cleaned_data['never_published']:
-            raise forms.ValidationError("Check 'never published' if this article was never printed.");
+            raise forms.ValidationError("Check 'never published' if this article was never printed.")
         if p and self.cleaned_data['never_published']:
-            raise forms.ValidationError("Uncheck 'never published' if this article was printed.");
+            raise forms.ValidationError("Uncheck 'never published' if this article was printed.")
+        if p and p.date != self.cleaned_data['date']:
+            raise forms.ValidationError("Printed date disagrees with publication date.")
         return p
 
 class ArticleAdmin(admin.ModelAdmin):

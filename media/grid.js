@@ -33,6 +33,12 @@ $(document).ready(function() {
 		});
 	});
 
+    // delete noscript compatibility links
+    $(".paginator .pagelink a").map(function() {
+        var stripped = $(this).attr("href").substring($(this).attr("href").search("#"));
+        $(this).attr("href", stripped);
+    });
+
 	// redirect to hash id if possible for better functionality
 	if (window.location.pathname != "/")
 		location.replace("/" + new State(window.location.pathname));

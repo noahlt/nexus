@@ -108,7 +108,8 @@ def staticpage(request, slug):
         mimetype='application/json'
     )
 
-def frontpage(request, title='The Nexus', content=None):
+def frontpage(request, title='The Nexus', content=None, page=1):
+    frontpage = True # for paginator.html
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all()
     DEBUG = settings.DEBUG
@@ -122,18 +123,19 @@ def frontpage(request, title='The Nexus', content=None):
         ))
     if not content:
         paginator = Paginator(visible(Article.objects), PAGE_SIZE)
-        articles = paginator.page(1).object_list
         pages = paginator.num_pages
+        if page > pages or page < 1:
+            raise Http404
         if pages > 1:
-            page = 1
             is_paginated = True
             page_numbers, jump_forward, jump_back = pagesof(page, pages)
-            previous = None
+            previous = page - 1
             next = 2
-            has_next = True
-            has_previous = False
+            has_next = (page < pages)
+            has_previous = (page > 1)
             # the bottom one
             page_numbers2, jump_forward2, jump_back2 = pagesof(page, pages, 5)
+        articles = paginator.page(page).object_list
     try:
         current_issue = visible(Issue.objects)[0]
     except IndexError:
@@ -153,6 +155,10 @@ def frontpage(request, title='The Nexus', content=None):
             dates[-1].append(date)
         cache.set(key, dates, METADATA_CACHE_SECONDS)
     return HttpResponse(get_template('frontpage.html').render(Context(locals())))
+
+def frontpage_paginated(request, page):
+    title = 'The Nexus' if page == 1 else 'The Nexus | %s' % page
+    return frontpage(request, page=int(page), title=title)
 
 def imageview(request, slug):
     MEDIA_URL = settings.MEDIA_URL
@@ -253,7 +259,7 @@ def month_end(d):
 def wrap(function):
     def wrapped(*args):
         response = json.loads(function(*args).content)
-        return frontpage(args[0], response['title'], response['html'])
+        return frontpage(args[0], title=response['title'], content=response['html'])
     return wrapped
 
 def test(function):

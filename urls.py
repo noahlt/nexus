@@ -50,6 +50,7 @@ urlpatterns = patterns('',
     (r'^archive/$', wrap(issue_gallery)),
     (r'^archive/current/$', wrap(current_page_gallery)),
     (r'^archive/(\d{4}-\d{2}-\d{2})/$', wrap(page_gallery)),
+    (r'^(\d+)$', frontpage_paginated),
 
     (r'^test/(\d{4})/(\d{2})/([-_a-zA-Z0-9]+).*$', test(articlepage)),
     (r'^test/image/([-_a-zA-Z0-9]+).*$', test(imageview)),

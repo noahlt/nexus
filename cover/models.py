@@ -40,7 +40,7 @@ class Title(models.Model):
         return "%s" % self.title
 
     class Meta:
-        ordering = ('order',)
+        ordering = ('order', 'id')
 
 class TitleAdmin(admin.ModelAdmin):
     def active_authors(obj):
@@ -63,7 +63,7 @@ class Author(models.Model):
         return self.name
 
     class Meta:
-        ordering = ('retired', 'name',)
+        ordering = ('retired', 'name', 'id')
 
 class AuthorAdminForm(forms.ModelForm):
     def clean_grouping(self):
@@ -100,7 +100,7 @@ class Tag(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['-type', 'order', 'name']
+        ordering = ['-type', 'order', 'name', 'id']
 
 class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
@@ -140,7 +140,7 @@ class Image(models.Model):
         return resize(self.image.path, ARTICLE_MAX_SIZE, self.lossless)
 
     class Meta:
-        ordering = ['-priority']
+        ordering = ['-priority', 'id']
 
     def __str__(self):
         return self.slug
@@ -261,7 +261,7 @@ class InfoPage(models.Model):
         return "/info/%s -> %s" % (self.link_name, self.title)
 
     class Meta:
-        ordering = ['order']
+        ordering = ['order', 'id']
 
 class InfoPageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('link_name',)}
@@ -287,7 +287,7 @@ class SideBarLink(models.Model):
         return self.link_target[0] != '/'
 
     class Meta:
-        ordering = ['order']
+        ordering = ['order', 'id']
 
     def __str__(self):
         return "%s -> %s" % (self.link_name, self.link_target)
@@ -305,7 +305,7 @@ class Choice(models.Model):
         return "%s: %i" % (self.name, self.count)
 
     class Meta:
-        ordering = ('order',)
+        ordering = ('order', 'id')
 
 class ChoiceInline(admin.TabularInline):
     model = Choice
@@ -320,7 +320,7 @@ class Poll(models.Model):
         return self.question
 
     class Meta:
-        ordering = ('-active','date')
+        ordering = ('-active', 'date', 'id')
 
 class Voter(models.Model):
     ip = models.CharField(max_length=30)

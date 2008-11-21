@@ -34,7 +34,7 @@ class PDF(models.Model):
             return "[corrupted file]"
 
     class Meta:
-        ordering = ['order']
+        ordering = ['order', 'id']
 
 class PDFAdminForm(forms.ModelForm):
     def clean_pdf(self):
@@ -72,4 +72,4 @@ class Issue(models.Model):
         return "%s" % self.date
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['-date', 'id']

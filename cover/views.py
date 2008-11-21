@@ -141,7 +141,7 @@ def frontpage(request, title='The Nexus', content=None, page=1):
         current_issue = False
     key = 'frontpage_dates_key'
     try:
-        key += '%s' % visible(Article.objects)[0]
+        key += '%s' % visible(Article.objects)[0].id
     except IndexError:
         pass
     dates = cache.get(key)
@@ -269,7 +269,7 @@ def test(function):
     return minimal_wrap
 
 def snippet(article):
-    key = 'snippet' + str(article)
+    key = 'snippet' + str(article.id)
     cached = cache.get(key)
     if cached:
         return cached

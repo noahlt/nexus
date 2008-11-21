@@ -29,7 +29,7 @@
  *		- sets page to 'n'; returns self
  *	[State].keep_hash()
  *		- disables history tracking; returns self
- *  [State].toString()
+ *	[State].toString()
  *		- returns serialized form to be used for reconstruction
  */
 

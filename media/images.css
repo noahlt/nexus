@@ -77,11 +77,11 @@
 	display: none;
 }
 
-.nocaption .caption {
+.nocaption .caption, .cartoon .caption, .comic .caption {
 	display: none;
 }
 
-.noattr .author {
+.noattr .author, .cartoon .author, .comic .author {
 	display: none;
 }
 

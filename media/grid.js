@@ -33,11 +33,11 @@ $(document).ready(function() {
 		});
 	});
 
-    // delete noscript compatibility links
-    $(".paginator .pagelink a").map(function() {
-        var stripped = $(this).attr("href").substring($(this).attr("href").search("#"));
-        $(this).attr("href", stripped);
-    });
+	// delete noscript compatibility links
+	$(".paginator .pagelink a").map(function() {
+		var stripped = $(this).attr("href").substring($(this).attr("href").search("#"));
+		$(this).attr("href", stripped);
+	});
 
 	// redirect to hash id if possible for better functionality
 	if (window.location.pathname != "/") {
@@ -59,9 +59,9 @@ $(document).ready(function() {
 	State.init_history_monitor();
 
 	$("#tags li").not("#alltags").click(function(event) {
-        if (event.ctrlKey || event.shiftKey)
-            return;
-        event.preventDefault();
+		if (event.ctrlKey || event.shiftKey)
+			return;
+		event.preventDefault();
 		if ($(this).hasClass("useless") && !$(this).hasClass("activetag"))
 			$("#tags .activetag").not("#alltags").removeClass("activetag");
 		tagslug = $(this).attr("id");
@@ -73,7 +73,7 @@ $(document).ready(function() {
 	});
 
 	$("#tags #alltags").click(function(event) {
-        event.preventDefault();
+		event.preventDefault();
 		$("#dates li").removeClass("activedate");
 		selecting_dates = false;
 		$("#tags li").removeClass("useless");
@@ -83,13 +83,13 @@ $(document).ready(function() {
 	});
 
 	$("#tags li a").click(function(event) {
-        if (event.ctrlKey || event.shiftKey)
-            return;
+		if (event.ctrlKey || event.shiftKey)
+			return;
 		event.preventDefault();
 	});
 
 	$("#dates h3").click(function(event) {
-        event.preventDefault();
+		event.preventDefault();
 		var min = ($(this).text().substring(5) - 1) + "08";
 		var max = $(this).text().substring(5) + "07"; // year_
 		var some_newly_selected = false;

@@ -13,6 +13,16 @@ ARTICLE_MAX_SIZE = (530,2048) # remember to sync with images.css
 SMALL_MAX_SIZE = (255,2048) # remeber to sync with images.css
 THUMBS_PATH = 'cache/image_thumbs/'
 
+def autoclass(obj, tags):
+    for tag in tags:
+        if tag.slug.startswith('cartoon') or tag.slug.startswith('comic'):
+            return 'cartoon:'
+    if obj.image.width < 200 and obj.image.height < 200:
+        return 'thumb:'
+    if obj.image.width < 500 or float(obj.image.height) / float(obj.image.width) > .70:
+        return 'small:'
+    return ''
+
 def resize(input, max_size, hq):
     if hq:
         name = '@%ix%i.png' % max_size

@@ -4,10 +4,11 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
-from imageutil import resize, THUMB_MAX_SIZE, ARTICLE_MAX_SIZE, SMALL_MAX_SIZE
+from imageutil import *
 from nexus.archive.models import Issue
 
 NEWLINE = re.compile('([^\n])\n([^\n])')
+IMAGE_HELP = settings.MEDIA_URL + 'doc/embedding-images.txt'
 PARAGRAPH = re.compile(r'\n[A-Z][^\n]+\n')
 IMAGE_PATH = 'image_orig/'
 L1, L2, L3 = (1,2,3)
@@ -52,8 +53,7 @@ class Author(models.Model):
     slug = models.SlugField(max_length=30, unique=True)
     bio = models.TextField(blank=True, null=True)
     title = models.ForeignKey(Title, blank=True, null=True, help_text="Leave blank if unknown or to exclude author from staff page.")
-    year = models.PositiveSmallIntegerField(blank=True, null=True,
-        help_text="Year of graduation, if applicable.")
+    year = models.PositiveSmallIntegerField(blank=True, null=True, help_text="Year of graduation, if applicable.")
     retired = models.BooleanField(help_text="Adds 'former' to title; hides author from staff list.")
     nexus_staff = models.BooleanField(help_text="Allows author to show up in staff list if not retired.")
     grouping = models.ManyToManyField('self', blank=True, null=True,
@@ -214,12 +214,20 @@ class Article(models.Model):
         ordering = ['-date', '-printed', '-id']
 
 class ArticleAdminForm(forms.ModelForm):
+
+    def clean_images(self):
+        for image in self.cleaned_data['images']:
+            if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, self.cleaned_data['fulltext']):
+                self.cleaned_data['fulltext'] = '[[' + autoclass(image, self.cleaned_data['tags']) + image.slug + ']]\r\n' + self.cleaned_data['fulltext']
+        return self.cleaned_data['images']
+
     def clean_title(self):
         try:
             self.cleaned_data['title'].encode()
         except:
             return self.cleaned_data['title'].encode('ascii', 'xmlcharrefreplace')
         return self.cleaned_data['title']
+
     def clean_printed(self):
         p = self.cleaned_data['printed']
         if not p and not self.cleaned_data['never_published']:

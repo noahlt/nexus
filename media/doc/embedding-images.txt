@@ -54,6 +54,10 @@ Embedding images in articles:
 		thumb  -  shows thumbnail with no caption or attribution
 		left   -  float image at left, only affects small/thumb images
 
+	Presets:
+
+		cartoon/comic - noattr + nocaption combined
+
 	Override display settings:
 
 		noscale       -  don't stretch image (use for non-photographic images)

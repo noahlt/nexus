@@ -7,7 +7,11 @@
 {% block content %}
 	<br>
 	<a href="{{ issue.calculate_join_url }}">Download the complete issue.</a>
-	<div class=alist>
+	<br>
+	{% if issue.article_set.all %}
+	<div class="list-hider" style="padding: .2em 0 .5em .5em"><a href="#" class="list-hider">...or read online ({{ issue.article_set.count }})</a></div>
+	{% endif %}
+	<div class="alist" style="display:none">
 	{% for article in issue.article_set.all %}
 	{% include "articlelink.html" %}<br>
 	{% endfor %}

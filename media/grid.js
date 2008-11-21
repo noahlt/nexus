@@ -7,6 +7,11 @@ $(document).ready(function() {
 	var TAG_EXPANDED = TAG_NORMAL + 13;
 	var IFRAME = $("iframe").size() > 0;
 	State.init(TAG_NORMAL, TAG_EXPANDED, IFRAME, function() {
+		$("a").filter(".list-hider").unbind().click(function(event) {
+			event.preventDefault();
+			$(".alist").show("slow");
+			$(".list-hider").hide();
+		});
 		$("a").filter(".poll").unbind().click(function(event) {
 			if (event.ctrlKey || event.shiftKey)
 				return;

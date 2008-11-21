@@ -18,13 +18,15 @@
  *
  * As object:
  *
- *	Construct by passing either of the two:
- *		"#/url,page=1,tags=one.two,min=200801,max=200805,month=200805"
- *			(all args optional; url must be first if used)
- *		"/url", [[tag,tag], page#, min, max]
- *			(nulls will be replaced by default values)
- *	[State].enter()
- *		- loads new state, overriding any other enter() operations
+ *	Construct by either of the two:
+ *	new State("#/url,page=1,tags=one.two,min=200801,max=200805,month=200805")
+ *		- all args optional; url must be first if used
+ *	new State("/url", [[tag,tag], page#, min, max])
+ *		- nulls will be replaced by default values
+ *	[State].enter(link)
+ *		- loads new state w/optional link, aborting other enter() operations
+ *	[State].noqueue()
+ *		- disables history queueing - use to avoid race conditions; returns self
  *	[State].page(n)
  *		- sets page to 'n'; returns self
  *	[State].keep_hash()
@@ -42,7 +44,7 @@ try {
 		var siteSearch = new google.search.WebSearch();
 		siteSearch.setSiteRestriction("http://wvnexus.com");
 		siteSearch.setUserDefinedLabel("The Nexus");
-		options = new google.search.SearcherOptions();
+		var options = new google.search.SearcherOptions();
 		options.setRoot(document.getElementById("search_results"));
 		options.setExpandMode(google.search.SearchControl.EXPAND_MODE_OPEN);
 		searchControl.addSearcher(siteSearch, options);
@@ -80,6 +82,7 @@ var TAG_NORMAL, TAG_EXPANDED, IFRAME; // use State.init(a,b,c,grab_links)
 
 function State(arg1, sel) {
 	change_hash = true;
+	atomic = false;
 	url = '';
 	selection = [[], 1, DATE_MIN, DATE_MAX];
 	if (arg1 && arg1.charAt(0) == "#") {
@@ -129,13 +132,18 @@ function State(arg1, sel) {
 			}
 		}
 		if (change_hash || IFRAME) { // always do this on IE6/7
-			window.location.hash = State.hash = this.toString();
-			if (change_hash && IFRAME) {
-				var doc = document.getElementById("iFrame").contentWindow.document;
-				doc.open();
-				doc.write(this);
-				doc.close();
-			}
+			var that = this;
+			State.queued_history = function() {
+				window.location.hash = State.hash = that.toString();
+				if (change_hash && IFRAME) {
+					var doc = document.getElementById("iFrame").contentWindow.document;
+					doc.open();
+					doc.write(that);
+					doc.close();
+				}
+			};
+			if (atomic)
+				State.write_history();
 		} else
 			State.hash = window.location.hash;
 		State.select_tags(selection[0]);
@@ -145,6 +153,11 @@ function State(arg1, sel) {
 			State.load_selection(selection, this.toString(true), true);
 		} else
 			State.load_selection(selection, this.toString(true));
+	};
+
+	this.noqueue = function() {
+		atomic = true;
+		return this;
 	};
 
 	this.toString = function(omit_page) {
@@ -201,9 +214,17 @@ State.scroll_flag = false;
 State.init_ms = new Date().getTime();
 State.disabled = false;
 State.request_count = 0;
+State.queued_history = null;
 State.cached = new Object();
 State.activelink = null;
 State.hash = window.location.hash;
+
+State.write_history = function() {
+	if (State.queued_history) {
+		State.queued_history();
+		State.queued_history = null;
+	}
+};
 
 State.check_and_incr = function(a,b) {
 	if (State.disabled)
@@ -373,6 +394,7 @@ State.release_request = function() {
 	window.status = "Done";
 	if (google_ok)
 		searchControl.clearAllResults();
+	State.write_history();
 	document.title = State.title;
 	State.request = null;
 	State.request2 = null;

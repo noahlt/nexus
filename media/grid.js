@@ -53,9 +53,10 @@ $(document).ready(function() {
 
 	if (window.location.hash.length > 1) { // permalink and not lone '#'
 		$(".results").hide();
-		new State(window.location.hash).enter();
+		new State(window.location.hash).noqueue().enter();
 	}
 
+	/* HISTORY BEGINS - all State changes must be done */
 	State.init_history_monitor();
 
 	$("#tags li").not("#alltags").click(function(event) {

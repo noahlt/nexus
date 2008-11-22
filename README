@@ -1,9 +1,13 @@
 Dependencies:
-	python-django >= 1.0
-	python-imaging (PIL)
-	python-simplejson
-	python-markdown
-	django_evolution (or disable it)
-	python-pysqlite2 (or similar if not using sqlite)
-	evince OR imagemagick (evince faster)
-	pdftk OR python-pypdf (both sufficiently fast; pdftk faster)
+
+  python-django >= 1.0
+  python-imaging (PIL)
+  python-simplejson
+  python-markdown
+  evince OR imagemagick (evince faster)
+  pdftk OR python-pypdf (both sufficiently fast; pdftk faster)
+
+  Removable:
+    django_evolution
+    python-numpy
+    python-pysqlite2

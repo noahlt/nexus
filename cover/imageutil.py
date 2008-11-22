@@ -28,18 +28,20 @@ def borderclass(obj):
         border.append(img.getpixel((img.size[0]-1, h)))
     return 'noborder:' if numpy.std(border) <= NATURAL_BORDER_STDEV else ''
 
-def baseclass(obj, tags):
+def baseclass(obj, tags, image_centric):
     for tag in tags:
         if tag.slug.startswith('cartoon') or tag.slug.startswith('comic'):
             return 'cartoon:'
     if obj.image.width < 200 and obj.image.height < 200:
         return 'thumb:'
-    if obj.image.width < 500 or float(obj.image.height) / float(obj.image.width) > MAX_LARGE_RATIO:
+    if obj.image.width < 500:
+        return 'small:' + ('left:' if image_centric else '')
+    if not image_centric and float(obj.image.height) / float(obj.image.width) > MAX_LARGE_RATIO:
         return 'small:'
     return ''
 
-def autoclass(obj, tags):
-    return baseclass(obj, tags) + borderclass(obj)
+def autoclass(obj, tags, image_centric):
+    return baseclass(obj, tags, image_centric) + borderclass(obj)
 
 def resize(input, max_size, hq):
     if hq:
@@ -98,7 +100,7 @@ class ImageFormatter():
                 'viewlink': viewlink, 'classes': ' '.join(classes)
             }))
         else:
-            return hunk
+            return ''
 
     def format(self):
         return self.IMAGE_TAG.sub(self.__process_match, self.html)

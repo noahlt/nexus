@@ -174,11 +174,11 @@ class Article(models.Model):
     title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=20, unique=True)
     snippet = models.CharField(max_length=600, blank=True, null=True)
-    fulltext = models.TextField()
+    fulltext = models.TextField(blank=True)
     date = models.DateField(help_text="Articles from the future will not be shown.")
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
-    image_centric = models.BooleanField(help_text="Shows a large image preview.")
+    image_centric = models.BooleanField(help_text="Use for cartoons or photo galleries.")
     never_published = models.BooleanField(default=False, help_text="Here to make sure you don't forget the 'printed' field.")
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
@@ -216,8 +216,8 @@ class ArticleAdminForm(forms.ModelForm):
 
     def clean_images(self):
         for image in self.cleaned_data['images']:
-            if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, self.cleaned_data['fulltext']):
-                self.cleaned_data['fulltext'] = '[[' + autoclass(image, self.cleaned_data['tags']) + image.slug + ']]\r\n' + self.cleaned_data['fulltext']
+            if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, self.cleaned_data.get('fulltext','')):
+                self.cleaned_data['fulltext'] = '[[' + autoclass(image, self.cleaned_data['tags'], self.cleaned_data['image_centric']) + image.slug + ']]\r\n' + self.cleaned_data.get('fulltext','')
         return self.cleaned_data['images']
 
     def clean_title(self):

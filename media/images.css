@@ -7,7 +7,7 @@
 
 .image-wrap {
 	text-align: center;
-	border: 1px solid #eee;
+	border: 1px solid #ddd;
 }
 
 .image-default img {
@@ -99,7 +99,7 @@
 	margin-right: 1.5em;
 }
 
-.noborder .image-wrap {
+.noborder .image-wrap, .comic .image-wrap, .cartoon .image-wrap {
 	border: none;
 }
 

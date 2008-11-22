@@ -8,7 +8,6 @@ from imageutil import *
 from nexus.archive.models import Issue
 
 NEWLINE = re.compile('([^\n])\n([^\n])')
-IMAGE_HELP = settings.MEDIA_URL + 'doc/embedding-images.txt'
 PARAGRAPH = re.compile(r'\n[A-Z][^\n]+\n')
 IMAGE_PATH = 'image_orig/'
 L1, L2, L3 = (1,2,3)
@@ -217,8 +216,8 @@ class ArticleAdminForm(forms.ModelForm):
 
     def clean_images(self):
         for image in self.cleaned_data['images']:
-            if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, self.cleaned_data['fulltext']):
-                self.cleaned_data['fulltext'] = '[[' + autoclass(image, self.cleaned_data['tags']) + image.slug + ']]\r\n' + self.cleaned_data['fulltext']
+            if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, self.cleaned_data.get('fulltext','')):
+                self.cleaned_data['fulltext'] = '[[' + autoclass(image, self.cleaned_data['tags']) + image.slug + ']]\r\n' + self.cleaned_data.get('fulltext','')
         return self.cleaned_data['images']
 
     def clean_title(self):

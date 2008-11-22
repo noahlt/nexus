@@ -8,7 +8,6 @@ from imageutil import *
 from nexus.archive.models import Issue
 
 NEWLINE = re.compile('([^\n])\n([^\n])')
-IMAGE_HELP = settings.MEDIA_URL + 'doc/embedding-images.txt'
 PARAGRAPH = re.compile(r'\n[A-Z][^\n]+\n')
 IMAGE_PATH = 'image_orig/'
 L1, L2, L3 = (1,2,3)

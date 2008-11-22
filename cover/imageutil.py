@@ -1,4 +1,5 @@
 import Image
+import numpy
 import re
 
 from os.path import exists, getmtime, dirname
@@ -13,15 +14,32 @@ ARTICLE_MAX_SIZE = (530,2048) # remember to sync with images.css
 SMALL_MAX_SIZE = (255,2048) # remeber to sync with images.css
 THUMBS_PATH = 'cache/image_thumbs/'
 
-def autoclass(obj, tags):
+MAX_LARGE_RATIO = .70 # larger is taller
+NATURAL_BORDER_STDEV = 25 # images below this amount get no border
+
+def borderclass(obj):
+    img = Image.open(obj.image.path)
+    border = []
+    for w in xrange(0, img.size[0]):
+        border.append(img.getpixel((w, 1)))
+        border.append(img.getpixel((w, img.size[1]-1)))
+    for h in xrange(0, img.size[1]):
+        border.append(img.getpixel((1, h)))
+        border.append(img.getpixel((img.size[0]-1, h)))
+    return 'noborder:' if numpy.std(border) <= NATURAL_BORDER_STDEV else ''
+
+def baseclass(obj, tags):
     for tag in tags:
         if tag.slug.startswith('cartoon') or tag.slug.startswith('comic'):
             return 'cartoon:'
     if obj.image.width < 200 and obj.image.height < 200:
         return 'thumb:'
-    if obj.image.width < 500 or float(obj.image.height) / float(obj.image.width) > .70:
+    if obj.image.width < 500 or float(obj.image.height) / float(obj.image.width) > MAX_LARGE_RATIO:
         return 'small:'
     return ''
+
+def autoclass(obj, tags):
+    return baseclass(obj, tags) + borderclass(obj)
 
 def resize(input, max_size, hq):
     if hq:

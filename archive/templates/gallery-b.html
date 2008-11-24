@@ -1,7 +1,7 @@
 {% extends "basic.html" %}
 
 {% block content %}
-<a class="embeddable" style="font-size: 10pt; position: relative; top:-20pt" id="switch" href="/archive-b">With Back Covers</a>
+<a class="embeddable" style="font-size: 10pt; position: relative; top:-20pt" id="switch" href="/archive">Front Covers</a>
 {% spaceless %}
     {% for year in years %}
         <div class="yearblock">
@@ -9,7 +9,10 @@
             {% for issue in year reversed %}
 		<div class="shadow"><div class="s1"><div class="s2"><div class="s3"><div class="s4">
                 <a class="page embeddable" href="/archive/{{ issue.date }}">
-			<img class="gallery-page" alt="Issue {{ issue.date }}" src="{{ issue.calculate_thumbnail_url }}">
+			<img width=120 style="border-right: 1px solid #eee" alt="Issue {{ issue.date }}" src="{{ issue.calculate_back_url }}">
+                </a>
+                <a class="page embeddable" href="/archive/{{ issue.date }}">
+			<img width=120 alt="Issue {{ issue.date }}" src="{{ issue.calculate_thumbnail_url }}">
                 </a>
                 <div class="thumbtext">{{ issue.date|date:"F j" }}</div>
 		</div></div></div></div></div>

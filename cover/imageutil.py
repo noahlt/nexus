@@ -11,7 +11,7 @@ from django.template.loader import get_template
 
 THUMB_MAX_SIZE = (100,100)
 ARTICLE_MAX_SIZE = (530,2048) # remember to sync with images.css
-SMALL_MAX_SIZE = (255,2048) # remeber to sync with images.css
+SMALL_MAX_SIZE = (255,2048) # remember to sync with images.css
 THUMBS_PATH = 'cache/image_thumbs/'
 
 MAX_LARGE_RATIO = .70 # larger is taller
@@ -19,13 +19,10 @@ NATURAL_BORDER_STDEV = 25 # images below this amount get no border
 
 def borderclass(obj):
     img = Image.open(obj.image.path)
-    border = []
-    for w in xrange(0, img.size[0]):
-        border.append(img.getpixel((w, 1)))
-        border.append(img.getpixel((w, img.size[1]-1)))
-    for h in xrange(0, img.size[1]):
-        border.append(img.getpixel((1, h)))
-        border.append(img.getpixel((img.size[0]-1, h)))
+    border = map(lambda w: img.getpixel((w, 1)), range(0, img.size[0])) \
+           + map(lambda w: img.getpixel((w, img.size[1]-1)), range(0, img.size[0])) \
+           + map(lambda h: img.getpixel((1, h)), range(0, img.size[1])) \
+           + map(lambda h: img.getpixel((img.size[0]-1, h)), range(0, img.size[1]))
     return 'noborder:' if numpy.std(border) <= NATURAL_BORDER_STDEV else ''
 
 def baseclass(obj, tags, image_centric):

@@ -7,7 +7,7 @@ from models import Issue
 from nexus.cover.models import InfoPage
 from nexus.cover.views import visible, what_school_year, SchoolYear, render_json
 
-def issue_gallery(request):
+def issue_gallery(request, temp='gallery.html'):
     """Thumbnail gallery of front pages."""
     MEDIA_URL = settings.MEDIA_URL
     issues = visible(Issue.objects)
@@ -19,7 +19,10 @@ def issue_gallery(request):
         if not years or years[-1].year != year:
             years.append(SchoolYear(year))
         years[-1].append(issue)
-    return render_json('Issue Archive', 'gallery.html', locals())
+    return render_json('Issue Archive', temp, locals())
+
+def issue_gallery_b(request):
+    return issue_gallery(request, 'gallery-b.html')
 
 def page_gallery(request, issue):
     """Previews of each page in the selected issue."""

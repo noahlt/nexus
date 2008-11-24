@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from imageutil import *
-from nexus.archive.models import Issue
+from nexus.archive.models import Issue, ignore_errors
 
 NEWLINE = re.compile('([^\n])\n([^\n])')
 PARAGRAPH = re.compile(r'\n[A-Z][^\n]+\n')
@@ -78,10 +78,7 @@ class AuthorAdmin(admin.ModelAdmin):
     def num_images(obj):
         return str(obj.image_set.count())
     def grouped_with(obj):
-        try:
-            return ', '.join([group.name for group in obj.grouping.all()])
-        except:
-            return None
+        return ', '.join([group.name for group in obj.grouping.all()])
     list_display = ('name', 'year', 'title', grouped_with, num_articles, num_images, 'nexus_staff')
     list_filter = ('title', 'year', 'retired')
     search_fields = ('name',)
@@ -129,12 +126,15 @@ class Image(models.Model):
         self.small_size()
         self.article_size()
 
+    @ignore_errors
     def thumbnail_size(self):
         return resize(self.image.path, THUMB_MAX_SIZE, self.lossless)
 
+    @ignore_errors
     def small_size(self):
         return resize(self.image.path, SMALL_MAX_SIZE, self.lossless)
 
+    @ignore_errors
     def article_size(self):
         return resize(self.image.path, ARTICLE_MAX_SIZE, self.lossless)
 

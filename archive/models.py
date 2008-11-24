@@ -9,6 +9,14 @@ from datetime import date
 PDF_PATH = 'pdf_orig/'
 FILE_PATH = 'upload/'
 
+def ignore_errors(f):
+    def _f(*args):
+        try:
+            return f(*args)
+        except:
+            return None
+    return _f
+
 class File(models.Model):
     file = models.FileField(upload_to=FILE_PATH)
 
@@ -20,6 +28,7 @@ class PDF(models.Model):
     pdf = models.FileField(upload_to=PDF_PATH)
     parent = models.ForeignKey('Issue')
 
+    @ignore_errors
     def calculate_thumbnail_url(self):
         return pdf_to_thumbnail(self.pdf.path, 250)
 
@@ -27,11 +36,9 @@ class PDF(models.Model):
         super(PDF, self).save()
         self.calculate_thumbnail_url()
 
+    @ignore_errors
     def __str__(self):
-        try:
-            return "%s" % basename(self.pdf.path)
-        except ValueError:
-            return "[corrupted file]"
+        return "%s" % basename(self.pdf.path)
 
     class Meta:
         ordering = ['order', 'id']
@@ -55,16 +62,20 @@ class IssueAdmin(admin.ModelAdmin):
 class Issue(models.Model):
     date = models.DateField(unique=True, help_text="Issues from the future will not be shown.")
 
+    @ignore_errors
     def calculate_thumbnail_url(self):
-        try:
-            the_actual_pdf = self.pdf_set.all()[0]
-            return pdf_to_thumbnail(the_actual_pdf.pdf.path, 160)
-        except IndexError: # someone deleted all the pages
-            return None
+        the_actual_pdf = self.pdf_set.all()[0]
+        return pdf_to_thumbnail(the_actual_pdf.pdf.path, 160)
+
+    @ignore_errors
+    def calculate_back_url(self):
+        the_actual_pdf = self.pdf_set.all().reverse()[0]
+        return pdf_to_thumbnail(the_actual_pdf.pdf.path, 120)
 
     def current(self):
         return self.date <= date.today()
 
+    @ignore_errors
     def calculate_join_url(self):
         return joined_pdfs(self.pdf_set.all(), self.id)
 

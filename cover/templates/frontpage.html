@@ -71,9 +71,7 @@
 	<li id="IE6_PLACEHOLDER" style="display: inline !important; padding: 0 !important;"></li>
 	<![endif]-->
     {% for article in articles %}
-      {% if article.current %}
-          {% include "article_snippet.html" %}
-      {% endif %}
+        {% include "article_snippet.html" %}
     {% endfor %}
 	<li id="none-visible">
       <h3>No matching articles.</h3>

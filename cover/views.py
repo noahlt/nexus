@@ -207,6 +207,7 @@ def tagpage(request, slug):
     FOOTER = InfoPage.objects.all();
     MEDIA_URL = settings.MEDIA_URL
     tag = get_object_or_404(Tag, slug=slug)
+    articles = visible(tag.article_set).filter(image_centric=False)
     return render_json(tag.name, 'tag.html', locals())
 
 def authorpage(request, slug):
@@ -214,6 +215,7 @@ def authorpage(request, slug):
     MEDIA_URL = settings.MEDIA_URL
     author = get_object_or_404(Author, slug=slug)
     authors = [ x for x in author.grouping.all() ]
+    articles = visible(author.article_set).filter(image_centric=False)
     return render_json(author.name, 'author.html', locals())
 
 def tag_data(articles, selected_tags, min_date, max_date):

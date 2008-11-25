@@ -1,7 +1,6 @@
 <li style="overflow: hidden;" id="art_{{ article.slug }}">
   <h3>{% include "articlelink.html" %}</h3>
   <div class="date">{{ article.date|date:"F d, Y" }}&nbsp;&nbsp;|&nbsp;{% with article.authors.all as authors %}{% include "authorlinks.html" %}{% endwith %}</div>
-  {% if article.current %}
       {% if article.images.all %}
 		{% with article.images.all.0 as img %}
         {% if article.image_centric %}
@@ -14,7 +13,4 @@
 		{% endwith %}
       {% endif %}
       {{ article.auto_snippet }}
-  {% else %}
-     Sorry, this article won't be available until {{ article.date|date:"F d, Y" }}.
-  {% endif %}
 </li>

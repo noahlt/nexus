@@ -5,7 +5,6 @@ TEMPLATE_DEBUG = DEBUG
 CACHE_BACKEND = 'file:///home/nexus/django_cache?timeout=900'
 
 ADMINS = (
-    ('Nexus Developers', 'dev@wvnexus.com'),
 )
 
 MANAGERS = ADMINS

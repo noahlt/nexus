@@ -72,7 +72,7 @@ function make_relative(url) {
 		url = url.substring(7);
 		url = url.substring(url.indexOf("/"));
 	}
-	return url;
+	return url.length < 2 ? null : url;
 }
 
 var DATE_MIN = 100001;

@@ -88,6 +88,7 @@ class Tag(models.Model):
     name = models.CharField(max_length=30)
     slug = models.SlugField(max_length=30, unique=True)
     order = models.IntegerField(default=0)
+    article_priority = models.FloatField(default=0)
     type = models.IntegerField(choices=((L1, "Bottom"),(L2, "Middle"), (L3, "Top")), default=L1)
     article_regex = models.CharField(max_length=50, blank=True, null=True)
     article_regex_sub = models.CharField(max_length=50, blank=True, null=True)
@@ -107,7 +108,7 @@ class TagAdmin(admin.ModelAdmin):
     def modifies_article_title(obj):
         return bool(obj.article_regex and obj.article_regex_sub)
     modifies_article_title.boolean = True
-    list_display = ('name', 'type', modifies_article_title, 'order', num_articles, num_images)
+    list_display = ('name', 'type', modifies_article_title, 'article_priority', 'order', num_articles, num_images)
 
 class Image(models.Model):
     image = models.ImageField(upload_to='image_orig/')
@@ -183,7 +184,7 @@ class Article(models.Model):
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
     custom_template = models.ForeignKey(CustomArticleTemplate, blank=True, null=True)
-    order = models.FloatField(default=0)
+    order = models.FloatField(blank=True, null=True)
 
     def auto_snippet(self):
         if self.snippet:
@@ -219,6 +220,16 @@ class ArticleAdminForm(forms.ModelForm):
             if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, self.cleaned_data.get('fulltext','')):
                 self.cleaned_data['fulltext'] = '[[' + autoclass(image, self.cleaned_data['tags'], self.cleaned_data['image_centric']) + image.slug + ']]\r\n' + self.cleaned_data.get('fulltext','')
         return self.cleaned_data['images']
+
+    def clean_tags(self):
+        order = self.cleaned_data.get('order', None)
+        if order is None:
+            order = 0
+            for tag in self.cleaned_data['tags']:
+                if tag.article_priority > order:
+                    order = tag.article_priority
+        self.cleaned_data['order'] = order
+        return self.cleaned_data['tags']
 
     def clean_title(self):
         try:

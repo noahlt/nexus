@@ -1,6 +1,5 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
-from django.views.decorators.cache import never_cache
 from django.http import HttpResponse
 from cover.views import *
 from archive.views import *
@@ -16,12 +15,10 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    # Uncomment the next line for to enable the admin:
+    (r'^admin/[^/]+/(?P<type>[^/]+)/(?P<object_id>[0-9]+)/preview/$', preview),
     (r'^admin/(.*)', admin.site.root),
 
-
     (r'^$', frontpage),
-    (r'^test$', never_cache(frontpage)),
     (r'^null/', lambda x: HttpResponse('')),
     (r'^ajax/embed/(\d{4})/(\d{2})/([-_a-zA-Z0-9]+)/$', articlepage),
     (r'^ajax/embed/author/([-_a-zA-Z0-9]+)$', authorpage),
@@ -53,20 +50,6 @@ urlpatterns = patterns('',
     (r'^archive/current/$', wrap(current_page_gallery)),
     (r'^archive/(\d{4}-\d{2}-\d{2})/$', wrap(page_gallery)),
     (r'^(\d+)$', frontpage_paginated),
-
-    (r'^test/(\d{4})/(\d{2})/([-_a-zA-Z0-9]+).*$', test(articlepage)),
-    (r'^test/image/([-_a-zA-Z0-9]+).*$', test(imageview)),
-    (r'^test/tag/([-_a-zA-Z0-9]+).*$', test(tagpage)),
-    (r'^test/author/([-_a-zA-Z0-9]+).*$', test(authorpage)),
-    (r'^test/info/staff.*$', test(staff_auto_infopage)),
-    (r'^test/info/([-_a-zA-Z0-9]+).*$', test(infopage)),
-    (r'^test/static/([-_a-zA-Z0-9]+).*$', test(staticpage)),
-    (r'^test/polls.*$', test(pollpage)),
-    (r'^test/poll_history.*$', test(pollhist)),
-    (r'^test/archive/(\d{4}-\d{2}-\d{2}).*$', test(page_gallery)),
-    (r'^test/archive/current.*$', test(current_page_gallery)),
-    (r'^test/archive.*$', test(issue_gallery)),
-    (r'^test/archive-b.*$', test(issue_gallery_b)),
 )
 
 if settings.STATIC_SERVE:

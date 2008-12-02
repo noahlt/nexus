@@ -1,11 +1,15 @@
 # Create your views here.
 
+from datetime import date
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.conf import settings
 from models import Issue
 from nexus.cover.models import InfoPage
-from nexus.cover.views import visible, what_school_year, SchoolYear, render_json
+from nexus.cover.util import *
+
+def visible(x):
+    return x.filter(date__lte=date.today())
 
 def issue_gallery(request, temp='gallery.html'):
     """Thumbnail gallery of front pages."""

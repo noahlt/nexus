@@ -1,8 +1,10 @@
 import re
+import previews
 import simplejson as json
 
 from datetime import date, timedelta
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core.cache import cache
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponse, Http404
@@ -10,8 +12,10 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context, Template
 from django.template.loader import get_template
 from django.views.decorators.cache import never_cache
+from django.views.generic.list_detail import object_detail
 from imageutil import ImageFormatter
 from models import *
+from util import *
 
 PAGE_SIZE = 10
 METADATA_CACHE_SECONDS = 3600 * 12
@@ -61,44 +65,9 @@ def pollpage(request):
     polls = [(poll, can_vote(poll, request.META)) for poll in Poll.objects.filter(active=True)]
     return render_json('Polls', 'polls.html', locals())
 
-def render_json(title, template, vars):
-    return HttpResponse(
-        json.dumps({'html': get_template(template).render(Context(vars)), 'title': 'Nexus | %s' % title})
-    )
-
 def pollhist(request):
     polls = Poll.objects.filter(active=False)
     return render_json('Old polls', 'poll_history.html', locals())
-
-class SchoolYear(list):
-    def __init__(self, year):
-        self.year = year;
-    def __str__(self):
-        return '%s-%s' % (self.year-1, self.year)
-
-def visible(x):
-    return x.filter(date__lte=date.today())
-
-def pagesof(page, pages, adjacent_pages=3):
-    ret = [n for n in range(page - adjacent_pages, page + adjacent_pages + 1) if n > 0 and n <= pages]
-    while len(ret) < adjacent_pages*2+1 and ret[-1] < pages:
-        ret.append(ret[-1]+1)
-    while len(ret) < adjacent_pages*2+1 and ret[0] > 1:
-        ret.insert(0,ret[0]-1)
-    jump_forward = False
-    jump_back = False
-    if ret[0] > 1:
-        jump_back = True
-        ret[0] = 1
-    if ret[-1] < pages:
-        jump_forward = True
-        ret[-1] = pages
-    return (ret,jump_forward,jump_back)
-
-def what_school_year(date):
-    if date.month <= 7:
-        return date.year
-    return date.year + 1
 
 def staticpage(request, slug):
     obj = get_object_or_404(StaticPage, slug=slug)
@@ -190,10 +159,7 @@ def infopage(request, slug):
     info = get_object_or_404(InfoPage, slug=slug)
     return render_json(info.title, 'info.html', locals())
 
-def articlepage(request, year, month, slug):
-    article = get_object_or_404(Article, slug=slug)
-    if article.date.year != int(year) or article.date.month != int(month):
-        raise Http404
+def _articlepage(request, article):
     template = Template(article.custom_template.template) \
         if article.custom_template else get_template('article.html')
     html = template.render(Context(
@@ -202,6 +168,12 @@ def articlepage(request, year, month, slug):
     ))
     html = ImageFormatter(html, article.images.all()).format()
     return HttpResponse(json.dumps({'html': html, 'title': article.title}), mimetype='application/json')
+
+def articlepage(request, year, month, slug):
+    article = get_object_or_404(Article, slug=slug)
+    if article.date.year != int(year) or article.date.month != int(month):
+        raise Http404
+    return _articlepage(request, article)
 
 def tagpage(request, slug):
     FOOTER = InfoPage.objects.all();
@@ -244,14 +216,6 @@ def dates_of(articles, tags):
     cache.set(key, ret, METADATA_CACHE_SECONDS)
     return ret
 
-def parse_date(input):
-    '''Turns an integer date like 200801 into a datetime object like
-    datetime.date(2008, 1, 1)'''
-    strdate = str(input)
-    year = int(strdate[0:4])
-    month = int(strdate[4:6])
-    return date(year, month, 1)
-
 def month_end(d):
     '''Takes a datetime.date and returns the date for the last day in the
     same month.'''
@@ -262,13 +226,6 @@ def wrap(function):
         response = json.loads(function(*args).content)
         return frontpage(args[0], title=response['title'], content=response['html'])
     return wrapped
-
-def test(function):
-    @never_cache
-    def minimal_wrap(*args):
-        response = json.loads(function(*args).content)
-        return render_to_response('minimal.html', Context({'MEDIA_URL': settings.MEDIA_URL, 'content': response['html'], 'title': response['title']}))
-    return minimal_wrap
 
 def snippet(article):
     key = 'snippet' + str(article.id)
@@ -316,3 +273,10 @@ def paginate(request):
          'pages2': get_template('paginator2.html').render(Context(locals())),
          'title': 'The Nexus | %i' % page if page > 1 else 'The Nexus'}
     return HttpResponse(json.dumps(r), mimetype='application/json')
+
+@staff_member_required
+def preview(request, type, object_id):
+    try:
+        return getattr(previews, '_preview_' + type)(request, object_id)
+    except AttributeError:
+        raise Http404

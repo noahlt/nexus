@@ -1,8 +1,5 @@
 $(document).ready(function() {
 
-	if (window.location.pathname == "/test")
-		return;
-
 	var TAG_NORMAL = $("#alltags").width();
 	var TAG_EXPANDED = TAG_NORMAL + 13;
 	var IFRAME = $("iframe").size() > 0;

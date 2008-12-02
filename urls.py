@@ -68,7 +68,8 @@ urlpatterns = patterns('',
     (r'^test/archive.*$', test(issue_gallery)),
     (r'^test/archive-b.*$', test(issue_gallery_b)),
 )
-if settings.DEBUG: # not in production!
+
+if settings.STATIC_SERVE:
     urlpatterns += patterns('',
         (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     )

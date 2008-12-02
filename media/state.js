@@ -10,8 +10,8 @@
  *		- returns current state of page with a page number of 1
  *	State.scrollup()
  *		- flags next page load for scrolling to top
- *	State.submit_poll(id)
- *		- renders response to poll of choice 'id'
+ *	State.submit_poll(id, link)
+ *		- renders response to poll of choice 'id' with link
  *	State.select_dates(min, max)
  *		- selects dates between min and max
  *		- returns (true if any were highlighted, true if any were unhighlighted)
@@ -319,9 +319,20 @@ State.load_selection = function(selection, hashstring, just_url_update) {
 			{"tags": selection[0], "page": selection[1], "have_articles": have_articles,
 			 "date_min": selection[2], "date_max": selection[3], "hash": hashstring}, load);
 		else
-		State.request = $.getJSON("/ajax/paginator",
-			{"tags": selection[0], "page": selection[1], "have_articles": have_articles,
-			 "date_min": selection[2], "date_max": selection[3], "hash": hashstring}, load);
+		State.request = $.ajax({
+			type: "GET",
+			dataType: "json",
+			data: {"tags": selection[0], "page": selection[1], "have_articles": have_articles,
+			       "date_min": selection[2], "date_max": selection[3], "hash": hashstring},
+			url: "/ajax/paginator",
+			success: load,
+			error: function(xhr) {
+				$("#embedded_content").html(xhr.responseText);
+				$(".results").hide();
+				$(".embed").show();
+				State.release_request();
+			}
+		});
 	}
 };
 
@@ -444,8 +455,23 @@ State.select_dates = function(min, max) {
 	return [added_some,removed_some];
 };
 
-State.submit_poll = function submit_poll(choice_id) {
-	$.getJSON("/ajax/poll", {"choice": choice_id}, function(r) {
-		$("#poll_" + r['poll_id']).html(r['html']);
+State.submit_poll = function submit_poll(choice_id, link) {
+	State.acquire_request();
+	if (link)
+		State.activelink = link.addClass("active");
+	State.request = $.ajax({
+		type: "GET",
+		dataType: "json",
+		url: "/ajax/poll",
+		data: {"choice": choice_id},
+		success: function(r) {
+			$("#poll_" + r['poll_id']).html(r['html']);
+		},
+		error: function(xhr) {
+			$("#embedded_content").html(xhr.responseText);
+		},
+		complete: function() {
+			State.release_request();
+		}
 	});
 };

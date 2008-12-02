@@ -182,8 +182,8 @@ class Article(models.Model):
     never_published = models.BooleanField(default=False, help_text="Here to make sure you don't forget the 'printed' field.")
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
-    custom_template = models.ForeignKey(
-        CustomArticleTemplate, blank=True, null=True)
+    custom_template = models.ForeignKey(CustomArticleTemplate, blank=True, null=True)
+    order = models.FloatField(default=0)
 
     def auto_snippet(self):
         if self.snippet:
@@ -210,7 +210,7 @@ class Article(models.Model):
         return "%s" % self.title
 
     class Meta:
-        ordering = ['-date', '-printed', '-id']
+        ordering = ['-date', '-order', '-id']
 
 class ArticleAdminForm(forms.ModelForm):
 
@@ -247,7 +247,7 @@ class ArticleAdmin(admin.ModelAdmin):
     def template(obj):
         return obj.custom_template if obj.custom_template else ''
     visible.boolean = True
-    list_display = ('title', 'printed', tags, visible, template)
+    list_display = ('title', 'printed', tags, visible, 'order')
     list_filter = ('date', 'printed', 'authors')
     search_fields = ('title', 'slug', 'date')
     filter_horizontal = ('authors','tags','images')

@@ -1,11 +1,15 @@
-# Django settings for nexus project.
-
 import os
 
+# all True in development
 DEBUG = True
+STATIC_SERVE = True
+DISABLE_GOOGLE = True
+
 TEMPLATE_DEBUG = DEBUG
-CACHE_BACKEND = 'dummy:///'
-#CACHE_BACKEND = 'file:///tmp/django_cache?timeout=1'
+if DEBUG:
+    CACHE_BACKEND = 'dummy:///'
+else:
+    CACHE_BACKEND = 'file:///tmp/django_cache?timeout=900'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -84,7 +88,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.webdesign',
     'django.contrib.markup',
     'nexus.cover',
     'nexus.archive',

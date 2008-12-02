@@ -6,7 +6,9 @@
 <link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css">
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}jquery-disable-text-select.js"></script>
+{% if not DISABLE_GOOGLE %}
 <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+{% endif %}
 <script type="text/javascript" src="{{ MEDIA_URL }}state.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}grid.js"></script>
 <!--[if lt IE 7]>
@@ -63,7 +65,7 @@
     <!--[if lt IE 8]>
     <iframe style="display:none" id='iFrame' src='/null'></iframe>
 	<![endif]-->
-  <div id="searchcontrol"></div>
+  <div id="searchcontrol">&lt;search disabled during development&gt;</div>
   <div class="paginator results" id="top_paginator">{% include "paginator.html" %}</div>
   <div id="search_results" style="width:100%"></div>
   <ul id="results" class="results">

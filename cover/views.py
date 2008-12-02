@@ -1,4 +1,3 @@
-# Create your views here.
 import re
 import simplejson as json
 
@@ -110,6 +109,7 @@ def staticpage(request, slug):
 
 def frontpage(request, title='The Nexus', content=None, page=1):
     frontpage = True # for paginator.html
+    DISABLE_GOOGLE = settings.DISABLE_GOOGLE
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all()
     sidelinks = SideBarLink.objects.all()

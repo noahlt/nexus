@@ -17,7 +17,7 @@ $(document).ready(function() {
 				return;
 			event.preventDefault();
 			var choice_id = $(this).attr("id").substring(7); // choice_
-			State.submit_poll(choice_id);
+			State.submit_poll(choice_id, $(this));
 		});
 		$("a").filter(".embeddable").unbind().click(function(event) {
 			if (event.ctrlKey || event.shiftKey)

@@ -1,10 +1,18 @@
 import os
 
+# all False in production
 DEBUG = False
+STATIC_SERVE = False
+DISABLE_GOOGLE = False
+
 TEMPLATE_DEBUG = DEBUG
-CACHE_BACKEND = 'file:///home/nexus/django_cache?timeout=900'
+if DEBUG:
+    CACHE_BACKEND = 'dummy:///'
+else:
+    CACHE_BACKEND = 'file:///home/nexus/django_cache?timeout=900'
 
 ADMINS = (
+    # ('Your Name', 'your_email@domain.com'),
 )
 
 MANAGERS = ADMINS
@@ -52,7 +60,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.webdesign',
     'django.contrib.markup',
     'nexus.cover',
     'nexus.archive',

@@ -1,14 +1,18 @@
-<table class="poll-results">
+<table class="poll-results" style="margin-top: 10px">
 <tr>
 <td class="question" colspan=3><b>{{ poll.question }}</b></td>
 </tr>
 {% if can_vote %}
-	{% for choice in poll.choice_set.all %}
-		<tr>
-			<td>&bull; {{ choice.name }}</td>
-            <td colspan=2><div style="text-align:right"><a class="poll" href="#" id="choice_{{ choice.id }}">vote</a></div></td>
-		</tr>
-	{% endfor %}
+    {% for choice in poll.choice_set.all %}
+        <tr>
+            <td width=130px>&bull; <a class="poll" href="#vote" id="choice_{{ choice.id }}">{{ choice.name }}</a></td>
+            <td width=40px class="bar-graph">
+                <div class="bar-wrapper">
+                    <div class="bar" style="width: 0;"></div>
+                </div><div style="font-size: 8pt; text-align: right">?</div>
+            </td>
+        </tr>
+    {% endfor %}
 {% else %}
     <tr>
     <td class="poll-message" colspan=3><span style="font-size: 8pt; color: gray">Thank you for voting.</span></td>

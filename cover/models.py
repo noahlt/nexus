@@ -344,7 +344,7 @@ class Poll(models.Model):
         ordering = ('-active', 'date', 'id')
 
 class Voter(models.Model):
-    ip = models.CharField(max_length=30)
+    ip = models.CharField(max_length=30, primary_key=True)
     polls = models.ManyToManyField(Poll, blank=True, null=True)
 
 class PollAdmin(admin.ModelAdmin):

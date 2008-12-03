@@ -6,7 +6,7 @@
 	{% for choice in poll.choice_set.all %}
 		<tr>
 			<td>&bull; {{ choice.name }}</td>
-            <td colspan=2><div style="text-align:right"><a class="poll" href="/ajax/poll?choice={{ choice.id }}" id="choice_{{ choice.id }}">vote</a></div></td>
+            <td colspan=2><div style="text-align:right"><a class="poll" href="#" id="choice_{{ choice.id }}">vote</a></div></td>
 		</tr>
 	{% endfor %}
 {% else %}

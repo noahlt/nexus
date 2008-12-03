@@ -129,12 +129,6 @@ ol, ul {
   list-style: none;
 }
 
-/* tables still need 'cellspacing="0"' in the markup */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
 caption, th, td {
   text-align: left;
   font-weight: normal;
@@ -291,13 +285,17 @@ ul#dates, ul#gridtypes {
 
 #tags a, #tags a:hover { color: inherit; text-decoration: none; }
 
-#dates, #gridtypes {
+#dates, #gridtypes, #poll {
   float: right;
   clear: right;
   position: relative;
   left: -1em;
   margin-top: 1em;
   margin-right: 0;
+}
+
+#poll {
+  margin-top: 0;
 }
 
 #signed {
@@ -389,7 +387,7 @@ ul#dates, ul#gridtypes {
   font-weight: bold;
 }
 
-#tags, #dates, #gridtypes {
+#tags, #dates, #gridtypes, table.poll-results {
   width: 170px;
 }
 
@@ -555,4 +553,29 @@ a.active {
   background-color: #007cb0;
   border: 1px solid #07d;
   color: white;
+}
+
+table.poll-results td {
+  font-size: 9pt;
+  color: black;
+}
+
+table {
+  margin-top: 10px !important;
+}
+
+table td.question {
+  font-size: 10pt;
+  text-align: center;
+  color: black;
+  padding-bottom: 5px;
+}
+
+table td.bar-graph div.bar-wrapper {
+  background-color: #ebeff2;
+}
+
+div.bar {
+  height: 5px;
+  background-color: #07d;
 }

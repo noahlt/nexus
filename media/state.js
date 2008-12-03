@@ -191,6 +191,15 @@ State.init = function(tag_norm, tag_exp, iframe, grab) {
 	IFRAME = iframe;
 	State.grab_links = grab;
 	State.grab_links();
+	$.ajax({
+		type: "GET",
+		dataType: "html",
+		url: "/ajax/poll/current",
+		success: function(r) {
+			$("div #poll").html(r);
+            State.grab_links();
+		}
+	});
 };
 
 State.init_history_monitor = function() {
@@ -459,19 +468,17 @@ State.submit_poll = function submit_poll(choice_id, link) {
 	State.acquire_request();
 	if (link)
 		State.activelink = link.addClass("active");
-	State.request = $.ajax({
+    $.ajax({
 		type: "GET",
 		dataType: "json",
 		url: "/ajax/poll",
 		data: {"choice": choice_id},
 		success: function(r) {
-			$("#poll_" + r['poll_id']).html(r['html']);
+			$("div #poll").html(r['html']);
+            State.grab_links();
 		},
 		error: function(xhr) {
-			$("#embedded_content").html(xhr.responseText);
-		},
-		complete: function() {
-			State.release_request();
+			$("div #poll").html(xhr.responseText);
 		}
 	});
 };

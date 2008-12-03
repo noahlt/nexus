@@ -1,13 +1,27 @@
 {% extends "basic.html" %}
 
-{% block subtitle %}Old Polls{% endblock %}
+{% block subtitle %}Closed Polls{% endblock %}
 
 {% block content %}
-	{% for poll in polls %}
-		{% include "poll.html" %}
+	{% for poll, choices in objs %}
+        <h4>{{ poll.question }}</h4>
+        <span style="font-size: 9pt">{{ poll.date|date:"F d, Y" }}</span>
+        <table>
+        {% for choice in choices %}
+            <tr>
+                <p>
+                <td width=300px>&bull; {{ choice.name }}</td>
+                <td width=180px class="bar-graph">
+                    <div class="bar-wrapper">
+                        <div class="bar" style="width: {% widthratio choice.count poll.total_votes 180 %}px;"></div>
+                    </div>
+                </td>
+                <td width=40px>
+                <div style="font-size: 8pt; text-align: right">{{ choice.count }}</div>
+                </td>
+                </p>
+            </tr>
+        {% endfor %}
+        </table>
 	{% endfor %}
-{% endblock %}
-
-{% block extra %}
-	<a class="embeddable" href="/polls">See current polls.</a>
 {% endblock %}

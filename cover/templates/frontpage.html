@@ -49,6 +49,7 @@
     <li><a class="{% if not link.external %}embeddable{% endif %}" href="{{ link.link_target }}">{{ link.link_name }}{% if link.external %} <img src="{{ MEDIA_URL }}external.gif">{% endif %}</a></li>
 	{% endfor %}
   </ul>
+  <div id="poll"></div>
   <ul id="dates" title="drag to select a date range">
 	<!--[if lt IE 7]>
 	<li id="IE6_DATE_PLACEHOLDER" style="display: inline !important; padding: 0 !important;"></li>

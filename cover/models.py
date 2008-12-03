@@ -334,6 +334,9 @@ class Poll(models.Model):
     active = models.BooleanField(default=True)
     date = models.DateField(default=date.today())
 
+    def total_votes(self):
+        return sum([c.count for c in self.choice_set.all()])
+
     def __str__(self):
         return self.question
 

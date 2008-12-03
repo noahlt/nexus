@@ -47,26 +47,32 @@ def register_voter(poll, meta):
         voter.polls.add(poll)
         voter.save()
 
+@never_cache
+def poll_view(request):
+    polls = Poll.objects.filter(active=True)
+    polls = [(poll, can_vote(poll, request.META)) for poll in polls]
+    return render_to_response('poll_bar.html', locals())
+
+@never_cache
 def poll_results(request):
     if 'choice' not in request.GET:
         raise Http404
     choice = get_object_or_404(Choice, id=request.GET['choice'])
     poll = choice.parent
+    voted_already = True
     if can_vote(poll, request.META):
         register_voter(poll, request.META)
+        voted_already = False
         choice.count += 1
         choice.save()
-    ret = {'poll_id': poll.id,
-           'html': get_template("poll_core.html").render(Context(locals()))}
+    polls = Poll.objects.filter(active=True)
+    polls = [(poll, can_vote(poll, request.META)) for poll in polls]
+    ret = {'html': get_template('poll_bar.html').render(Context(locals()))}
     return HttpResponse(json.dumps(ret), mimetype='application/json')
-
-@never_cache
-def pollpage(request):
-    polls = [(poll, can_vote(poll, request.META)) for poll in Poll.objects.filter(active=True)]
-    return render_json('Polls', 'polls.html', locals())
 
 def pollhist(request):
     polls = Poll.objects.filter(active=False)
+    objs = [(poll, poll.choice_set.order_by('-count')) for poll in polls]
     return render_json('Old polls', 'poll_history.html', locals())
 
 def staticpage(request, slug):

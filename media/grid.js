@@ -9,18 +9,21 @@ $(document).ready(function() {
 			$(".alist").show("slow");
 			$(".list-hider").hide();
 		});
+		function hash_of(url) { // IE6 YET AGAIN
+			return url.substring(url.indexOf("#"));
+		}
 		$("a").filter(".poll").unbind().click(function(event) {
 			if (event.ctrlKey || event.shiftKey)
 				return;
 			event.preventDefault();
-			var choice_id = $(this).attr("href").substring(8); // #choice_
+			var choice_id = hash_of($(this).attr("href")).substring(8); // #choice_
 			State.submit_poll(choice_id, $(this));
 		});
 		$("a").filter(".poll_results_only").unbind().click(function(event) {
 			if (event.ctrlKey || event.shiftKey)
 				return;
 			event.preventDefault();
-			var poll_id = $(this).attr("href").substring(6); // #poll_
+			var poll_id = hash_of($(this).attr("href")).substring(6); // #poll_
 			State.get_poll(poll_id, $(this));
 		});
 		$("a").filter(".embeddable").unbind().click(function(event) {

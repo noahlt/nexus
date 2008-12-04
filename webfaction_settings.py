@@ -1,7 +1,7 @@
 import os
 
 # all False in production
-DEBUG = False
+DEBUG = True
 STATIC_SERVE = False
 DISABLE_GOOGLE = False
 

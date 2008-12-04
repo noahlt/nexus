@@ -2,24 +2,30 @@
 <tr>
 <td class="question" colspan=3><b>{{ poll.question }}</b></td>
 </tr>
-{% if can_vote %}
+{% if can_vote and not readonly %}
     {% for choice in poll.choice_set.all %}
         <tr>
-            <td width=130px>&bull; <a class="poll" href="#vote" id="choice_{{ choice.id }}">{{ choice.name }}</a></td>
+            <td width=130px>&bull; <a class="poll" href="#choice_{{ choice.id }}"">{{ choice.name }}</a></td>
             <td width=40px class="bar-graph">
                 <div class="bar-wrapper">
                     <div class="bar" style="width: 0;"></div>
-                </div><div style="font-size: 8pt; text-align: right">?</div>
+                </div><div style="font-size: 8pt; text-align: right"><a class="poll_results_only" href="#poll_{{ poll.id }}">?</a></div>
             </td>
         </tr>
     {% endfor %}
 {% else %}
+    {% ifnotequal readonly 'r' %}
     <tr>
     <td class="poll-message" colspan=3><span style="font-size: 8pt; color: gray">Thank you for voting.</span></td>
     </tr>
+    {% endifnotequal %}
     {% for choice in poll.choice_set.all %}
         <tr>
+            {% if can_vote %}
+            <td width=130px>&bull; <a class="poll" href="#choice_{{ choice.id }}">{{ choice.name }}</a></td>
+            {% else %}
             <td width=130px>&bull; {{ choice.name }}</td>
+            {% endif %}
             <td width=40px class="bar-graph">
                 <div class="bar-wrapper">
                     <div class="bar" style="width: {% widthratio choice.count poll.total_votes 40 %}px;"></div>

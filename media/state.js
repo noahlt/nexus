@@ -464,17 +464,34 @@ State.select_dates = function(min, max) {
 	return [added_some,removed_some];
 };
 
-State.submit_poll = function submit_poll(choice_id, link) {
-	State.acquire_request();
+State.submit_poll = function(choice_id, link) {
 	if (link)
 		State.activelink = link.addClass("active");
     $.ajax({
 		type: "GET",
-		dataType: "json",
+		dataType: "html",
 		url: "/ajax/poll",
 		data: {"choice": choice_id},
 		success: function(r) {
-			$("div #poll").html(r['html']);
+			$("div #poll").html(r);
+            State.grab_links();
+		},
+		error: function(xhr) {
+			$("div #poll").html(xhr.responseText);
+		}
+	});
+};
+
+State.get_poll = function(poll_id, link) {
+	if (link)
+		State.activelink = link.addClass("active");
+    $.ajax({
+		type: "GET",
+		dataType: "html",
+		url: "/ajax/poll",
+		data: {"poll": poll_id},
+		success: function(r) {
+			$("div #poll").html(r);
             State.grab_links();
 		},
 		error: function(xhr) {

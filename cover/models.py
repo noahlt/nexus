@@ -343,10 +343,6 @@ class Poll(models.Model):
     class Meta:
         ordering = ('-active', 'date', 'id')
 
-class Voter(models.Model):
-    ip = models.CharField(max_length=30, primary_key=True)
-    polls = models.ManyToManyField(Poll, blank=True, null=True)
-
 class PollAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]
     def choices(obj):

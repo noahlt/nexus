@@ -15,60 +15,51 @@ from django.views.decorators.cache import never_cache
 from django.views.generic.list_detail import object_detail
 from imageutil import ImageFormatter
 from models import *
+from random import random
 from util import *
 
 PAGE_SIZE = 10
 METADATA_CACHE_SECONDS = 3600 * 12
 
-def can_vote(poll, meta):
-    if not poll.active:
+def can_vote(poll, request):
+    if not poll.active or not request.session.get('valid'):
         return False
-    ip = meta.get('HTTP_X_FORWARDED_FOR', meta.get('REMOTE_ADDR'))
-    try:
-        voter = Voter.objects.get(ip=ip)
-    except:
-        return True
-    try:
-        voter.polls.get(id=poll.id)
-        return False
-    except:
-        return True
+    return not request.session.get('poll_%i' % poll.id)
 
-def register_voter(poll, meta):
-    ip = meta.get('HTTP_X_FORWARDED_FOR', meta.get('REMOTE_ADDR'))
-    try:
-        voter = Voter.objects.get(ip=ip)
-    except:
-        voter = Voter(ip=ip)
-        voter.save()
-    try:
-        voter.polls.get(id=poll.id)
-    except:
-        voter.polls.add(poll)
-        voter.save()
+def register_voter(poll, request):
+    request.session['poll_%i' % poll.id] = True
 
 @never_cache
 def poll_view(request):
+    request.session['valid'] = True
     polls = Poll.objects.filter(active=True)
-    polls = [(poll, can_vote(poll, request.META)) for poll in polls]
+    polls = [(poll, can_vote(poll, request)) for poll in polls]
+    return render_to_response('poll_bar.html', locals())
+
+def _poll_vote(request):
+    choice = get_object_or_404(Choice, id=request.GET['choice'])
+    poll = choice.parent
+    if can_vote(poll, request):
+        register_voter(poll, request)
+        choice.count += 1
+        choice.save()
+    polls = Poll.objects.filter(active=True)
+    polls = [(p, can_vote(p, request) and p != poll, False) for p in polls]
+    return render_to_response('poll_bar.html', locals())
+
+def _poll_results(request):
+    poll = get_object_or_404(Poll, id=request.GET['poll'])
+    polls = Poll.objects.filter(active=True)
+    polls = [(p, can_vote(p, request), p == poll and 'r') for p in polls]
     return render_to_response('poll_bar.html', locals())
 
 @never_cache
 def poll_results(request):
-    if 'choice' not in request.GET:
-        raise Http404
-    choice = get_object_or_404(Choice, id=request.GET['choice'])
-    poll = choice.parent
-    voted_already = True
-    if can_vote(poll, request.META):
-        register_voter(poll, request.META)
-        voted_already = False
-        choice.count += 1
-        choice.save()
-    polls = Poll.objects.filter(active=True)
-    polls = [(poll, can_vote(poll, request.META)) for poll in polls]
-    ret = {'html': get_template('poll_bar.html').render(Context(locals()))}
-    return HttpResponse(json.dumps(ret), mimetype='application/json')
+    if 'choice' in request.GET:
+        return _poll_vote(request)
+    if 'poll' in request.GET:
+        return _poll_results(request)
+    raise Http404
 
 def pollhist(request):
     polls = Poll.objects.filter(active=False)

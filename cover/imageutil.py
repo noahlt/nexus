@@ -1,5 +1,4 @@
 import Image
-import numpy
 import re
 
 from os.path import exists, getmtime, dirname
@@ -17,13 +16,17 @@ THUMBS_PATH = 'cache/image_thumbs/'
 MAX_LARGE_RATIO = .70 # larger is taller
 NATURAL_BORDER_STDEV = 25 # images below this amount get no border
 
+def std(list):
+    avg = sum(list)/len(list)
+    return (sum(map(lambda i:(i-avg)**2, list))/(len(list)-1 or 1))**.5
+
 def borderclass(obj):
     img = Image.open(obj.image.path)
     border = map(lambda w: img.getpixel((w, 1)), range(0, img.size[0])) \
            + map(lambda w: img.getpixel((w, img.size[1]-1)), range(0, img.size[0])) \
            + map(lambda h: img.getpixel((1, h)), range(0, img.size[1])) \
            + map(lambda h: img.getpixel((img.size[0]-1, h)), range(0, img.size[1]))
-    return 'noborder:' if numpy.std(border) <= NATURAL_BORDER_STDEV else ''
+    return 'noborder:' if std(border) <= NATURAL_BORDER_STDEV else ''
 
 def baseclass(obj, tags, image_centric):
     for tag in tags:

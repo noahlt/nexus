@@ -7,7 +7,6 @@ Dependencies:
   evince OR imagemagick (evince faster)
   pdftk OR python-pypdf (both sufficiently fast; pdftk faster)
 
-  Removable:
-    django_evolution
-    python-numpy
-    python-pysqlite2
+  psycopg (if using postgresql)
+
+  django_evolution (optional)

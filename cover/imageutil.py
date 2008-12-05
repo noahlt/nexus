@@ -22,10 +22,11 @@ def std(list):
 
 def borderclass(obj):
     img = Image.open(obj.image.path)
-    border = map(lambda w: img.getpixel((w, 1)), range(0, img.size[0])) \
-           + map(lambda w: img.getpixel((w, img.size[1]-1)), range(0, img.size[0])) \
-           + map(lambda h: img.getpixel((1, h)), range(0, img.size[1])) \
-           + map(lambda h: img.getpixel((img.size[0]-1, h)), range(0, img.size[1]))
+    get = lambda pixel: pixel if type(pixel) is int else sum(pixel)
+    border = map(lambda w: get(img.getpixel((w, 1))), range(0, img.size[0])) \
+           + map(lambda w: get(img.getpixel((w, img.size[1]-1))), range(0, img.size[0])) \
+           + map(lambda h: get(img.getpixel((1, h))), range(0, img.size[1])) \
+           + map(lambda h: get(img.getpixel((img.size[0]-1, h))), range(0, img.size[1]))
     return 'noborder:' if std(border) <= NATURAL_BORDER_STDEV else ''
 
 def baseclass(obj, tags, image_centric):

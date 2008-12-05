@@ -12,6 +12,8 @@
  *		- flags next page load for scrolling to top
  *	State.submit_poll(id, link)
  *		- renders response to poll of choice 'id' with link
+ *	State.get_poll(id, link)
+ *		- renders stats of poll 'id' with link
  *	State.select_dates(min, max)
  *		- selects dates between min and max
  *		- returns (true if any were highlighted, true if any were unhighlighted)
@@ -465,8 +467,7 @@ State.select_dates = function(min, max) {
 };
 
 State.submit_poll = function(choice_id, link) {
-	if (link)
-		State.activelink = link.addClass("active");
+	link.addClass("active");
     $.ajax({
 		type: "GET",
 		dataType: "html",
@@ -483,8 +484,7 @@ State.submit_poll = function(choice_id, link) {
 };
 
 State.get_poll = function(poll_id, link) {
-	if (link)
-		State.activelink = link.addClass("active");
+	link.addClass("active");
     $.ajax({
 		type: "GET",
 		dataType: "html",

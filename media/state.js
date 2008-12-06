@@ -209,7 +209,7 @@ State.init_history_monitor = function() {
 	function different(a, b) {
 		return a != b && !((!a || a == EMPTY) && (!b || b == EMPTY));
 	}
-	setInterval(function() {
+	State.poll = setInterval(function() {
 		if (different(window.location.hash, State.hash)) {
 			State.check_and_incr(window.location.hash, State.hash);
 			new State(window.location.hash).keep_hash().enter();
@@ -223,7 +223,6 @@ State.init_history_monitor = function() {
 State.title = 'NO TITLE YET';
 State.scroll_flag = false;
 State.init_ms = new Date().getTime();
-State.disabled = false;
 State.request_count = 0;
 State.queued_history = null;
 State.cached = new Object();
@@ -238,15 +237,13 @@ State.write_history = function() {
 };
 
 State.check_and_incr = function(a,b) {
-	if (State.disabled)
-		throw "ProbablyStuckInLoop";
 	var dt = new Date().getTime() - State.init_ms;
 	if (State.request_count++ / (1+(dt/1000)) > 1) {
 		alert("This script appears to be stuck in an infinite loop.\n("
 		+ State.request_count + " requests in " + (dt/1000)
 		+ " seconds)\n\nPlease report this bug.");
 		alert("DEBUG: [" + a + "] vs [" + b + "]");
-		State.disabled = true;
+		clearInterval(State.poll);
 	}
 };
 

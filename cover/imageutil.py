@@ -30,16 +30,18 @@ def borderclass(obj):
     return 'noborder:' if std(border) <= NATURAL_BORDER_STDEV else ''
 
 def baseclass(obj, tags, image_centric):
+    ret = ''
     for tag in tags:
         if tag.slug.startswith('cartoon') or tag.slug.startswith('comic'):
-            return 'cartoon:'
+            ret += 'cartoon:'
+            break
     if obj.image.width < 200 and obj.image.height < 200:
-        return 'thumb:'
-    if obj.image.width < 500:
-        return 'small:' + ('left:' if image_centric else '')
-    if not image_centric and float(obj.image.height) / float(obj.image.width) > MAX_LARGE_RATIO:
-        return 'small:'
-    return ''
+        ret += 'thumb:'
+    elif obj.image.width < 500:
+        ret += 'small:' + ('left:' if image_centric else '')
+    elif not image_centric and float(obj.image.height) / float(obj.image.width) > MAX_LARGE_RATIO:
+        ret += 'small:'
+    return ret
 
 def autoclass(obj, tags, image_centric):
     return baseclass(obj, tags, image_centric) + borderclass(obj)

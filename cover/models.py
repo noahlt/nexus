@@ -31,6 +31,15 @@ Most anything outside the block tags will be ignored.
 {{ block.super }}
 {% endblock %}"""
 
+# taken fron django snippet #29
+def slugify(inStr):
+    removelist = ["a", "an", "as", "at", "before", "but", "by", "for","from","is", "in", "into", "like", "of", "off", "on", "onto","per","since", "than", "the", "this", "that", "to", "up", "via","with"];
+    for a in removelist:
+        aslug = re.sub(r'\b'+a+r'\b','',inStr)
+    aslug = re.sub('[^\w\s-]', '', aslug).strip().lower()
+    aslug = re.sub('\s+', '-', aslug)
+    return aslug[:20]
+
 class Title(models.Model):
     title = models.CharField(max_length=30, help_text="Staff Writer, Photographer, etc.")
     plural_form = models.CharField(max_length=33, blank=True, null=True)
@@ -173,14 +182,14 @@ class CustomArticleTemplateAdmin(admin.ModelAdmin):
 
 class Article(models.Model):
     title = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=20, unique=True)
+    slug = models.SlugField(max_length=20, unique=True, blank=True)
     snippet = models.CharField(max_length=600, blank=True, null=True)
-    fulltext = models.TextField(blank=True)
+    fulltext = models.TextField(blank=True, help_text="""<span style="color: green; 9pt; font-weight: bold;">NOTE: </span>It's no longer necessary to insert images like [[this]]. In most cases they will be automatically added with suitable formatting.""")
     date = models.DateField(help_text="Articles from the future will not be shown.")
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
-    image_centric = models.BooleanField(help_text="Use for cartoons or photo galleries.")
-    never_published = models.BooleanField(default=False, help_text="Here to make sure you don't forget the 'printed' field.")
+    image_centric = models.BooleanField(help_text="Displays images more prominently than text.")
+    never_published = models.BooleanField(default=False, help_text="Disassociates article from any printed publication.")
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
     custom_template = models.ForeignKey(CustomArticleTemplate, blank=True, null=True)
@@ -217,12 +226,15 @@ class ArticleAdminForm(forms.ModelForm):
 
     def clean_images(self):
         for image in self.cleaned_data['images']:
-            if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, self.cleaned_data.get('fulltext','')):
-                self.cleaned_data['fulltext'] = '[[' + autoclass(image, self.cleaned_data['tags'], self.cleaned_data['image_centric']) + image.slug + ']]\r\n' + self.cleaned_data.get('fulltext','')
+            fulltext = self.cleaned_data.get('fulltext','')
+            if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, fulltext):
+                self.cleaned_data['fulltext'] = '[[auto:' + autoclass(image, self.cleaned_data['tags'], self.cleaned_data['image_centric']) + image.slug + ']]\r\n' + fulltext
+            elif re.search(r'\[\[auto:[a-z:]*%s]]' % image.slug, fulltext):
+                self.cleaned_data['fulltext'] = re.sub(r'\[\[auto:[a-z:]*%s]]' % image.slug, '[[auto:' + autoclass(image, self.cleaned_data['tags'], self.cleaned_data['image_centric']) + image.slug + ']]', fulltext)
         return self.cleaned_data['images']
 
     def clean_tags(self):
-        order = self.cleaned_data.get('order', None)
+        order = self.cleaned_data.get('order')
         if order is None:
             order = 0
             for tag in self.cleaned_data['tags']:
@@ -238,14 +250,27 @@ class ArticleAdminForm(forms.ModelForm):
             return self.cleaned_data['title'].encode('ascii', 'xmlcharrefreplace')
         return self.cleaned_data['title']
 
+    def clean_slug(self):
+        slug = self.cleaned_data.get('slug')
+        if not slug:
+            title = self.cleaned_data.get('title')
+            if title:
+                slug = slugify(title)
+        return slug
+
     def clean_printed(self):
+        online = self.cleaned_data['never_published']
         p = self.cleaned_data['printed']
-        if not p and not self.cleaned_data['never_published']:
-            raise forms.ValidationError("Check 'never published' if this article was never printed.")
-        if p and self.cleaned_data['never_published']:
-            raise forms.ValidationError("Uncheck 'never published' if this article was printed.")
-        if p and p.date != self.cleaned_data['date']:
-            raise forms.ValidationError("Printed date disagrees with publication date.")
+        d = self.cleaned_data['date']
+        if not d:
+            return p # let other validators handle it
+        if online:
+            p = None
+        else:
+            try:
+                p = Issue.objects.get(date=self.cleaned_data['date'])
+            except Issue.DoesNotExist:
+                raise forms.ValidationError("No issue found for %s. Change the article 'date' to something listed here." % self.cleaned_data['date'])
         return p
 
 class ArticleAdmin(admin.ModelAdmin):
@@ -261,7 +286,17 @@ class ArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'printed', tags, visible, 'order')
     list_filter = ('date', 'printed', 'authors')
     search_fields = ('title', 'slug', 'date')
-    filter_horizontal = ('authors','tags','images')
+    filter_horizontal = ('authors', 'tags', 'images')
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'fulltext', 'date', 'authors', 'tags', 'images')
+        }),
+        ('Advanced options', {
+            'classes': ('collapse',),
+            'fields': ('slug', 'snippet', 'image_centric', 'never_published', 'custom_template', 'order', 'printed')
+        }),
+    )
+
 
 class InfoPage(models.Model):
     title = models.CharField(max_length=100)

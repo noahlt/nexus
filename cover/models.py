@@ -1,4 +1,5 @@
 import re
+from hashlib import md5
 from datetime import date
 from django import forms
 from django.conf import settings
@@ -129,8 +130,10 @@ class Image(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     lossless = models.BooleanField("Use lossless compression", help_text="For detailed or computer generated images. Will result in larger file sizes for photographic images.", default=False)
     priority = models.IntegerField("Preview priority", default=0)
+    hash = models.TextField(blank=True, null=True, editable=False)
 
     def save(self):
+        self.hash = md5(file(self.image.path).read()).hexdigest()
         super(Image, self).save()
         self.thumbnail_size()
         self.small_size()
@@ -153,6 +156,15 @@ class Image(models.Model):
 
     def __str__(self):
         return self.slug
+
+class ImageAdminForm(forms.ModelForm):
+    def clean_image(self):
+        img = self.cleaned_data['image']
+        hash = md5(img.read()).hexdigest()
+        query = Image.objects.filter(hash=hash).exclude(id=self.instance.id)
+        if query.count() > 0:
+            raise forms.ValidationError('Image already uploaded as "%s"' % query[0])
+        return img
     
 class ImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('caption',)}
@@ -166,6 +178,7 @@ class ImageAdmin(admin.ModelAdmin):
     list_display = ('slug', author, tags, article_list)
     search_fields = ('slug', 'caption')
     filter_horizontal = ('authors', 'tags')
+    form = ImageAdminForm
 
 class CustomArticleTemplate(models.Model):
     name = models.CharField(max_length=50)

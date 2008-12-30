@@ -1,6 +1,10 @@
 <div id="content" class="error">
 <h3>404 - Not Found</h3>
 <p>
-	The requested page does not exist.
+    {% if message %}
+        {{ message }}
+    {% else %}
+        The requested page does not exist.
+    {% endif %}
 </p>
 </div>

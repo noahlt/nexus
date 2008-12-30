@@ -283,7 +283,7 @@ class ArticleAdminForm(forms.ModelForm):
             try:
                 p = Issue.objects.get(date=self.cleaned_data['date'])
             except Issue.DoesNotExist:
-                raise forms.ValidationError("No issue found for %s. Change the article 'date' to something listed here." % self.cleaned_data['date'])
+                raise forms.ValidationError("No issue found for %s. Change the article 'date' to something listed here. If this article was not published check 'never published'." % self.cleaned_data['date'])
         return p
 
 class ArticleAdmin(admin.ModelAdmin):
@@ -337,12 +337,20 @@ class StaticPage(models.Model):
     title = models.CharField(max_length=100)
     slug = models.CharField(max_length=20)
     html = models.TextField()
+    date = models.DateField(unique=True)
+    cover_page = models.BooleanField(default=False)
 
     def __str__(self):
         return "/static/%s" % self.slug
 
+    class Meta:
+        ordering = ['-date']
+
 class StaticAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
+    def url(obj):
+        return str(obj)
+    list_display = (url, 'date', 'cover_page')
 
 class SideBarLink(models.Model):
     link_name = models.CharField(max_length=100);

@@ -73,6 +73,17 @@ def staticpage(request, slug):
         mimetype='application/json'
     )
 
+def static_frontpage(request):
+    query = StaticPage.objects.filter(cover_page=True)
+    if query.count() < 1:
+        message = "No static pages were marked as cover pages."
+        return render_json('not found', '404.html', locals())
+    obj = query[0]
+    return HttpResponse(
+        json.dumps({'html': obj.html, 'title': 'Nexus | %s' % obj.title}),
+        mimetype='application/json'
+    )
+
 def frontpage(request, title='The Nexus', content=None, page=1):
     frontpage = True # for paginator.html
     DISABLE_GOOGLE = settings.DISABLE_GOOGLE

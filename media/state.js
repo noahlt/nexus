@@ -85,7 +85,7 @@ var TAG_NORMAL, TAG_EXPANDED, IFRAME; // use State.init(a,b,c,grab_links)
 function State(arg1, sel) {
 	change_hash = true;
 	atomic = false;
-	url = '';
+    url = '';
 	selection = [[], 1, DATE_MIN, DATE_MAX];
 	if (arg1 && arg1.charAt(0) == "#") {
 		var args = arg1.substring(1).split(FS);
@@ -107,12 +107,13 @@ function State(arg1, sel) {
 	} else {
 		if (arg1) {
 			var page_match = arg1.match(/^\/[0-9]+$/);
-			if (page_match)
+			if (page_match) // paginated root
 				selection[1] = page_match.toString().substring(1);
-			else
+			else // noscript url fallback
 				url = make_relative(arg1);
-		}
-		if (sel)
+		} else if (arg1 === '') // root page
+            url = '/cover';
+		if (sel) // manual selection overrides defaults
 			selection = sel;
 	}
 

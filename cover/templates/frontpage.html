@@ -24,6 +24,13 @@
 }
 </style>
 <![endif]-->
+{% if content %}
+<style type="text/css">
+.results {
+    display: none;
+}
+</style>
+{% endif %}
 </head>
 
 <body>
@@ -34,7 +41,7 @@
 <div id="grid">
 <noscript>Javascript is required to filter by tag and date.</noscript>
   <ul id="tags">
-    <li class="activetag" id="alltags"><a href="#">(Show All)</a></li>
+    <li id="alltags"><a href="#">(Show All)</a></li>
 	{% for type, tags in types %}
 		{% for tag in tags %}
 			<li class="{{ type }}" id="tag_{{ tag.slug }}"><a class="not_embeddable" href="/tag/{{ tag.slug }}">

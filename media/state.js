@@ -2,7 +2,7 @@
  *
  * Static methods:
  *
- *	State.init(tag_width_normal, tag_width_expanded, iframe, ungrab_function)
+ *	State.init(tag_width_normal, tag_width_expanded, iframe, cover, ungrab_function)
  *		- run before using any other functions
  *	State.init_history_monitor()
  *		- start after any page redirects/loading
@@ -80,12 +80,14 @@ function make_relative(url) {
 var DATE_MIN = 100001;
 var DATE_MAX = 300001;
 var FS = ",", FS2 = ".";
-var TAG_NORMAL, TAG_EXPANDED, IFRAME; // use State.init(a,b,c,grab_links)
+
+// set by State.init(a,b,c,d,grab_links)
+var TAG_NORMAL, TAG_EXPANDED, IFRAME, STATIC_FRONTPAGE;
 
 function State(arg1, sel) {
 	change_hash = true;
 	atomic = false;
-    url = '';
+	url = '';
 	selection = [[], 1, DATE_MIN, DATE_MAX];
 	if (arg1 && arg1.charAt(0) == "#") {
 		var args = arg1.substring(1).split(FS);
@@ -111,8 +113,8 @@ function State(arg1, sel) {
 				selection[1] = page_match.toString().substring(1);
 			else // noscript url fallback
 				url = make_relative(arg1);
-		} else if (arg1 === '') // root page
-            url = '/cover';
+		} else if (STATIC_FRONTPAGE && arg1 === '') // root page
+			url = '/cover';
 		if (sel) // manual selection overrides defaults
 			selection = sel;
 	}
@@ -188,10 +190,11 @@ function State(arg1, sel) {
 	};
 }
 
-State.init = function(tag_norm, tag_exp, iframe, grab) {
+State.init = function(tag_norm, tag_exp, iframe, cover, grab) {
 	TAG_NORMAL = tag_norm;
 	TAG_EXPANDED = tag_exp;
 	IFRAME = iframe;
+	STATIC_FRONTPAGE = cover;
 	State.grab_links = grab;
 	State.grab_links();
 	$.ajax({
@@ -200,7 +203,7 @@ State.init = function(tag_norm, tag_exp, iframe, grab) {
 		url: "/ajax/poll/current",
 		success: function(r) {
 			$("div #poll").html(r);
-            State.grab_links();
+			State.grab_links();
 		}
 	});
 };
@@ -332,7 +335,7 @@ State.load_selection = function(selection, hashstring, just_url_update) {
 			type: "GET",
 			dataType: "json",
 			data: {"tags": selection[0], "page": selection[1], "have_articles": have_articles,
-			       "date_min": selection[2], "date_max": selection[3], "hash": hashstring},
+				   "date_min": selection[2], "date_max": selection[3], "hash": hashstring},
 			url: "/ajax/paginator",
 			success: load,
 			error: function(xhr) {
@@ -466,14 +469,14 @@ State.select_dates = function(min, max) {
 
 State.submit_poll = function(choice_id, link) {
 	link.addClass("active");
-    $.ajax({
+	$.ajax({
 		type: "GET",
 		dataType: "html",
 		url: "/ajax/poll",
 		data: {"choice": choice_id},
 		success: function(r) {
 			$("div #poll").html(r);
-            State.grab_links();
+			State.grab_links();
 		},
 		error: function(xhr) {
 			$("div #poll").html(xhr.responseText);
@@ -483,17 +486,19 @@ State.submit_poll = function(choice_id, link) {
 
 State.get_poll = function(poll_id, link) {
 	link.addClass("active");
-    $.ajax({
+	$.ajax({
 		type: "GET",
 		dataType: "html",
 		url: "/ajax/poll",
 		data: {"poll": poll_id},
 		success: function(r) {
 			$("div #poll").html(r);
-            State.grab_links();
+			State.grab_links();
 		},
 		error: function(xhr) {
 			$("div #poll").html(xhr.responseText);
 		}
 	});
 };
+
+// vim: noet ts=4

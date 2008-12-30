@@ -2,8 +2,9 @@ $(document).ready(function() {
 
 	var TAG_NORMAL = $("#alltags").width();
 	var TAG_EXPANDED = TAG_NORMAL + 13;
-	var IFRAME = $("iframe").size() > 0;
-	State.init(TAG_NORMAL, TAG_EXPANDED, IFRAME, function() {
+	var IFRAME = $("iframe").size() > 0; // XXX
+	var STATIC_FRONTPAGE = $("#config_static").size() > 0; // XXX
+	State.init(TAG_NORMAL, TAG_EXPANDED, IFRAME, STATIC_FRONTPAGE, function() {
 		$("a").filter(".list-hider").unbind().click(function(event) {
 			event.preventDefault();
 			$(".alist").show("slow");

@@ -73,7 +73,7 @@ def staticpage(request, slug):
         mimetype='application/json'
     )
 
-def static_frontpage(request):
+def frontpage_static_contents(request):
     query = StaticPage.objects.filter(cover_page=True)
     if query.count() < 1:
         message = "No static pages were marked as cover pages."
@@ -84,7 +84,7 @@ def static_frontpage(request):
         mimetype='application/json'
     )
 
-def frontpage(request, title='The Nexus', content=None, page=1):
+def frontpage(request, title='The Nexus', content=None, page=1, static=False):
     frontpage = True # for paginator.html
     DISABLE_GOOGLE = settings.DISABLE_GOOGLE
     MEDIA_URL = settings.MEDIA_URL
@@ -131,6 +131,14 @@ def frontpage(request, title='The Nexus', content=None, page=1):
             dates[-1].append(date)
         cache.set(key, dates, METADATA_CACHE_SECONDS)
     return HttpResponse(get_template('frontpage.html').render(Context(locals())))
+
+def some_frontpage(request):
+    query = StaticPage.objects.filter(cover_page=True)
+    if query.count() < 1:
+        return frontpage(request)
+    else:
+        obj = query[0]
+        return frontpage(request, static=True, content=obj.html)
 
 def frontpage_paginated(request, page):
     title = 'The Nexus' if page == 1 else 'The Nexus | %s' % page

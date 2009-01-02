@@ -63,7 +63,7 @@ def poll_results(request):
 
 def pollhist(request):
     polls = Poll.objects.filter(stop_date__lt=date.today())
-    objs = [(poll, poll.choice_set.order_by('-count')) for poll in polls]
+    objs = [(poll, poll.choice_set.all()) for poll in polls]
     return render_json('Old polls', 'poll_history.html', locals())
 
 def staticpage(request, slug):

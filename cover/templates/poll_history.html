@@ -5,7 +5,7 @@
 {% block content %}
 	{% for poll, choices in objs %}
         <h4>{{ poll.question }}</h4>
-		<span style="font-size: 9pt">{{ poll.start_date|date:"F d, Y" }} - {{ poll.days}}</span>
+		<span style="font-size: 9pt">{{ poll.start_date|date:"F d, Y" }} ({{ poll.days}})</span>
         <table>
         {% for choice in choices %}
             <tr>

@@ -22,7 +22,7 @@ PAGE_SIZE = 10
 METADATA_CACHE_SECONDS = 3600 * 12
 
 def can_vote(poll, request):
-    if not poll.active or not request.session.get('valid'):
+    if not poll.active() or not request.session.get('valid'):
         return False
     return not request.session.get('poll_%i' % poll.id)
 
@@ -32,7 +32,7 @@ def register_voter(poll, request):
 @never_cache
 def poll_view(request):
     request.session['valid'] = True
-    polls = Poll.objects.filter(active=True)
+    polls = Poll.objects.filter(stop_date__gte=date.today())
     polls = [(poll, can_vote(poll, request)) for poll in polls]
     return render_to_response('poll_bar.html', locals())
 
@@ -43,13 +43,13 @@ def _poll_vote(request):
         register_voter(poll, request)
         choice.count += 1
         choice.save()
-    polls = Poll.objects.filter(active=True)
+    polls = Poll.objects.filter(stop_date__gte=date.today())
     polls = [(p, can_vote(p, request) and p != poll, False) for p in polls]
     return render_to_response('poll_bar.html', locals())
 
 def _poll_results(request):
     poll = get_object_or_404(Poll, id=request.GET['poll'])
-    polls = Poll.objects.filter(active=True)
+    polls = Poll.objects.filter(stop_date__gte=date.today())
     polls = [(p, can_vote(p, request), p == poll and 'r') for p in polls]
     return render_to_response('poll_bar.html', locals())
 
@@ -62,7 +62,7 @@ def poll_results(request):
     raise Http404
 
 def pollhist(request):
-    polls = Poll.objects.filter(active=False)
+    polls = Poll.objects.filter(stop_date__lt=date.today())
     objs = [(poll, poll.choice_set.order_by('-count')) for poll in polls]
     return render_json('Old polls', 'poll_history.html', locals())
 

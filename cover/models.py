@@ -387,20 +387,35 @@ class ChoiceInline(admin.TabularInline):
 
 class Poll(models.Model):
     question = models.CharField(max_length=300)
-    active = models.BooleanField(default=True)
-    date = models.DateField(default=date.today())
+    start_date = models.DateField(default=date.today())
+    stop_date = models.DateField(default=date.today())
 
     def total_votes(self):
         return sum([c.count for c in self.choice_set.all()])
+
+    def days(self):
+        days = (self.stop_date - self.start_date).days + 1
+        return '%i day%s' % (days, 's' if days > 1 else '')
+
+    def active(self):
+        return self.stop_date >= date.today()
+    active.boolean = True
 
     def __str__(self):
         return self.question
 
     class Meta:
-        ordering = ('-active', 'date', 'id')
+        ordering = ('-stop_date', 'id')
+
+class PollAdminForm(forms.ModelForm):
+    def clean_stop_date(self):
+        if self.cleaned_data['start_date'] > self.cleaned_data['stop_date']:
+            raise forms.ValidationError("Stop date must be after or the same as the start date.")
+        return self.cleaned_data['stop_date']
 
 class PollAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]
+    form = PollAdminForm
     def choices(obj):
         return ', '.join([str(c) for c in obj.choice_set.all()])
     list_display = ('question', choices, 'active')

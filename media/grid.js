@@ -1,5 +1,10 @@
 $(document).ready(function() {
 
+	function is_nonlocal(event) {
+		return event.ctrlKey || event.shiftKey
+		|| (!$.browser.msie && event.button == 1); // not IE; chrome fix
+	}
+
 	var TAG_NORMAL = $("#alltags").width();
 	var TAG_EXPANDED = TAG_NORMAL + 13;
 	var IFRAME = $("iframe").size() > 0; // XXX
@@ -14,28 +19,28 @@ $(document).ready(function() {
 			return url.substring(url.indexOf("#"));
 		}
 		$("a").filter(".poll").unbind().click(function(event) {
-			if (event.ctrlKey || event.shiftKey)
+			if (is_nonlocal(event))
 				return;
 			event.preventDefault();
 			var choice_id = hash_of($(this).attr("href")).substring(8); // #choice_
 			State.submit_poll(choice_id, $(this));
 		});
 		$("a").filter(".poll_results_only").unbind().click(function(event) {
-			if (event.ctrlKey || event.shiftKey)
+			if (is_nonlocal(event))
 				return;
 			event.preventDefault();
 			var poll_id = hash_of($(this).attr("href")).substring(6); // #poll_
 			State.get_poll(poll_id, $(this));
 		});
 		$("a").filter(".embeddable").unbind().click(function(event) {
-			if (event.ctrlKey || event.shiftKey)
+			if (is_nonlocal(event))
 				return;
 			event.preventDefault();
 			State.current().enter($(this));
 			State.scrollup();
 		});
 		$(".paginator .pagelink").unbind().click(function(event) {
-			if (event.ctrlKey || event.shiftKey)
+			if (is_nonlocal(event))
 				return;
 			event.preventDefault();
 			State.current().page($(this).attr("id").substring(2)).enter($("#" + $(this).attr("id") + " a"));
@@ -73,7 +78,7 @@ $(document).ready(function() {
 	State.init_history_monitor();
 
 	$("#tags li").not("#alltags").click(function(event) {
-		if (event.ctrlKey || event.shiftKey)
+		if (is_nonlocal(event))
 			return;
 		event.preventDefault();
 		if ($(this).hasClass("useless") && !$(this).hasClass("activetag"))
@@ -97,7 +102,7 @@ $(document).ready(function() {
 	});
 
 	$("#tags li a").click(function(event) {
-		if (event.ctrlKey || event.shiftKey)
+		if (is_nonlocal(event))
 			return;
 		event.preventDefault();
 	});

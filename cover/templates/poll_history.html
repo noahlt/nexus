@@ -9,7 +9,6 @@
         <table>
         {% for choice in choices %}
             <tr>
-                <p>
                 <td width=300px>&bull; {{ choice.name }}</td>
                 <td width=180px class="bar-graph">
                     <div class="bar-wrapper">
@@ -19,7 +18,6 @@
                 <td width=40px>
                 <div style="font-size: 8pt; text-align: right">{{ choice.count }}</div>
                 </td>
-                </p>
             </tr>
         {% endfor %}
         </table>

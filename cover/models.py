@@ -338,7 +338,7 @@ class StaticPage(models.Model):
     slug = models.CharField(max_length=20)
     html = models.TextField()
     date = models.DateField(unique=True)
-    cover_page = models.BooleanField(default=False)
+    cover_page = models.BooleanField("Set as cover page", default=False)
 
     def __str__(self):
         return "/static/%s" % self.slug
@@ -346,8 +346,18 @@ class StaticPage(models.Model):
     class Meta:
         ordering = ['-date']
 
+class StaticAdminForm(forms.ModelForm):
+    def clean_cover_page(self):
+        if self.cleaned_data.get('cover_page'):
+            for page in StaticPage.objects.filter(cover_page=True).exclude(id=self.instance.id):
+                page.cover_page = False
+                page.save()
+        return self.cleaned_data.get('cover_page')
+
+
 class StaticAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
+    form = StaticAdminForm
     def url(obj):
         return str(obj)
     list_display = (url, 'date', 'cover_page')

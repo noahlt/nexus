@@ -31,11 +31,24 @@
  *		- disables history queueing - use to avoid race conditions; returns self
  *	[State].page(n)
  *		- sets page to 'n'; returns self
+ *	[State].search(query)
+ *		- sets query to 'query'; returns self
  *	[State].keep_hash()
  *		- disables history tracking; returns self
  *	[State].toString()
  *		- returns serialized form to be used for reconstruction
  */
+
+function setVisible(str) {
+	var types = ['embed', 'search', 'results'];
+	for (var i in types) {
+		key = types[i];
+		if (key == str)
+			$('.' + key).show();
+		else
+			$('.' + key).hide();
+	}
+}
 
 var google_ok = false;
 try {
@@ -52,7 +65,15 @@ try {
 		searchControl.addSearcher(siteSearch, options);
 		searchControl.setResultSetSize(google.search.Search.LARGE_RESULTSET);
 		searchControl.draw(document.getElementById("searchcontrol"));
+		searchControl.setSearchStartingCallback(null, function(searchControl, searcher) {
+			setVisible("search"); // called early because the search bar is drawn early
+		});
 		searchControl.setSearchCompleteCallback(null, function(searchControl, searcher) {
+			// otherwise we'll loop
+			if (State.query != searcher.ve) {
+				State.query = searcher.ve;
+				State.current().search(searcher.ve).enter();
+			}
 			$("a.gs-title").unbind().click(function(event) {
 				if (event.ctrlKey || event.shiftKey)
 					return;
@@ -65,6 +86,8 @@ try {
 				State.scrollup();
 			});
 		});
+		if (State.query) // was queued from page hash
+			searchControl.execute(State.query);
 		google_ok = true;
 	}, true);
 } catch (e) { } // google_ok will then be false
@@ -88,6 +111,7 @@ function State(arg1, sel) {
 	change_hash = true;
 	atomic = false;
 	url = '';
+	query = '';
 	selection = [[], 1, DATE_MIN, DATE_MAX];
 	if (arg1 && arg1.charAt(0) == "#") {
 		var args = arg1.substring(1).split(FS);
@@ -105,6 +129,8 @@ function State(arg1, sel) {
 				selection[2] = x.substring(4);
 			else if (x.substring(0,4) == 'max=')
 				selection[3] = x.substring(4);
+			else if (x.substring(0,6) == 'query=')
+				query = x.substring(6);
 		}
 	} else {
 		if (arg1) {
@@ -124,9 +150,15 @@ function State(arg1, sel) {
 		return this;
 	};
 
+	this.search = function(q) {
+		query = q;
+		return this;
+	};
+
 	this.enter = function(link) {
 		State.acquire_request();
-		if (link) {
+		if (link && !query) {
+			// some url processing
 			State.activelink = link.addClass("active");
 			url = link.attr("href");
 			if (url) {
@@ -153,7 +185,19 @@ function State(arg1, sel) {
 			State.hash = window.location.hash;
 		State.select_tags(selection[0]);
 		State.select_dates(selection[2], selection[3]);
-		if (url) {
+		if (query) {
+			if (google_ok)
+				searchControl.execute(query);
+			else {
+				// either google hasn't loaded
+				// or this is a initial page load
+				// in any case queue it for processing
+				State.query = query;
+			}
+			State.load_selection(selection, this.toString(true), true);
+			setVisible("search");
+			State.release_request();
+		} else if (url) {
 			State.load_url(url);
 			State.load_selection(selection, this.toString(true), true);
 		} else
@@ -179,7 +223,9 @@ function State(arg1, sel) {
 			if (selection[3] != DATE_MAX)
 				output[output.length] = "max=" + selection[3];
 		}
-		if (!omit_page && (output.length === 0 || selection[1] != 1))
+		if (query)
+			output[output.length] = "query=" + query;
+		else if (!omit_page && (output.length === 0 || selection[1] != 1))
 			output[output.length] = "page=" + selection[1];
 		return '#' + output.join(FS);
 	};
@@ -224,10 +270,11 @@ State.init_history_monitor = function() {
 	}, 100);
 };
 
-State.title = 'NO TITLE YET';
+State.title = 'The Nexus';
 State.scroll_flag = false;
 State.init_ms = new Date().getTime();
 State.request_count = 0;
+State.query = '';
 State.queued_history = null;
 State.cached = new Object();
 State.activelink = null;
@@ -286,8 +333,7 @@ State.load_url = function(url) {
 		},
 		complete: function() {
 			State.grab_links();
-			$(".results").hide();
-			$(".embed").show();
+			setVisible("embed");
 			State.release_request();
 		}
 	});
@@ -312,8 +358,7 @@ State.load_selection = function(selection, hashstring, just_url_update) {
 		}
 		if (!just_url_update) {
 			State.grab_links();
-			$(".embed").hide();
-			$(".results").show();
+			setVisible("results");
 			State.release_request();
 		}
 	}
@@ -340,8 +385,7 @@ State.load_selection = function(selection, hashstring, just_url_update) {
 			success: load,
 			error: function(xhr) {
 				$("#embedded_content").html(xhr.responseText);
-				$(".results").hide();
-				$(".embed").show();
+				setVisible("embed");
 				State.release_request();
 			}
 		});
@@ -415,8 +459,10 @@ State.acquire_request = function() {
 // call at end of dom update
 State.release_request = function() {
 	window.status = "Done";
-	if (google_ok)
+	if (google_ok && !query) {
+		State.query = '';
 		searchControl.clearAllResults();
+	}
 	State.write_history();
 	document.title = State.title;
 	State.request = null;

@@ -15,7 +15,7 @@
   margin-bottom: -1em;
 }
 #searchcontrol {
-  margin-left: 280px;
+  margin-left: 270px;
   margin-top: 10px;
   margin-bottom: -25px;
   height: 47px;
@@ -29,6 +29,9 @@
 
 #tags li, #dates li, #gridtypes li {
   padding: .3em;
+}
+.gsc-clear-button {
+  display:none;
 }
 
 body, h1, h2, h3, h4, h5, h6, p, img, ul, li {

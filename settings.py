@@ -3,7 +3,7 @@ import os
 # all True in development
 DEBUG = True
 STATIC_SERVE = True
-DISABLE_GOOGLE = True
+DISABLE_GOOGLE = False
 
 TEMPLATE_DEBUG = DEBUG
 if DEBUG:

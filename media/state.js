@@ -70,9 +70,9 @@ try {
 		});
 		searchControl.setSearchCompleteCallback(null, function(searchControl, searcher) {
 			// otherwise we'll loop
-			if (State.query != searcher.ve) {
-				State.query = searcher.ve;
-				State.current().search(searcher.ve).enter();
+			if (State.query != searchControl.input.value) {
+				State.query = searchControl.input.value;
+				State.current().search(searchControl.input.value).enter();
 			}
 			$("a.gs-title").unbind().click(function(event) {
 				if (event.ctrlKey || event.shiftKey)
@@ -117,7 +117,9 @@ function State(arg1, sel) {
 		var args = arg1.substring(1).split(FS);
 		for (var i in args) {
 			var x = args[i];
-			if (x.substring(0,1) == '/')
+			if (query)
+				query += ',' + x;
+			else if (x.substring(0,1) == '/')
 				url = x;
 			else if (x.substring(0,5) == 'tags=')
 				selection[0] = x.substring(5).split(FS2);

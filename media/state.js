@@ -217,9 +217,9 @@ function State(arg1, sel) {
 		return this;
 	};
 
-	this.toString = function(omit_page) {
+	this.toString = function(nav_attrs_only) {
 		var output = [];
-		if (url)
+		if (!nav_attrs_only && url)
 			output[output.length] = url;
 		if (selection[0] && selection[0].length > 0)
 			output[output.length] = "tags=" + selection[0].join(FS2);
@@ -231,7 +231,7 @@ function State(arg1, sel) {
 			if (selection[3] != DATE_MAX)
 				output[output.length] = "max=" + selection[3];
 		}
-		if (!omit_page) {
+		if (!nav_attrs_only) {
 			if (query)
 				output[output.length] = "query=" + query;
 			else if (output.length === 0 || selection[1] != 1)

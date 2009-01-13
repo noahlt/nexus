@@ -159,15 +159,21 @@ function State(arg1, sel) {
 
 	this.enter = function(link) {
 		State.acquire_request();
-		if (link && !query) {
+		if (link) {
 			// some url processing
 			State.activelink = link.addClass("active");
-			url = link.attr("href");
+			url = make_relative(link.attr("href"));
+			// XXX repeat of url processing when constructing state
 			if (url) {
 				if (url.match(/#/)) // 'embeddable' or search result link
 					url = undefined;
-				else
-					url = make_relative(url);
+				else {
+					var page_match = url.match(/^\/[0-9]+$/);
+					if (page_match) { // paginated root
+						selection[1] = page_match.toString().substring(1);
+						url = undefined;
+					}
+				}
 			}
 		}
 		if (change_hash || IFRAME) { // always do this on IE6/7
@@ -225,10 +231,12 @@ function State(arg1, sel) {
 			if (selection[3] != DATE_MAX)
 				output[output.length] = "max=" + selection[3];
 		}
-		if (query)
-			output[output.length] = "query=" + query;
-		else if (!omit_page && (output.length === 0 || selection[1] != 1))
-			output[output.length] = "page=" + selection[1];
+		if (!omit_page) {
+			if (query)
+				output[output.length] = "query=" + query;
+			else if (output.length === 0 || selection[1] != 1)
+				output[output.length] = "page=" + selection[1];
+		}
 		return '#' + output.join(FS);
 	};
 

@@ -5,8 +5,10 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
+from django.forms.util import ErrorList
 from imageutil import *
 from nexus.archive.models import Issue, ignore_errors
+from nexus.archive.pdfutil import nameof
 
 NEWLINE = re.compile('([^\n])\n([^\n])')
 PARAGRAPH = re.compile(r'\n[A-Z][^\n]+\n')
@@ -32,7 +34,7 @@ Most anything outside the block tags will be ignored.
 {{ block.super }}
 {% endblock %}"""
 
-# taken fron django snippet #29
+# taken from django snippet #29
 def slugify(inStr):
     removelist = ["a", "an", "as", "at", "before", "but", "by", "for","from","is", "in", "into", "like", "of", "off", "on", "onto","per","since", "than", "the", "this", "that", "to", "up", "via","with"];
     for a in removelist:
@@ -123,13 +125,13 @@ class TagAdmin(admin.ModelAdmin):
 class Image(models.Model):
     image = models.ImageField(upload_to='image_orig/')
     caption = models.TextField(blank=True, null=True)
-    slug = models.SlugField(max_length=20, unique=True,
-        help_text="You can embed images in articles as [[slug]]")
+    slug = models.SlugField(max_length=20, unique=True, blank=True,
+        help_text="You can embed images in articles as [[slug]]<br>Defaults to the uploaded file's name.")
     authors = models.ManyToManyField(Author)
     date = models.DateField(blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
     lossless = models.BooleanField("Use lossless compression", help_text="For detailed or computer generated images. Will result in larger file sizes for photographic images.", default=False)
-    priority = models.IntegerField("Preview priority", default=0)
+    priority = models.IntegerField("Preview priority", default=0, help_text="Applies to the preview of 'image_centric' articles.")
     hash = models.TextField(blank=True, null=True, editable=False)
 
     def save(self):
@@ -158,6 +160,7 @@ class Image(models.Model):
         return self.slug
 
 class ImageAdminForm(forms.ModelForm):
+
     def clean_image(self):
         img = self.cleaned_data['image']
         hash = md5(img.read()).hexdigest()
@@ -165,9 +168,25 @@ class ImageAdminForm(forms.ModelForm):
         if query.count() > 0:
             raise forms.ValidationError('Image already uploaded as "%s"' % query[0])
         return img
+
+    def clean(self):
+        # autogenerate slug if necessary
+        slug = self.cleaned_data.get('slug')
+        image = self.cleaned_data.get('image')
+        if image and not slug:
+            self.cleaned_data['slug'] = slugify(nameof(image.name))
+        return forms.ModelForm.clean(self)
     
 class ImageAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('caption',)}
+    fieldsets = (
+        (None, {
+            'fields': ('image', 'slug', 'caption', 'authors', 'date', 'tags')
+        }),
+        ('Advanced Options', {
+            'classes': ('collapse',),
+            'fields': ('lossless', 'priority')
+        }),
+    )
     def tags(obj):
         return ', '.join([tag.name for tag in obj.tags.all()])
     def article_list(obj):
@@ -198,11 +217,10 @@ class Article(models.Model):
     slug = models.SlugField(max_length=20, unique=True, blank=True)
     snippet = models.CharField(max_length=600, blank=True, null=True)
     fulltext = models.TextField(blank=True, help_text="""<span style="color: green; 9pt; font-weight: bold;">NOTE: </span>It's no longer necessary to insert images like [[this]]. In most cases they will be automatically added with suitable formatting.""")
-    date = models.DateField(help_text="Articles from the future will not be shown.")
+    date = models.DateField(blank=True)
     authors = models.ManyToManyField(Author)
     tags = models.ManyToManyField(Tag)
     image_centric = models.BooleanField(help_text="Displays images more prominently than text.")
-    never_published = models.BooleanField(default=False, help_text="Disassociates article from any printed publication.")
     printed = models.ForeignKey(Issue, blank=True, null=True)
     images = models.ManyToManyField(Image, blank=True)
     custom_template = models.ForeignKey(CustomArticleTemplate, blank=True, null=True)
@@ -237,25 +255,6 @@ class Article(models.Model):
 
 class ArticleAdminForm(forms.ModelForm):
 
-    def clean_images(self):
-        for image in self.cleaned_data['images']:
-            fulltext = self.cleaned_data.get('fulltext','')
-            if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, fulltext):
-                self.cleaned_data['fulltext'] = '[[auto:' + autoclass(image, self.cleaned_data['tags'], self.cleaned_data['image_centric']) + image.slug + ']]\r\n' + fulltext
-            elif re.search(r'\[\[auto:[a-z:]*%s]]' % image.slug, fulltext):
-                self.cleaned_data['fulltext'] = re.sub(r'\[\[auto:[a-z:]*%s]]' % image.slug, '[[auto:' + autoclass(image, self.cleaned_data['tags'], self.cleaned_data['image_centric']) + image.slug + ']]', fulltext)
-        return self.cleaned_data['images']
-
-    def clean_tags(self):
-        order = self.cleaned_data.get('order')
-        if order is None:
-            order = 0
-            for tag in self.cleaned_data['tags']:
-                if tag.article_priority > order:
-                    order = tag.article_priority
-        self.cleaned_data['order'] = order
-        return self.cleaned_data['tags']
-
     def clean_title(self):
         try:
             self.cleaned_data['title'].encode()
@@ -263,28 +262,44 @@ class ArticleAdminForm(forms.ModelForm):
             return self.cleaned_data['title'].encode('ascii', 'xmlcharrefreplace')
         return self.cleaned_data['title']
 
-    def clean_slug(self):
+    def clean(self):
+        # autogenerate slug if necessary
         slug = self.cleaned_data.get('slug')
-        if not slug:
-            title = self.cleaned_data.get('title')
-            if title:
-                slug = slugify(title)
-        return slug
+        title = self.cleaned_data.get('title')
+        if title and not slug:
+            self.cleaned_data['slug'] = slugify(title)
 
-    def clean_printed(self):
-        online = self.cleaned_data['never_published']
-        p = self.cleaned_data['printed']
-        d = self.cleaned_data['date']
-        if not d:
-            return p # let other validators handle it
-        if online:
-            p = None
-        else:
-            try:
-                p = Issue.objects.get(date=self.cleaned_data['date'])
-            except Issue.DoesNotExist:
-                raise forms.ValidationError("No issue found for %s. Change the article 'date' to something listed here. If this article was not published check 'never published'." % self.cleaned_data['date'])
-        return p
+        # ensure date field is present
+        printed = self.cleaned_data.get('printed')
+        date = self.cleaned_data.get('date')
+        if printed:
+            self.cleaned_data['date'] = printed.date
+        elif not date:
+            self._errors['date'] = ErrorList(["If this is a purely online article, enter a date manually."])
+
+        # auto-order articles if it's undefined
+        order = self.cleaned_data.get('order')
+        tags = self.cleaned_data.get('tags')
+        if tags and order is None:
+            order = 0
+            for tag in tags:
+                if tag.article_priority > order:
+                    order = tag.article_priority
+        self.cleaned_data['order'] = order
+
+        # auto-embed images into fulltext
+        images = self.cleaned_data.get('images')
+        tags = self.cleaned_data.get('tags')
+        image_centric = self.cleaned_data.get('image_centric')
+        if images and tags and image_centric is not None:
+            for image in images:
+                fulltext = self.cleaned_data.get('fulltext','')
+                if not re.search(r'\[\[[a-z:]*%s]]' % image.slug, fulltext):
+                    self.cleaned_data['fulltext'] = '[[auto:' + autoclass(image, tags, image_centric) + image.slug + ']]\r\n' + fulltext
+                elif re.search(r'\[\[auto:[a-z:]*%s]]' % image.slug, fulltext):
+                    self.cleaned_data['fulltext'] = re.sub(r'\[\[auto:[a-z:]*%s]]' % image.slug, '[[auto:' + autoclass(image, tags, image_centric) + image.slug + ']]', fulltext)
+
+        return forms.ModelForm.clean(self)
 
 class ArticleAdmin(admin.ModelAdmin):
     form = ArticleAdminForm
@@ -302,11 +317,11 @@ class ArticleAdmin(admin.ModelAdmin):
     filter_horizontal = ('authors', 'tags', 'images')
     fieldsets = (
         (None, {
-            'fields': ('title', 'fulltext', 'date', 'authors', 'tags', 'images')
+            'fields': ('title', 'fulltext', 'printed', 'authors', 'tags', 'images')
         }),
         ('Advanced options', {
             'classes': ('collapse',),
-            'fields': ('slug', 'snippet', 'image_centric', 'never_published', 'custom_template', 'order', 'printed')
+            'fields': ('slug', 'snippet', 'image_centric', 'custom_template', 'order', 'date')
         }),
     )
 
@@ -353,7 +368,6 @@ class StaticAdminForm(forms.ModelForm):
                 page.cover_page = False
                 page.save()
         return self.cleaned_data.get('cover_page')
-
 
 class StaticAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
@@ -418,10 +432,12 @@ class Poll(models.Model):
         ordering = ('-stop_date', 'id')
 
 class PollAdminForm(forms.ModelForm):
-    def clean_stop_date(self):
-        if self.cleaned_data['start_date'] > self.cleaned_data['stop_date']:
-            raise forms.ValidationError("Stop date must be after or the same as the start date.")
-        return self.cleaned_data['stop_date']
+    def clean(self):
+        start_date = self.cleaned_data.get('start_date')
+        stop_date = self.cleaned_data.get('stop_date')
+        if start_date and stop_date and start_date > stop_date:
+            self._errors['stop_date'] = ErrorList(["Stop date must greater than or equal to start date."])
+        return forms.ModelForm.clean(self)
 
 class PollAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]

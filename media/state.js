@@ -21,7 +21,7 @@
  * As object:
  *
  *	Construct by either of the two:
- *	new State("#/url,page=1,tags=one.two,min=200801,max=200805,month=200805")
+ *	new State("#/url,page=1,tags=one.two,min=200801,max=200805,month=200805,query=string")
  *		- all args optional; url must be first if used
  *	new State("/url", [[tag,tag], page#, min, max])
  *		- nulls will be replaced by default values

@@ -9,46 +9,52 @@ $(document).ready(function() {
 	var TAG_EXPANDED = TAG_NORMAL + 13;
 	var IFRAME = $("iframe").size() > 0; // XXX
 	var STATIC_FRONTPAGE = $("#config_static").size() > 0; // XXX
-	State.init(TAG_NORMAL, TAG_EXPANDED, IFRAME, STATIC_FRONTPAGE, function() {
-		$("a").filter(".list-hider").unbind().click(function(event) {
-			event.preventDefault();
-			$(".alist").show("slow");
-			$(".list-hider").hide();
-		});
-		function hash_of(url) { // IE6 YET AGAIN
-			return url.substring(url.indexOf("#"));
-		}
-		$("a").filter(".poll").unbind().click(function(event) {
-			if (is_nonlocal(event))
-				return;
-			event.preventDefault();
-			var choice_id = hash_of($(this).attr("href")).substring(8); // #choice_
-			State.submit_poll(choice_id, $(this));
-		});
-		$("a").filter(".poll_results_only").unbind().click(function(event) {
-			if (is_nonlocal(event))
-				return;
-			event.preventDefault();
-			var poll_id = hash_of($(this).attr("href")).substring(6); // #poll_
-			State.get_poll(poll_id, $(this));
-		});
-		$("a").filter(".embeddable").unbind().click(function(event) {
-			if (is_nonlocal(event))
-				return;
-			event.preventDefault();
-			State.current().enter($(this));
-			State.scrollup();
-		});
-		$(".paginator .pagelink").unbind().click(function(event) {
-			if (is_nonlocal(event))
-				return;
-			event.preventDefault();
-			State.current().page($(this).attr("id").substring(2)).enter($("#" + $(this).attr("id") + " a"));
-			State.scrollup();
-		});
-		$("#goto_top").unbind().click(function() {
-			window.scroll(0,0);
-		});
+	State.init(TAG_NORMAL, TAG_EXPANDED, IFRAME, STATIC_FRONTPAGE);
+
+	function hash_of(url) { // IE6 YET AGAIN
+		return url.substring(url.indexOf("#"));
+	}
+
+	$("a.list-hider").live("click", function(event) {
+		event.preventDefault();
+		$(".alist").show("slow");
+		$(".list-hider").hide();
+	});
+
+	$("a.poll").live("click", function(event) {
+		if (is_nonlocal(event))
+			return;
+		event.preventDefault();
+		var choice_id = hash_of($(this).attr("href")).substring(8); // #choice_
+		State.submit_poll(choice_id, $(this));
+	});
+
+	$("a.poll_results_only").live("click", function(event) {
+		if (is_nonlocal(event))
+			return;
+		event.preventDefault();
+		var poll_id = hash_of($(this).attr("href")).substring(6); // #poll_
+		State.get_poll(poll_id, $(this));
+	});
+
+	$("a.embeddable").live("click", function(event) {
+		if (is_nonlocal(event))
+			return;
+		event.preventDefault();
+		State.current().enter($(this));
+		State.scrollup();
+	});
+
+	$(".paginator .pagelink a").live("click", function(event) {
+		if (is_nonlocal(event))
+			return;
+		event.preventDefault();
+		State.current().page($(this).attr("id").substring(2)).enter($("#" + $(this).attr("id") + " a"));
+		State.scrollup();
+	});
+
+	$("#goto_top").live("click", function() {
+		window.scroll(0,0);
 	});
 
 	// delete noscript compatibility links

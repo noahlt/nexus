@@ -2,7 +2,7 @@
  *
  * Static methods:
  *
- *	State.init(tag_width_normal, tag_width_expanded, iframe, cover, ungrab_function)
+ *	State.init(tag_width_normal, tag_width_expanded, iframe, cover)
  *		- run before using any other functions
  *	State.init_history_monitor()
  *		- start after any page redirects/loading
@@ -74,7 +74,7 @@ try {
 				State.query = searchControl.input.value;
 				State.current().search(searchControl.input.value).enter();
 			}
-			$("a.gs-title").unbind().click(function(event) {
+			$("a.gs-title").live("click", function(event) {
 				if (event.ctrlKey || event.shiftKey)
 					return;
 				if ($(this).attr("href").match(/\.[a-z]+$/)) {
@@ -104,7 +104,7 @@ var DATE_MIN = 100001;
 var DATE_MAX = 300001;
 var FS = ",", FS2 = ".";
 
-// set by State.init(a,b,c,d,grab_links)
+// set by State.init(a,b,c,d)
 var TAG_NORMAL, TAG_EXPANDED, IFRAME, STATIC_FRONTPAGE;
 
 function State(arg1, sel) {
@@ -246,20 +246,17 @@ function State(arg1, sel) {
 	};
 }
 
-State.init = function(tag_norm, tag_exp, iframe, cover, grab) {
+State.init = function(tag_norm, tag_exp, iframe, cover) {
 	TAG_NORMAL = tag_norm;
 	TAG_EXPANDED = tag_exp;
 	IFRAME = iframe;
 	STATIC_FRONTPAGE = cover;
-	State.grab_links = grab;
-	State.grab_links();
 	$.ajax({
 		type: "GET",
 		dataType: "html",
 		url: "/ajax/poll/current",
 		success: function(r) {
 			$("div #poll").html(r);
-			State.grab_links();
 		}
 	});
 };
@@ -342,7 +339,6 @@ State.load_url = function(url) {
 			State.title = "error";
 		},
 		complete: function() {
-			State.grab_links();
 			setVisible("embed");
 			State.release_request();
 		}
@@ -367,7 +363,6 @@ State.load_selection = function(selection, hashstring, just_url_update) {
 			State.cached[selection] = data;
 		}
 		if (!just_url_update) {
-			State.grab_links();
 			setVisible("results");
 			State.release_request();
 		}
@@ -532,7 +527,6 @@ State.submit_poll = function(choice_id, link) {
 		data: {"choice": choice_id},
 		success: function(r) {
 			$("div #poll").html(r);
-			State.grab_links();
 		},
 		error: function(xhr) {
 			$("div #poll").html(xhr.responseText);
@@ -549,7 +543,6 @@ State.get_poll = function(poll_id, link) {
 		data: {"poll": poll_id},
 		success: function(r) {
 			$("div #poll").html(r);
-			State.grab_links();
 		},
 		error: function(xhr) {
 			$("div #poll").html(xhr.responseText);

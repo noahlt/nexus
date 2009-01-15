@@ -332,11 +332,6 @@ ul#dates, ul#gridtypes {
   padding-left: 1.7em;
 }
 
-.goto_top {
-  text-align: right;
-  cursor: pointer;
-}
-
 #content {
   overflow: hidden;
   margin: 0;

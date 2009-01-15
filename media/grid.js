@@ -53,10 +53,6 @@ $(document).ready(function() {
 		State.scrollup();
 	});
 
-	$("#goto_top").live("click", function() {
-		window.scroll(0,0);
-	});
-
 	// delete noscript compatibility links
 	$(".paginator .pagelink a").map(function() {
 		var stripped = $(this).attr("href").substring($(this).attr("href").search("#"));

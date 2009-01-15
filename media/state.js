@@ -356,12 +356,12 @@ State.load_selection = function(selection, hashstring, just_url_update) {
 	function load(data) {
 		State.read_json_tags(data['tags']);
 		State.read_json_dates(data['dates']);
-		if (!just_url_update) {
+		if (!just_url_update)
 			State.title = data['title'];
-			State.read_json_results(data['results']);
-			$("#top_paginator").html(data['pages']);
-			$("#bottom_paginator").html(data['pages2']);
-		}
+		// load data into html; cache relies on it
+		State.read_json_results(data['results']);
+		$("#top_paginator").html(data['pages']);
+		$("#bottom_paginator").html(data['pages2']);
 		if (!hit) {
 			data['results']['new'] = null;
 			State.cached[selection] = data;

@@ -70,7 +70,7 @@ $(document).ready(function() {
 	$("#dates").disableTextSelect();
 
 	if (window.location.hash.length > 1) { // permalink and not lone '#'
-		$(".results").hide();
+		setVisible("none");
 		new State(window.location.hash).noqueue().enter();
 	}
 
@@ -84,7 +84,7 @@ $(document).ready(function() {
 		if ($(this).hasClass("useless") && !$(this).hasClass("activetag"))
 			$("#tags .activetag").not("#alltags").removeClass("activetag");
 		tagslug = $(this).attr("id");
-		if ($(".embed").is(":visible"))
+		if (!$(".results").is(":visible"))
 			$(this).removeClass("activetag");
 		$(this).removeClass("useless").toggleClass("activetag");
 		State.current().enter();

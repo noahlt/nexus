@@ -1,19 +1,19 @@
 {% spaceless %}
 {% if is_paginated %}
 {% if has_previous %}
-    <span id="b_{{ previous }}" class="paginate-prev pagelink"><a href="{% if frontpage %}{{ previous }}{% endif %}{% if hash %}{{ hash }}{% else %}#{% endif %}page={{ previous }}" title="Previous Page">prev</a></span>&nbsp;
+    <span class="paginate-prev"><a class="pagelink" id="b_{{ previous }}" href="{% if frontpage %}{{ previous }}{% endif %}{% if hash %}{{ hash }}{% else %}#{% endif %}page={{ previous }}" title="Previous Page">prev</a></span>&nbsp;
 {% else %}
-    <span id="b_{{ previous }}" class="paginate-prev page-end">prev</span>&nbsp;
+    <span class="paginate-prev page-end">prev</span>&nbsp;
 {% endif %}
 {% for num in page_numbers2 %}
   {% ifequal num page %}
-    <span id="n_{{ num }}" class="paginate-current" title="Current Page">{{ num }}</span>{% else %}<span id="n_{{ num }}" class="pagelink"><a href="{% if frontpage %}{{ num }}{% endif %}{% if hash %}{{ hash }}{% else %}#{% endif %}page={{ num }}" title="Page {{ num }}">{{ num }}</a></span>{% endifequal %}{% if not forloop.first or not jump_back2 %}&nbsp;{% endif %}{% ifequal forloop.revcounter0 1 %}{% if jump_forward2 %}...{% endif %}{% endifequal %}
+    <span class="paginate-current" title="Current Page">{{ num }}</span>{% else %}<span><a class="pagelink" id="n_{{ num }}" href="{% if frontpage %}{{ num }}{% endif %}{% if hash %}{{ hash }}{% else %}#{% endif %}page={{ num }}" title="Page {{ num }}">{{ num }}</a></span>{% endifequal %}{% if not forloop.first or not jump_back2 %}&nbsp;{% endif %}{% ifequal forloop.revcounter0 1 %}{% if jump_forward2 %}...{% endif %}{% endifequal %}
   {% if forloop.first and jump_back2 %}...{% endif %}
 {% endfor %}
 {% if has_next %}
-	<span id="y_{{ next }}" class="paginate-next pagelink"><a href="{% if frontpage %}{{ next }}{% endif %}{% if hash %}{{ hash }}{% else %}#{% endif %}page={{ next }}" title="Next Page">next</a></span>&nbsp;
+	<span class="paginate-next"><a class="pagelink" id="y_{{ next }}" href="{% if frontpage %}{{ next }}{% endif %}{% if hash %}{{ hash }}{% else %}#{% endif %}page={{ next }}" title="Next Page">next</a></span>&nbsp;
 {% else %}
-    <span id="y_{{ next }}" class="paginate-next page-end">next</span>&nbsp;
+    <span class="paginate-next page-end">next</span>&nbsp;
 {% endif %}
 {% else %}
 &nbsp;

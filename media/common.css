@@ -253,10 +253,6 @@ ul#dates, ul#gridtypes {
   font-weight: bold;
 }
 
-.pagelink {
-  cursor: pointer;
-}
-
 #gridtypes li {
   background-color: #222;
   border-bottom: 1px;

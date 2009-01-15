@@ -45,16 +45,16 @@ $(document).ready(function() {
 		State.scrollup();
 	});
 
-	$(".paginator .pagelink a").live("click", function(event) {
+	$("a.pagelink").live("click", function(event) {
 		if (is_nonlocal(event))
 			return;
 		event.preventDefault();
-		State.current().page($(this).attr("id").substring(2)).enter($("#" + $(this).attr("id") + " a"));
+		State.current().page($(this).attr("id").substring(2)).enter($(this));
 		State.scrollup();
 	});
 
 	// delete noscript compatibility links
-	$(".paginator .pagelink a").map(function() {
+	$("a.pagelink").map(function() {
 		var stripped = $(this).attr("href").substring($(this).attr("href").search("#"));
 		$(this).attr("href", stripped);
 	});

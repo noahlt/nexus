@@ -282,7 +282,7 @@ def paginate(request):
         has_previous = (page > 1)
         # the bottom one
         page_numbers2, jump_forward2, jump_back2 = pagesof(page, pages, 6)
-    results = [snippet(article) for article in object_list if article.slug not in have_articles]
+    results = [(article.slug, snippet(article)) for article in object_list if article.slug not in have_articles]
     r = {'results': {'new': results, 'all': [ article.slug for article in object_list ]},
          'tags': tag_data(articles, tags, min_date, max_date), 'dates': dates,
          'pages': get_template('paginator.html').render(Context(locals())),

@@ -89,10 +89,6 @@
     {% for article in articles %}
         {% include "article_snippet.html" %}
     {% endfor %}
-	<li id="none-visible">
-      <h3>No matching articles.</h3>
-	  Select fewer tags to the left, or specify a wider range of dates.
-	</li>
   </ul>
   <div id="embedded_content" class="embed">{% if content %}{{ content|safe }}{% endif %}</div>
   <div class="paginator results" id="bottom_paginator">

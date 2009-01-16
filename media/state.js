@@ -103,6 +103,7 @@ function make_relative(url) {
 var DATE_MIN = 100001;
 var DATE_MAX = 300001;
 var FS = ",", FS2 = ".";
+var NONE_VISIBLE="<li id=\"none-visible\"><h3>No matching articles.</h3>Select fewer tags to the left, or specify a wider range of dates.</li>";
 
 // set by State.init(a,b,c,d)
 var TAG_NORMAL, TAG_EXPANDED, IFRAME, STATIC_FRONTPAGE;
@@ -286,6 +287,8 @@ State.queued_history = null;
 State.cached = new Object();
 State.activelink = null;
 State.hash = window.location.hash;
+State.have_articles = [];
+State.article_data = new Object();
 
 State.write_history = function() {
 	if (State.queued_history) {
@@ -370,21 +373,15 @@ State.load_selection = function(selection, hashstring, just_url_update) {
 	if (hit) {
 		load(hit);
 	} else {
-		var have_articles = $("#results li")
-			.not("#IE6_PLACEHOLDER")
-			.not("#none-visible")
-			.map(function() {
-					return $(this).attr("id").substring(4); // art_
-				}).get();
 		if (just_url_update)
 		State.request2 = $.getJSON("/ajax/paginator",
-			{"tags": selection[0], "page": selection[1], "have_articles": have_articles,
+			{"tags": selection[0], "page": selection[1], "have_articles": State.have_articles,
 			 "date_min": selection[2], "date_max": selection[3], "hash": hashstring}, load);
 		else
 		State.request = $.ajax({
 			type: "GET",
 			dataType: "json",
-			data: {"tags": selection[0], "page": selection[1], "have_articles": have_articles,
+			data: {"tags": selection[0], "page": selection[1], "have_articles": State.have_articles,
 				   "date_min": selection[2], "date_max": selection[3], "hash": hashstring},
 			url: "/ajax/paginator",
 			success: load,
@@ -432,14 +429,19 @@ State.read_json_results = function(results) {
 	$("#results li").not("#IE6_PLACEHOLDER").hide();
 	var visible = results['all'];
 	var data = results['new'];
-	for (var i in visible)
-		$("#results li").filter("#art_" + visible[i]).show();
-	for (var j in data)
-		$("#results").append(data[j]);
+	for (var i in data) {
+		var slug = data[i][0];
+		var html = data[i][1];
+		State.have_articles[State.have_articles.length] = slug;
+		State.article_data[slug] = html;
+	}
+	$("#results").empty();
 	if (visible.length === 0)
-		$("#none-visible").show();
-	else
-		$("#none-visible").hide();
+		$("#results").append(NONE_VISIBLE);
+	else {
+		for (var j in visible)
+			$("#results").append(State.article_data[visible[j]]);
+	}
 };
 
 State.acquire_request = function() {

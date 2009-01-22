@@ -357,8 +357,7 @@ State.load_selection = function(selection, hashstring, just_url_update) {
 		State.read_json_dates(data['dates']);
 		if (!just_url_update)
 			State.title = data['title'];
-		// load data into html; cache relies on it
-		State.read_json_results(data['results']);
+		State.read_json_results(data['results'], just_url_update);
 		$("#top_paginator").html(data['pages']);
 		$("#bottom_paginator").html(data['pages2']);
 		if (!hit) {
@@ -425,8 +424,7 @@ State.read_json_dates = function(dates) {
 	);
 };
 
-State.read_json_results = function(results) {
-	$("#results li").not("#IE6_PLACEHOLDER").hide();
+State.read_json_results = function(results, just_url_update) {
 	var visible = results['all'];
 	var data = results['new'];
 	for (var i in data) {
@@ -435,12 +433,14 @@ State.read_json_results = function(results) {
 		State.have_articles[State.have_articles.length] = slug;
 		State.article_data[slug] = html;
 	}
-	$("#results").empty();
-	if (visible.length === 0)
-		$("#results").append(NONE_VISIBLE);
-	else {
-		for (var j in visible)
-			$("#results").append(State.article_data[visible[j]]);
+	if (!just_url_update) {
+		$("#results").empty();
+		if (visible.length === 0)
+			$("#results").append(NONE_VISIBLE);
+		else {
+			for (var j in visible)
+				$("#results").append(State.article_data[visible[j]]);
+		}
 	}
 };
 

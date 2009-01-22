@@ -180,11 +180,11 @@ class ImageAdminForm(forms.ModelForm):
 class ImageAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('image', 'slug', 'caption', 'authors', 'date', 'tags')
+            'fields': ('image', 'caption', 'authors', 'date', 'tags')
         }),
         ('Advanced Options', {
             'classes': ('collapse',),
-            'fields': ('lossless', 'priority')
+            'fields': ('slug', 'lossless', 'priority')
         }),
     )
     def tags(obj):

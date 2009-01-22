@@ -299,8 +299,12 @@ ul#dates, ul#gridtypes {
   margin-right: 0;
 }
 
-#poll, #pollhist {
+#poll {
   margin-top: 0;
+}
+
+#pollhist {
+  margin-top: .3em;
 }
 
 #signed {

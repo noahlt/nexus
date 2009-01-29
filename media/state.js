@@ -315,8 +315,10 @@ State.load_selection = function(selection, hashstring, just_url_update) {
 		if (!just_url_update)
 			State.title = data['title'];
 		State.read_json_results(data['results'], just_url_update);
-		$("#top_paginator").html(data['pages']);
-		$("#bottom_paginator").html(data['pages2']);
+		if (!just_url_update) {
+			$("#top_paginator").html(data['pages']);
+			$("#bottom_paginator").html(data['pages2']);
+		}
 		if (!hit) {
 			data['results']['new'] = null;
 			State.cached[selection] = data;

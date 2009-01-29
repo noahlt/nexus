@@ -7,9 +7,8 @@ $(document).ready(function() {
 
 	var TAG_NORMAL = $("#alltags").width();
 	var TAG_EXPANDED = TAG_NORMAL + 13;
-	var IFRAME = $("iframe").size() > 0; // XXX
 	var STATIC_FRONTPAGE = $("#config_static").size() > 0; // XXX
-	State.init(TAG_NORMAL, TAG_EXPANDED, IFRAME, STATIC_FRONTPAGE);
+	State.init(TAG_NORMAL, TAG_EXPANDED, STATIC_FRONTPAGE);
 
 	function hash_of(url) { // IE6 YET AGAIN
 		return url.substring(url.indexOf("#"));

@@ -2,7 +2,7 @@
  *
  * Static methods:
  *
- *	State.init(tag_width_normal, tag_width_expanded, iframe, cover)
+ *	State.init(tag_width_normal, tag_width_expanded, cover)
  *		- run before using any other functions
  *	State.init_history_monitor()
  *		- start after any page redirects/loading
@@ -106,7 +106,7 @@ var FS = ",", FS2 = ".";
 var NONE_VISIBLE="<li id=\"none-visible\"><h3>No matching articles.</h3>Select fewer tags to the left, or specify a wider range of dates.</li>";
 
 // set by State.init(a,b,c,d)
-var TAG_NORMAL, TAG_EXPANDED, IFRAME, STATIC_FRONTPAGE;
+var TAG_NORMAL, TAG_EXPANDED, STATIC_FRONTPAGE;
 
 function State(arg1, sel) {
 	change_hash = true;
@@ -177,12 +177,11 @@ function State(arg1, sel) {
 				}
 			}
 		}
-		if (IFRAME || change_hash) {
+		if (History.useIframe || change_hash) {
 			History.queue(this.toString());
 			if (atomic)
 				History.commit();
-		} else
-			History.sync();
+		}
 		State.select_tags(selection[0]);
 		State.select_dates(selection[2], selection[3]);
 		if (query) {
@@ -238,10 +237,9 @@ function State(arg1, sel) {
 	};
 }
 
-State.init = function(tag_norm, tag_exp, iframe, cover) {
+State.init = function(tag_norm, tag_exp, cover) {
 	TAG_NORMAL = tag_norm;
 	TAG_EXPANDED = tag_exp;
-	IFRAME = iframe;
 	STATIC_FRONTPAGE = cover;
 	$.ajax({
 		type: "GET",
@@ -262,7 +260,7 @@ State.have_articles = [];
 State.article_data = new Object();
 
 State.init_history_monitor = function() {
-	History.init(IFRAME, new State().toString(), function(hist) {
+	History.init(function(hist) {
 		new State(hist).keep_hash().enter();
 	});
 };

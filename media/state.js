@@ -177,21 +177,12 @@ function State(arg1, sel) {
 				}
 			}
 		}
-		if (change_hash || IFRAME) { // always do this on IE6/7
-			var that = this;
-			State.queued_history = function() {
-				window.location.hash = State.hash = that.toString();
-				if (change_hash && IFRAME) {
-					var doc = document.getElementById("iFrame").contentWindow.document;
-					doc.open();
-					doc.write(that);
-					doc.close();
-				}
-			};
+		if (IFRAME || change_hash) {
+			History.queue(this.toString());
 			if (atomic)
-				State.write_history();
+				History.commit();
 		} else
-			State.hash = window.location.hash;
+			History.sync();
 		State.select_tags(selection[0]);
 		State.select_dates(selection[2], selection[3]);
 		if (query) {
@@ -262,50 +253,18 @@ State.init = function(tag_norm, tag_exp, iframe, cover) {
 	});
 };
 
-State.init_history_monitor = function() {
-	EMPTY = new State().toString();
-	function different(a, b) {
-		return a != b && !((!a || a == EMPTY) && (!b || b == EMPTY));
-	}
-	State.poll = setInterval(function() {
-		if (different(window.location.hash, State.hash)) {
-			State.check_and_incr(window.location.hash, State.hash);
-			new State(window.location.hash).keep_hash().enter();
-		} else if (IFRAME && window["iFrame"].document.body && different(window["iFrame"].document.body.innerHTML, State.hash)) {
-			State.check_and_incr(window["iFrame"].document.body.innerHTML, State.hash);
-			new State(window["iFrame"].document.body.innerHTML).keep_hash().enter();
-		}
-	}, 100);
-};
-
 State.title = 'The Nexus';
 State.scroll_flag = false;
-State.init_ms = new Date().getTime();
-State.request_count = 0;
 State.query = '';
-State.queued_history = null;
 State.cached = new Object();
 State.activelink = null;
-State.hash = window.location.hash;
 State.have_articles = [];
 State.article_data = new Object();
 
-State.write_history = function() {
-	if (State.queued_history) {
-		State.queued_history();
-		State.queued_history = null;
-	}
-};
-
-State.check_and_incr = function(a,b) {
-	var dt = new Date().getTime() - State.init_ms;
-	if (State.request_count++ / (1+(dt/1000)) > 1) {
-		alert("This script appears to be stuck in an infinite loop.\n("
-		+ State.request_count + " requests in " + (dt/1000)
-		+ " seconds)\n\nPlease report this bug.");
-		alert("DEBUG: [" + a + "] vs [" + b + "]");
-		clearInterval(State.poll);
-	}
+State.init_history_monitor = function() {
+	History.init(IFRAME, new State().toString(), function(hist) {
+		new State(hist).keep_hash().enter();
+	});
 };
 
 State.scrollup = function() {
@@ -470,7 +429,7 @@ State.release_request = function() {
 		State.query = '';
 		searchControl.clearAllResults();
 	}
-	State.write_history();
+	History.commit();
 	document.title = State.title;
 	State.request = null;
 	State.request2 = null;

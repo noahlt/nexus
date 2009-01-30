@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.forms.util import ErrorList
+from django.template.defaultfilters import slugify
 from imageutil import *
 from nexus.archive.models import Issue, ignore_errors
 from nexus.archive.pdfutil import nameof
@@ -33,15 +34,6 @@ Most anything outside the block tags will be ignored.
 {% block extra %}
 {{ block.super }}
 {% endblock %}"""
-
-# taken from django snippet #29
-def slugify(inStr):
-    removelist = ["a", "an", "as", "at", "before", "but", "by", "for","from","is", "in", "into", "like", "of", "off", "on", "onto","per","since", "than", "the", "this", "that", "to", "up", "via","with"];
-    for a in removelist:
-        aslug = re.sub(r'\b'+a+r'\b','',inStr)
-    aslug = re.sub('[^\w\s-]', '', aslug).strip().lower()
-    aslug = re.sub('\s+', '-', aslug)
-    return aslug[:20]
 
 class Title(models.Model):
     title = models.CharField(max_length=30, help_text="Staff Writer, Photographer, etc.")
@@ -174,7 +166,7 @@ class ImageAdminForm(forms.ModelForm):
         slug = self.cleaned_data.get('slug')
         image = self.cleaned_data.get('image')
         if image and not slug:
-            self.cleaned_data['slug'] = slugify(nameof(image.name))
+            self.cleaned_data['slug'] = slugify(nameof(image.name))[:20]
         return forms.ModelForm.clean(self)
     
 class ImageAdmin(admin.ModelAdmin):
@@ -267,7 +259,7 @@ class ArticleAdminForm(forms.ModelForm):
         slug = self.cleaned_data.get('slug')
         title = self.cleaned_data.get('title')
         if title and not slug:
-            self.cleaned_data['slug'] = slugify(title)
+            self.cleaned_data['slug'] = slugify(title)[:20]
 
         # ensure date field is present
         printed = self.cleaned_data.get('printed')
@@ -312,7 +304,7 @@ class ArticleAdmin(admin.ModelAdmin):
         return obj.custom_template if obj.custom_template else ''
     visible.boolean = True
     list_display = ('title', 'printed', tags, visible, 'order')
-    list_filter = ('date', 'printed', 'authors')
+    list_filter = ('date', 'authors')
     search_fields = ('title', 'slug', 'date')
     filter_horizontal = ('authors', 'tags', 'images')
     fieldsets = (

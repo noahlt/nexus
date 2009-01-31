@@ -185,7 +185,6 @@ class ImageAdmin(admin.ModelAdmin):
         return ', '.join([str(i) for i in obj.article_set.all()])
     def author(obj):
         return ', '.join([str(i) for i in obj.authors.all()])
-    list_filter = ('date', 'tags')
     list_display = ('slug', author, tags, article_list)
     search_fields = ('slug', 'caption')
     filter_horizontal = ('authors', 'tags')
@@ -277,6 +276,9 @@ class ArticleAdminForm(forms.ModelForm):
             for tag in tags:
                 if tag.article_priority > order:
                     order = tag.article_priority
+        images = self.cleaned_data.get('images')
+        if images:
+            order += 0.1*len(images)
         self.cleaned_data['order'] = order
 
         # auto-embed images into fulltext
@@ -304,7 +306,6 @@ class ArticleAdmin(admin.ModelAdmin):
         return obj.custom_template if obj.custom_template else ''
     visible.boolean = True
     list_display = ('title', 'printed', tags, visible, 'order')
-    list_filter = ('date', 'authors')
     search_fields = ('title', 'slug', 'date')
     filter_horizontal = ('authors', 'tags', 'images')
     fieldsets = (

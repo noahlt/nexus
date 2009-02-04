@@ -39,6 +39,11 @@
  *		- returns serialized form to be used for reconstruction
  */
 
+function is_nonlocal(event) {
+	return event.ctrlKey || event.shiftKey
+	|| (!$.browser.msie && event.button == 1); // not IE; chrome fix
+}
+
 function setVisible(str) {
 	var types = ['embed', 'search', 'results'];
 	for (var i in types) {
@@ -75,7 +80,7 @@ try {
 				State.current().search(searchControl.input.value).enter();
 			}
 			$("a.gs-title").live("click", function(event) {
-				if (event.ctrlKey || event.shiftKey)
+				if (is_nonlocal(event))
 					return;
 				if ($(this).attr("href").match(/\.[a-z]+$/)) {
 					$(this).attr("target", null);

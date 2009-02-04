@@ -1,10 +1,5 @@
 $(document).ready(function() {
 
-	function is_nonlocal(event) {
-		return event.ctrlKey || event.shiftKey
-		|| (!$.browser.msie && event.button == 1); // not IE; chrome fix
-	}
-
 	var TAG_NORMAL = $("#alltags").width();
 	var TAG_EXPANDED = TAG_NORMAL + 13;
 	var STATIC_FRONTPAGE = $("#config_static").size() > 0; // XXX

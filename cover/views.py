@@ -15,7 +15,6 @@ from django.views.decorators.cache import never_cache
 from django.views.generic.list_detail import object_detail
 from imageutil import ImageFormatter
 from models import *
-from random import random
 from util import *
 
 PAGE_SIZE = 10

@@ -15,9 +15,24 @@ History.historyCurrentHash = undefined;
 History.historyCallback = undefined;
 History.historyQueue = undefined;
 History.useIframe = undefined;
+History.poller = undefined;
 
 History.callCallback = function(hash) {
 	History.historyCallback('#' + hash.replace(/^#/, ''));
+	fail = false;
+	if (History.useIframe) {
+		var ihistory = $("#jQuery_history")[0];
+		var iframe = ihistory.contentWindow.document;
+		if (iframe.location.hash != History.historyCurrentHash)
+			fail = true;
+	} else {
+		if (location.hash != History.historyCurrentHash)
+			fail = true;
+	}
+	if (fail) {
+		clearInterval(History.poller);
+		alert("Assertion failed: hash values changed");
+	}
 };
 
 History.init = function(callback) {
@@ -28,7 +43,7 @@ History.init = function(callback) {
 	History.historyCurrentHash = current_hash;
 
 	if (History.useIframe) {
-		// To stop the callback firing twice during initilization if no hash present
+		// IE quirk?
 		if (History.historyCurrentHash === '')
 			History.historyCurrentHash = '#';
 
@@ -40,8 +55,7 @@ History.init = function(callback) {
 		iframe.close();
 		iframe.location.hash = current_hash;
 	}
-	History.callCallback(current_hash);
-	setInterval(History.historyCheck, 100);
+	History.poller = setInterval(History.historyCheck, 100);
 };
 
 History.historyCheck = function() {

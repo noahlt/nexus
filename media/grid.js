@@ -20,7 +20,19 @@ $(document).ready(function() {
 			return;
 		event.preventDefault();
 		var choice_id = hash_of($(this).attr("href")).substring(8); // #choice_
-		State.submit_poll(choice_id, $(this));
+		$(this).addClass("active");
+		$.ajax({
+			type: "GET",
+			dataType: "html",
+			url: "/ajax/poll",
+			data: {"choice": choice_id},
+			success: function(r) {
+				$("div #poll").html(r);
+			},
+			error: function(xhr) {
+				$("div #poll").html(xhr.responseText);
+			}
+		});
 	});
 
 	$("a.poll_results_only").live("click", function(event) {
@@ -28,14 +40,26 @@ $(document).ready(function() {
 			return;
 		event.preventDefault();
 		var poll_id = hash_of($(this).attr("href")).substring(6); // #poll_
-		State.get_poll(poll_id, $(this));
+		$(this).addClass("active");
+		$.ajax({
+			type: "GET",
+			dataType: "html",
+			url: "/ajax/poll",
+			data: {"poll": poll_id},
+			success: function(r) {
+				$("div #poll").html(r);
+			},
+			error: function(xhr) {
+				$("div #poll").html(xhr.responseText);
+			}
+		});
 	});
 
 	$("a.embeddable").live("click", function(event) {
 		if (is_nonlocal(event))
 			return;
 		event.preventDefault();
-		State.current().enter($(this));
+		State.sync({}, {'link': $(this)});
 		State.scrollup();
 	});
 
@@ -43,7 +67,19 @@ $(document).ready(function() {
 		if (is_nonlocal(event))
 			return;
 		event.preventDefault();
-		State.current().page($(this).attr("id").substring(2)).enter($(this));
+		State.sync({'page': $(this).attr("id").substring(2)}, {'link': $(this)});
+		State.scrollup();
+	});
+
+	$("a.gs-title").live("click", function(event) {
+		if (is_nonlocal(event))
+			return;
+		if ($(this).attr("href").match(/\.[a-z]+$/)) {
+			$(this).attr("target", null);
+			return; // it's probably non-html
+		}
+		event.preventDefault();
+		State.sync({}, {'link': $(this)});
 		State.scrollup();
 	});
 
@@ -53,12 +89,6 @@ $(document).ready(function() {
 		$(this).attr("href", stripped);
 	});
 
-	// redirect to hash id if possible for better functionality
-	if (window.location.pathname != "/") {
-		location.replace("/" + new State(window.location.pathname));
-		return;
-	}
-
 	var selecting_dates = false;
 	var down = false;
 	$("#tags #alltags").width(TAG_EXPANDED);
@@ -67,7 +97,7 @@ $(document).ready(function() {
 
 	if (window.location.hash.length > 1) { // permalink and not lone '#'
 		setVisible("none");
-		new State(window.location.hash).noqueue().enter();
+		new State(Repr.deserialize(window.location.hash), {'atomic': false});
 	}
 
 	/* HISTORY BEGINS - all State changes must be done */
@@ -83,7 +113,7 @@ $(document).ready(function() {
 		if (!$(".results").is(":visible"))
 			$(this).removeClass("activetag");
 		$(this).removeClass("useless").toggleClass("activetag");
-		State.current().enter();
+		State.sync();
 		State.scrollup();
 	});
 
@@ -93,7 +123,7 @@ $(document).ready(function() {
 		selecting_dates = false;
 		$("#tags li").removeClass("useless");
 		$("#tags .activetag").removeClass("activetag");
-		State.current().enter();
+		State.sync();
 		State.scrollup();
 	});
 
@@ -110,7 +140,7 @@ $(document).ready(function() {
 		var some_newly_selected = false;
 		if (!State.select_dates(min, max)[0])
 			$("#dates li").removeClass("activedate");
-		State.current().enter();
+		State.sync();
 	});
 
 	$("#dates li li").mousedown(function() {
@@ -138,14 +168,14 @@ $(document).ready(function() {
 		}
 		if (selecting_dates) {
 			selecting_dates = false;
-			State.current().enter();
+			State.sync();
 		}
 	});
 
 	$(document).mouseup(function(event) {
 		if (selecting_dates) {
 			selecting_dates = false;
-			State.current().enter();
+			State.sync();
 		}
 	});
 

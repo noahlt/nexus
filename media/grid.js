@@ -97,7 +97,7 @@ $(document).ready(function() {
 
 	if (window.location.hash.length > 1) { // permalink and not lone '#'
 		setVisible("none");
-		new State(Repr.deserialize(window.location.hash), {'atomic': false});
+		new State(Repr.deserialize(window.location.hash), {'atomic': true, 'keep_hash': true});
 	}
 
 	/* HISTORY BEGINS - all State changes must be done */

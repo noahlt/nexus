@@ -123,7 +123,7 @@ $(document).ready(function() {
 		selecting_dates = false;
 		$("#tags li").removeClass("useless");
 		$("#tags .activetag").removeClass("activetag");
-		State.sync();
+		new State(new Repr({'page': 1}));
 		State.scrollup();
 	});
 

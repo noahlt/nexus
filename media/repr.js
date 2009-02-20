@@ -20,16 +20,22 @@ if (location.pathname != "/") {
 function Repr(dict) {
 	this.query = '';
 	this.url = '';
-	this.page = DEFAULT_PAGE;
+	this.page = 0;
 	this.tags = [];
 	this.date_min = DATE_MIN;
 	this.date_max = DATE_MAX;
 
+	if (this.page == 1 && this.tags.length === 0 && this.date_min == DATE_MIN && this.date_max == DATE_MAX && !this.query)
+		this.page = DEFAULT_PAGE;
+
 	for (var i in dict)
 		this[i] = dict[i];
 
-	if (!this.url && this.tags.length === 0 && this.date_min == DATE_MIN && this.date_max == DATE_MAX && this.page == DEFAULT_PAGE && !this.query)
+	if (!this.url && this.tags.length === 0 && this.date_min == DATE_MIN && this.date_max == DATE_MAX && !this.page && !this.query)
 		this.url = DEFAULT_URL;
+
+	if (!this.page)
+		this.page = 1;
 
 	this.toString = function() {
 		return 'Repr Object ' + this.serialize();
@@ -56,7 +62,7 @@ function Repr(dict) {
 		if (!nav_attrs_only && !have_embed) {
 			if (this.query)
 				output[output.length] = 'query=' + this.query;
-			else if (output.length === 0 && this.page != DEFAULT_PAGE)
+			else if (output.length === 0)
 				output[output.length] = 'page=' + this.page;
 		}
 		return '#' + output.join(FS);

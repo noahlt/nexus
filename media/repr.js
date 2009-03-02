@@ -21,6 +21,7 @@ function Repr(dict) {
 	this.query = '';
 	this.url = '';
 	this.page = 0;
+	this.author = '';
 	this.tags = [];
 	this.date_min = DATE_MIN;
 	this.date_max = DATE_MAX;
@@ -28,13 +29,15 @@ function Repr(dict) {
 	for (var i in dict)
 		this[i] = dict[i];
 
-	if (!this.url && this.tags.length === 0 && this.date_min == DATE_MIN && this.date_max == DATE_MAX && !this.page && !this.query)
+	// if no other parameters are defined the url defaults to [cover page]
+	if (!this.url && !this.author && this.tags.length === 0 && this.date_min == DATE_MIN && this.date_max == DATE_MAX && !this.page && !this.query)
 		this.url = DEFAULT_URL;
 
 	if (!this.page) {
-		if (this.tags.length === 0 && this.date_min == DATE_MIN && this.date_max == DATE_MAX && !this.query)
+		// if no other parameters are defined the page defaults to [cover page]
+		if (!this.author && this.tags.length === 0 && this.date_min == DATE_MIN && this.date_max == DATE_MAX && !this.query)
 			this.page = DEFAULT_PAGE;
-		else
+		else // we're filtering - start at page 1 always
 			this.page = 1;
 	}
 
@@ -52,6 +55,8 @@ function Repr(dict) {
 		}
 		if (this.tags.length > 0)
 			output[output.length] = 'tags=' + this.tags.join(FS2);
+		if (this.author)
+			output[output.length] = 'author=' + this.author;
 		if (this.date_min == this.date_max)
 			output[output.length] = 'month=' + this.date_min;
 		else {
@@ -83,6 +88,8 @@ Repr.deserialize = function(hash) {
 			attrs['url'] = chunk;
 		else if (chunk.substring(0,5) == 'tags=')
 			attrs['tags'] = chunk.substring(5).split(FS2);
+		else if (chunk.substring(0,7) == 'author=')
+			attrs['author'] = chunk.substring(7);
 		else if (chunk.substring(0,5) == 'page=')
 			attrs['page'] = chunk.substring(5);
 		else if (chunk.substring(0,6) == 'month=')

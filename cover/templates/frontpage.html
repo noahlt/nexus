@@ -44,7 +44,6 @@
 </h1>
 
 <div id="grid">
-<noscript>Javascript is required to filter by tag and date.</noscript>
   <ul id="tags">
     <li id="alltags"><a href="#">(Show All)</a></li>
 	{% for type, tags in types %}
@@ -75,6 +74,7 @@
   </ul>
   <div id="centercolumn">
   <div id="searchcontrol">&lt;site search disabled&gt;</div>
+  <noscript><div class="noscript">Javascript is <b>required</b> for main article navigation.</div></noscript>
   <div class="paginator results" id="top_paginator">{% include "paginator.html" %}</div>
   <div id="search_results" style="width:100%"></div>
   <div class="search" style="display:none"><br><br></div>

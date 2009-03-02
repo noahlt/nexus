@@ -107,6 +107,7 @@ function State(repr, config) {
 	this.read_json_results = function(results, just_url_update) {
 		var visible = results['all'];
 		var data = results['new'];
+		var info = results['info'];
 		for (var i in data) {
 			var slug = data[i][0];
 			var html = data[i][1];
@@ -115,6 +116,8 @@ function State(repr, config) {
 		}
 		if (!just_url_update) {
 			$("#results").empty();
+			if (info)
+				$("#results").html(info);
 			if (visible.length === 0)
 				$("#results").append(NONE_VISIBLE);
 			else {
@@ -173,13 +176,13 @@ function State(repr, config) {
 		} else {
 			if (just_url_update)
 			State.request2 = $.getJSON("/ajax/paginator",
-				{"tags": repr.tags, "page": repr.page, "have_articles": State.have_articles,
+				{"tags": repr.tags, "author": repr.author, "page": repr.page, "have_articles": State.have_articles,
 				 "date_min": repr.date_min, "date_max": repr.date_max, "hash": hashstring}, load);
 			else
 			State.request = $.ajax({
 				type: "GET",
 				dataType: "json",
-				data: {"tags": repr.tags, "page": repr.page, "have_articles": State.have_articles,
+				data: {"tags": repr.tags, "author": repr.author, "page": repr.page, "have_articles": State.have_articles,
 					   "date_min": repr.date_min, "date_max": repr.date_max, "hash": hashstring},
 				url: "/ajax/paginator",
 				success: load,
@@ -195,24 +198,25 @@ function State(repr, config) {
 	State.acquire_request();
 	if (config['link']) {
 		State.activelink = config['link'].addClass("active");
-
-		function make_relative(url) {
-			if (url.match("http://")) {
-				url = url.substring(7);
-				url = url.substring(url.indexOf("/"));
+		if (!config['nofollow']) {
+			function make_relative(url) {
+				if (url.match("http://")) {
+					url = url.substring(7);
+					url = url.substring(url.indexOf("/"));
+				}
+				return url.length < 2 ? null : url;
 			}
-			return url.length < 2 ? null : url;
-		}
-		repr.url = make_relative(config['link'].attr("href"));
+			repr.url = make_relative(config['link'].attr("href"));
 
-		if (repr.url) {
-			if (repr.url.match(/#/)) // 'embeddable' or search result link
-				repr.url = undefined;
-			else {
-				var page_match = repr.url.match(/^\/[0-9]+$/);
-				if (page_match) { // paginated root
-					repr.page = page_match.toString().substring(1);
+			if (repr.url) {
+				if (repr.url.match(/#/)) // 'embeddable' or search result link
 					repr.url = undefined;
+				else {
+					var page_match = repr.url.match(/^\/[0-9]+$/);
+					if (page_match) { // paginated root
+						repr.page = page_match.toString().substring(1);
+						repr.url = undefined;
+					}
 				}
 			}
 		}
@@ -283,6 +287,7 @@ State.scrollup = function() {
 
 State.sync = function(overrides, config) {
 	var min = DATE_MIN, max = DATE_MAX;
+	var author = $("#authorslug").html();
 	var selected_dates = $("#dates .activedate").map(function() {
 			return $(this).attr('id').substring(3); // ym_
 		}).get();
@@ -294,7 +299,7 @@ State.sync = function(overrides, config) {
 		.map(function() {
 				return $(this).attr("id").substring(4); // tag_
 			}).get();
-	var dict = {'tags': tags, 'date_min': min, 'date_max': max};
+	var dict = {'tags': tags, 'date_min': min, 'date_max': max, 'author': author};
 	for (var i in overrides)
 		dict[i] = overrides[i];
 	return new State(new Repr(dict), config);

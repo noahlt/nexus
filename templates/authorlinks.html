@@ -1,2 +1,2 @@
 {% for author in authors %}{% if not forloop.first %}, {% endif %}
-<a title="{{ author.title }}" class="embeddable" href="/author/{{ author.slug }}">{{ author }}</a>{% endfor %}
+<a title="{{ author.title }}" data-slug="{{ author.slug }}" class="authorlink" href="/author/{{ author.slug }}">{{ author }}</a>{% endfor %}

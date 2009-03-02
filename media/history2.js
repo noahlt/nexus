@@ -17,21 +17,36 @@ History.historyQueue = undefined;
 History.useIframe = undefined;
 History.poller = undefined;
 
+function strip(input) {
+	if (input) {
+		if (input.charAt(0) == '#')
+			input = input.substring(1);
+	}
+	return input;
+}
+
 History.callCallback = function(hash) {
 	History.historyCallback('#' + hash.replace(/^#/, ''));
 	fail = false;
+	var a = '', b = '';
 	if (History.useIframe) {
 		var ihistory = $("#jQuery_history")[0];
 		var iframe = ihistory.contentWindow.document;
-		if (iframe.location.hash != History.historyCurrentHash)
+		if (strip(iframe.location.hash) != strip(History.historyCurrentHash)) {
+			a = iframe.location.hash;
+			b = History.historyCurrentHash;
 			fail = true;
+		}
 	} else {
-		if (location.hash != History.historyCurrentHash)
+		if (strip(location.hash) != strip(History.historyCurrentHash)) {
+			a = location.hash;
+			b = History.historyCurrentHash;
 			fail = true;
+		}
 	}
 	if (fail) {
 		clearInterval(History.poller);
-		alert("Assertion failed: hash values changed");
+		alert("Assertion failed: hash values changed:\n'" + a + "' '" + b + "'");
 	}
 };
 
@@ -68,13 +83,13 @@ History.historyCheck = function() {
 			location.hash = current_hash;
 			History.historyCurrentHash = current_hash;
 			History.callCallback(current_hash);
+			return;
 		}
-	} else {
-		current_hash = location.hash;
-		if (current_hash != History.historyCurrentHash) {
-			History.historyCurrentHash = current_hash;
-			History.callCallback(current_hash);
-		}
+	}
+	current_hash = location.hash;
+	if (current_hash != History.historyCurrentHash) {
+		History.historyCurrentHash = current_hash;
+		History.callCallback(current_hash);
 	}
 };
 

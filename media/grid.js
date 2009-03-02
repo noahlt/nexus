@@ -55,12 +55,47 @@ $(document).ready(function() {
 		});
 	});
 
+	$("a.authorlink").live("click", function(event) {
+		if (is_nonlocal(event))
+			return;
+		var page_author = $("#authorslug").html();
+		var author = $(this).attr("data-slug");
+		event.preventDefault();
+		if ($(this).hasClass("showall")) {
+			State.sync({'tags': [], 'date_min': DATE_MIN, 'date_max': DATE_MAX, 'author': $(this).attr('data-slug')}, {'link': $(this), 'nofollow': true});
+			State.scrollup();
+			return;
+		} else if (page_author == author && $(".results").is(":visible")) {
+			window.scroll(0,0);
+			var old = $("#infobox").css('background-color');
+			function a() { $("#infobox").css('background-color', 'white'); }
+			function b() { $("#infobox").css('background-color', old); }
+			var i = 50;
+			setTimeout(a, 1*i);
+			setTimeout(b, 2*i);
+			setTimeout(a, 3*i);
+			setTimeout(b, 4*i);
+			setTimeout(a, 5*i);
+			setTimeout(b, 6*i);
+			setTimeout(a, 7*i);
+			setTimeout(b, 8*i);
+			return;
+		} else {
+			State.sync({'author': $(this).attr('data-slug')}, {'link': $(this), 'nofollow': true});
+			State.scrollup();
+		}
+	});
+
 	$("a.embeddable").live("click", function(event) {
 		if (is_nonlocal(event))
 			return;
 		event.preventDefault();
 		State.sync({}, {'link': $(this)});
 		State.scrollup();
+	});
+
+	$("#clearinfobox").live("click", function(event) {
+		State.sync({'author': ''}, {'link': $(this), 'nofollow': true});
 	});
 
 	$("a.pagelink").live("click", function(event) {

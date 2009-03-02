@@ -304,8 +304,10 @@ class ArticleAdmin(admin.ModelAdmin):
         return obj.current()
     def template(obj):
         return obj.custom_template if obj.custom_template else ''
+    def author(obj):
+        return ', '.join([str(i) for i in obj.authors.all()])
     visible.boolean = True
-    list_display = ('title', 'printed', tags, visible, 'order')
+    list_display = ('title', author, 'printed', tags, visible, 'order')
     search_fields = ('title', 'slug', 'date')
     filter_horizontal = ('authors', 'tags', 'images')
     fieldsets = (

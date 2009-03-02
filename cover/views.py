@@ -257,9 +257,20 @@ def paginate(request):
     if hash != '#':
         hash += ','
     have_articles = request.GET.getlist('have_articles')
+    authorslug = request.GET.get('author')
+    author = None
+    if authorslug:
+        try:
+            author = Author.objects.get(slug=authorslug)
+        except Author.DoesNotExist:
+            pass
     min_date = parse_date(request.GET.get('date_min'))
     max_date = month_end(parse_date(request.GET.get('date_max')))
     articles = visible(Article.objects)
+    info = ''
+    if author:
+        articles = articles.filter(authors=author)
+        info = get_template('infobox.html').render(Context({'author': author}))
     for tag in tags:
         articles = articles.filter(tags=tag)
     dates = dates_of(articles, tags) # BEFORE date filtering
@@ -282,7 +293,7 @@ def paginate(request):
         # the bottom one
         page_numbers2, jump_forward2, jump_back2 = pagesof(page, pages, 6)
     results = [(article.slug, snippet(article)) for article in object_list if article.slug not in have_articles]
-    r = {'results': {'new': results, 'all': [ article.slug for article in object_list ]},
+    r = {'results': {'new': results, 'info': info, 'all': [ article.slug for article in object_list ]},
          'tags': tag_data(articles, tags, min_date, max_date), 'dates': dates,
          'pages': get_template('paginator.html').render(Context(locals())),
          'pages2': get_template('paginator2.html').render(Context(locals())),

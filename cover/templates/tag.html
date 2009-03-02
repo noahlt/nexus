@@ -2,14 +2,12 @@
 
 {% block content %}
 	{% if articles %}
-	<h2>Articles tagged '{{ tag.name }}'</h2>
-	<ul id="sub_results" style="margin:0">
+		<h2>Articles tagged '{{ tag.name }}'</h2>
+		<div class="alist">
 		{% for article in articles %}
-			<li><h3>{% include "articlelink.html" %}</h3>
-				{{ article.auto_snippet }}
-			</li>
+		{% include "articlelink.html" %}<br>
 		{% endfor %}
-		</ul>
+		</div>
 	{% endif %}
 	{% if tag.image_set.all %}
 		<h2>Images tagged '{{ tag.name }}'</h2>

@@ -18,16 +18,11 @@
 	{{ author.bio|markdown }}
 	{% endif %}
 	{% if articles %}
-		<ul id="sub_results" style="margin:0">
-			{% for article in articles %}
-				{% if not article.image_centric %}
-				<li>
-					<h3 class="{{ article.slug }}">{% include "articlelink.html" %}</h3>
-					{{ article.auto_snippet }}
-				</li>
-				{% endif %}
-			{% endfor %}
-		</ul>
+		<div class="alist">
+		{% for article in articles %}
+		{% include "articlelink.html" %}<br>
+		{% endfor %}
+		</div>
 	{% endif %}
 	{% if author.image_set.all %}
 		<br>

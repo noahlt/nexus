@@ -1,0 +1,23 @@
+{% extends "basic.html" %}
+
+{% block content %}
+{% include "infobox2.html" %}
+{% if author.image_set.all %}
+    <table width=100%>
+    {% for image in images %}
+        <tr style="margin-bottom: 5px">
+            <td width=100px style="text-align: center">{% include "imagelink.html" %}</td>
+            <td style="padding: 1em; font-size: 10pt">
+            {% for article in image.article_set.all %}
+            {% ifnotequal forloop.counter 1 %}<br>{% endifnotequal %}
+            <b>{% include "articlelink.html" %}</b>
+            {% endfor %}
+            <br>{{ image.caption }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% for image in images_nc %}
+        {% include "imagelink.html" %}
+    {% endfor %}
+{% endif %}
+{% endblock %}

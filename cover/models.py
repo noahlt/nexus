@@ -146,7 +146,7 @@ class Image(models.Model):
         return resize(self.image.path, ARTICLE_MAX_SIZE, self.lossless)
 
     class Meta:
-        ordering = ['-priority', 'id']
+        ordering = ['-date', '-priority', 'id']
 
     def __str__(self):
         return self.slug

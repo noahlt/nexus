@@ -36,7 +36,7 @@ try {
 
 function is_nonlocal(event) {
 	return event.ctrlKey || event.shiftKey
-	|| (!$.browser.msie && event.button == 1); // not IE; chrome fix
+	|| (!$.browser.msie && event.button !== 0); // don't need check for IE?
 }
 
 function setVisible(str) {

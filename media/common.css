@@ -25,9 +25,19 @@
   height: 47px;
 }
 
+#infoboxall {
+  margin-top: 5px;
+}
+
+#photobox {
+  font-size: 7pt;
+  background-color: #c6deef;
+  padding-left: 3pt;
+  padding-right: 2pt;
+}
+
 #infobox {
   background-color: #c6deef;
-  margin-top: 5px;
   padding: 5px;
   font-size: 10pt;
   text-align: center;
@@ -37,7 +47,7 @@
   -webkit-border-radius: 5px 0 0 5px;
 }
 
-#clearinfobox {
+.infoboxaction {
   background-color: #408cc0;
   color: white;
   font-weight: bold;
@@ -477,7 +487,7 @@ a.active {
   background-color: #f2f2f2;
 }
 
-#clearinfobox.active {
+.infoboxaction.active {
   background-color: #cde;
   cursor: wait;
 }
@@ -490,8 +500,9 @@ a.active {
   background-color: #ddd;
 }
 
-#infobox a.active {
+#infoboxall a.active {
   background-color: #cde;
+  color: #305cb6;
 }
 
 #gridtypes a {

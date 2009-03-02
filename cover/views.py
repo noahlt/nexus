@@ -197,13 +197,20 @@ def tagpage(request, slug):
     articles = visible(tag.article_set).filter(image_centric=False)
     return render_json(tag.name, 'tag.html', locals())
 
-def authorpage(request, slug):
+def authorimages(request, slug):
     FOOTER = InfoPage.objects.all();
     MEDIA_URL = settings.MEDIA_URL
     author = get_object_or_404(Author, slug=slug)
-    authors = [ x for x in author.grouping.all() ]
-    articles = visible(author.article_set).filter(image_centric=False)
-    return render_json(author.name, 'author.html', locals())
+    # XXX probably should do this with queryset instead
+    images_all = author.image_set.all()
+    images = []
+    images_nc = []
+    for image in images_all:
+        if image.caption or image.article_set.count():
+            images.append(image)
+        else:
+            images_nc.append(image)
+    return render_json("Images by %s" % author.name, 'authorimages.html', locals())
 
 def tag_data(articles, selected_tags, min_date, max_date, author):
     key = 'tag_data' + str((selected_tags, min_date, max_date, author))

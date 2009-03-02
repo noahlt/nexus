@@ -1,44 +1,9 @@
-{% extends "basic.html" %}
 {% load markup %}
 
-{% block subtitle %}
-{{ author }}
-<span class="subtitle">
-	{% if author.title %}
-		<br>
-		{% if author.retired %}
-			former
-		{% endif %}
-		{{ author.title }}
-	{% endif %}
-</span>
-{% endblock %}
-{% block content %}
-	{% if author.bio %}
-	{{ author.bio|markdown }}
-	{% endif %}
-	{% if articles %}
-		<div class="alist">
-		{% for article in articles %}
-		{% include "articlelink.html" %}<br>
-		{% endfor %}
-		</div>
-	{% endif %}
-	{% if author.image_set.all %}
-		<br>
-		<center>
-			{% for image in author.image_set.all %}
-				{% include "imagelink.html" %}
-			{% endfor %}
-		</center>
-	{% endif %}
-{% endblock %}
-
-{% block extra %}
-	<p>
-	{% if author.year %}
-		Class of {{ author.year }}{% endif %}{% if authors %}{% if author.year %}, {% endif %}
-		{% include "authorlinks.html" %}
-	{% endif %}
-	</p>
-{% endblock %}
+{% if author.bio %}
+{{ author.bio|markdown }}
+{% endif %}
+{% if author.year %}
+	Class of {{ author.year }}{% endif %}{% if authors %}{% if author.year %}, {% endif %}
+	{% include "authorlinks.html" %}
+{% endif %}

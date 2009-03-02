@@ -1,2 +1,21 @@
-<table width="100%"><tr><td id="infobox">Showing only articles by <a title="{{ author.title }}" class="embeddable" href="/author/{{ author.slug }}">{{ author }}{% if author.title %} ({{ author.title }}){% endif %}</a>.</td><td id="clearinfobox"><span>&times;</span></td></tr></table>
+<table id="infoboxall" width="100%">
+<tr>
+	<td id="infobox">
+	{% block text %}Showing only articles by {% endblock %}<a title="{{ author.title }}" class="author_more_info" href="#author={{ author.slug }}">{{ author }}{% if author.title %} ({{ author.title }}){% endif %}</a>
+	<div class="author_info" style="display:none">
+	{% with author.grouping.all as authors %}
+	{% include "author.html" %}
+	{% endwith %}
+	</div>
+	</td>
+	{% block end %}
+	{% if author.image_set.count %}
+	<td id="photobox">
+		<a class="embeddable" href="/images/{{ author.slug }}">{{ author.image_set.count }}&nbsp;image{% ifnotequal author.image_set.count 1 %}s{% endifnotequal %} attributed</a>
+	</td>
+	{% endif %}
+	<td class="infoboxaction clearinfobox"><span>&times;</span></td>
+	{% endblock %}
+</tr>
+</table>
 <div style="display:none" id="authorslug">{{ author.slug }}</div>

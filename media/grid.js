@@ -94,7 +94,17 @@ $(document).ready(function() {
 		State.scrollup();
 	});
 
-	$("#clearinfobox").live("click", function(event) {
+	$(".backinfobox").live("click", function(event) {
+		State.sync({'author': $(this).attr('data-slug')}, {'link': $(this), 'nofollow': true});
+		State.scrollup();
+	});
+
+	$(".author_more_info").live("click", function(event) {
+		event.preventDefault();
+		$(".author_info").toggle();
+	});
+
+	$(".clearinfobox").live("click", function(event) {
 		State.sync({'author': ''}, {'link': $(this), 'nofollow': true});
 	});
 

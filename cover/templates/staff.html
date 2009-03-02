@@ -7,7 +7,7 @@
         <h4>{{ title }}</h4>
         {% for author, groups in authors %}
         <ul style="padding-left: 1em">
-            <li style="border:0;padding:1px"><a data-slug="{{ author.slug }}" class="showall authorlink" href="/author/{{ author.slug }}">
+            <li style="border:0;padding:1px"><a data-slug="{{ author.slug }}" class="authorlink" href="#author={{ author.slug }}">
             {{ author }}</a>
 			{% for n in groups %}<sup>{{ n }}</sup>{% endfor %}
             </li>
@@ -20,7 +20,7 @@
 <ul>
     {% for group in groups %}
     <li style="border: 0" id="note{{ forloop.counter }}">
-    [{{ forloop.counter }}] <a data-slug="{{ group.slug }}" class="showall authorlink" href="/author/{{ group.slug }}">{{ group }}</a>
+    [{{ forloop.counter }}] <a data-slug="{{ group.slug }}" class="authorlink" href="#author={{ group.slug }}">{{ group }}</a>
     </li>
     {% endfor %}
 </ul>

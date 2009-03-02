@@ -19,10 +19,6 @@ def _preview_article(request, object_id):
     article = get_object_or_404(Article, id=object_id)
     return test(views._articlepage)(request, article)
 
-def _preview_author(request, object_id):
-    author = get_object_or_404(Author, id=object_id)
-    return test(views.authorpage)(request, author.slug)
-
 def _preview_tag(request, object_id):
     tag = get_object_or_404(Tag, id=object_id)
     return test(views.tagpage)(request, tag.slug)

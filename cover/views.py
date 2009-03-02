@@ -205,8 +205,8 @@ def authorpage(request, slug):
     articles = visible(author.article_set).filter(image_centric=False)
     return render_json(author.name, 'author.html', locals())
 
-def tag_data(articles, selected_tags, min_date, max_date):
-    key = 'tag_data' + str((selected_tags, min_date, max_date))
+def tag_data(articles, selected_tags, min_date, max_date, author):
+    key = 'tag_data' + str((selected_tags, min_date, max_date, author))
     cached = cache.get(key)
     if cached:
         return cached
@@ -294,7 +294,7 @@ def paginate(request):
         page_numbers2, jump_forward2, jump_back2 = pagesof(page, pages, 6)
     results = [(article.slug, snippet(article)) for article in object_list if article.slug not in have_articles]
     r = {'results': {'new': results, 'info': info, 'all': [ article.slug for article in object_list ]},
-         'tags': tag_data(articles, tags, min_date, max_date), 'dates': dates,
+         'tags': tag_data(articles, tags, min_date, max_date, authorslug if author else None), 'dates': dates,
          'pages': get_template('paginator.html').render(Context(locals())),
          'pages2': get_template('paginator2.html').render(Context(locals())),
          'title': 'The Nexus | %i' % page if page > 1 else 'The Nexus'}

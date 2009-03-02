@@ -12,10 +12,8 @@
 	{% if tag.image_set.all %}
 		<h2>Images tagged '{{ tag.name }}'</h2>
 		<br>
-		<center>
-			{% for image in tag.image_set.all %}
-				{% include "imagelink.html" %}
-			{% endfor %}
-		</center>
+		{% for image in tag.image_set.all %}
+			<div style="padding: 5px; float: left">{% include "imagelink.html" %}</div>
+		{% endfor %}
 	{% endif %}
 {% endblock %}

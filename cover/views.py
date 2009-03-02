@@ -222,8 +222,8 @@ def tag_data(articles, selected_tags, min_date, max_date, author):
     cache.set(key, ret, METADATA_CACHE_SECONDS)
     return ret
 
-def dates_of(articles, tags):
-    key = 'date_of' + str(tags)
+def dates_of(articles, tags, author):
+    key = 'date_of' + str((tags,author))
     cached = cache.get(key)
     if cached:
         return cached
@@ -273,7 +273,7 @@ def paginate(request):
         info = get_template('infobox.html').render(Context({'author': author}))
     for tag in tags:
         articles = articles.filter(tags=tag)
-    dates = dates_of(articles, tags) # BEFORE date filtering
+    dates = dates_of(articles, tags, authorslug if author else None) # BEFORE date filtering
     articles = articles.filter(date__range=[min_date, max_date])
     paginator = Paginator(articles, PAGE_SIZE)
     pages = paginator.num_pages

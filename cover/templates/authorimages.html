@@ -1,7 +1,8 @@
-{% extends "basic.html" %}
-
-{% block content %}
+<ul id="fake_results">
 {% include "infobox2.html" %}
+</ul>
+<div id="content">
+<div id="text_content">
 {% if author.image_set.all %}
     <table width=100%>
     {% for image in images %}
@@ -20,4 +21,5 @@
         {% include "imagelink.html" %}
     {% endfor %}
 {% endif %}
-{% endblock %}
+</div>
+</div>

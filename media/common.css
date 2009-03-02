@@ -58,7 +58,6 @@
   font-weight: bold;
   text-align: center;
   padding: 5px;
-  width: 5%;
   border-radius: 0 5px 5px 0;
   -moz-border-radius: 0 5px 5px 0;
   -webkit-border-radius: 0 5px 5px 0;
@@ -68,7 +67,7 @@
   padding-top: 5px !important;
 }
 
-#results {
+#results, #fake_results {
   padding-top: 20px !important;
 }
 
@@ -380,7 +379,7 @@ ul#dates, ul#gridtypes {
   overflow: hidden;
 }
 
-#results, #bottom_paginator, #content {
+#results, #bottom_paginator, #content, #fake_results {
   overflow: hidden;
   padding: 1.5em;
   padding-left: 1.7em;

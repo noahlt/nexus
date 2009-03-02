@@ -105,7 +105,7 @@ $(document).ready(function() {
 	});
 
 	$(".clearinfobox").live("click", function(event) {
-		State.sync({'author': ''}, {'link': $(this), 'nofollow': true});
+		State.sync({'author': '', 'page': 1}, {'link': $(this), 'nofollow': true});
 	});
 
 	$("a.pagelink").live("click", function(event) {

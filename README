@@ -1,12 +1,11 @@
 Dependencies:
 
   python-django >= 1.0
-  python-imaging (PIL)
-  python-simplejson
+  python-django-evolution
+  python-imaging
   python-markdown
-  evince OR imagemagick (evince faster)
-  pdftk OR python-pypdf (both sufficiently fast; pdftk faster)
+  python-psycopg2
+  python-simplejson
 
-  psycopg (if using postgresql)
-
-  django_evolution (optional)
+  evince OR imagemagick (evince preferred)
+  pdftk OR python-pypdf (pdftk preferred)

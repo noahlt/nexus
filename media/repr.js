@@ -5,6 +5,7 @@ var DEFAULT_URL = '';
 var FS = ',';
 var FS2 = '.';
 
+// parse no-hash fallbacks (new tab, new window, etc)
 if (location.pathname != "/") {
 	var page_match = location.pathname.match(/^\/[0-9]+$/);
 	if (page_match)
@@ -20,25 +21,27 @@ if (location.pathname != "/") {
 function Repr(dict) {
 	this.query = '';
 	this.url = '';
-	this.page = 0;
+	this.page = 0; // differentiate with page=1, which is set when filtering
 	this.author = '';
 	this.tags = [];
 	this.date_min = DATE_MIN;
 	this.date_max = DATE_MAX;
 
-	for (var i in dict)
+	var changed = false;
+	for (var i in dict) {
+		if (this[i] != undefined && this[i] != dict[i])
+			changed = true;
 		this[i] = dict[i];
+	}
 
-	// if no other parameters are defined the url defaults to [cover page]
-	if (!this.url && !this.author && this.tags.length === 0 && this.date_min == DATE_MIN && this.date_max == DATE_MAX && !this.page && !this.query)
-		this.url = DEFAULT_URL;
+	if (!changed)
+		this.url = DEFAULT_URL; // sync with real url root
 
 	if (!this.page) {
-		// if no other parameters are defined the page defaults to [cover page]
-		if (!this.author && this.tags.length === 0 && this.date_min == DATE_MIN && this.date_max == DATE_MAX && !this.query)
+		if (changed)
+			this.page = 1; // filtering - go with first page always
+		else
 			this.page = DEFAULT_PAGE;
-		else // we're filtering - start at page 1 always
-			this.page = 1;
 	}
 
 	this.toString = function() {
@@ -49,8 +52,7 @@ function Repr(dict) {
 		var output = [];
 		var have_embed = false;
 		if (!nav_attrs_only && this.url) {
-			if (this.url != DEFAULT_URL)
-				output[output.length] = this.url;
+			output[output.length] = this.url;
 			have_embed = true;
 		}
 		if (this.tags.length > 0)

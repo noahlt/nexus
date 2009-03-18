@@ -392,6 +392,10 @@ ul#dates, ul#gridtypes {
   padding-left: 1.7em;
 }
 
+#fake_results {
+  padding-bottom: 0;
+}
+
 #content {
   overflow: hidden;
   margin: 0;

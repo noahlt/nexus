@@ -147,7 +147,7 @@ def imageview(request, slug):
     MEDIA_URL = settings.MEDIA_URL
     FOOTER = InfoPage.objects.all();
     obj = get_object_or_404(Image, slug=slug)
-    return render_json('Image View', 'imageview.html', locals())
+    return render_json("Image: " + obj.slug, 'imageview.html', locals())
 
 def staff_auto_infopage(request):
     MEDIA_URL = settings.MEDIA_URL

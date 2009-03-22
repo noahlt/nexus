@@ -28,12 +28,14 @@ def issue_gallery(request, temp='gallery.html'):
 def issue_gallery_b(request):
     return issue_gallery(request, 'gallery-b.html')
 
-def page_gallery(request, issue):
+def page_gallery(request, issue, title=None):
     """Previews of each page in the selected issue."""
     MEDIA_URL = settings.MEDIA_URL
     issue = get_object_or_404(Issue, date=issue)
     FOOTER = InfoPage.objects.all();
-    return render_json(issue.date, 'issue.html', locals())
+    if not title:
+        title = issue.date
+    return render_json(title, 'issue.html', locals())
 
 def current_page_gallery(request):
     """Previews of each page in the selected issue."""
@@ -44,4 +46,4 @@ def current_page_gallery(request):
             break
     if not issue:
         raise Http404
-    return page_gallery(request, issue.date)
+    return page_gallery(request, issue.date, "Current Issue")

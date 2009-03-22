@@ -259,20 +259,20 @@ def snippet(article):
     return ret
 
 def paginate(request):
-    tags = Tag.objects.filter(slug__in=request.GET.getlist('tags'))
-    hash = request.GET.get('hash', '#')
+    tags = Tag.objects.filter(slug__in=request.POST.getlist('tags'))
+    hash = request.POST.get('hash', '#')
     if hash != '#':
         hash += ','
-    have_articles = request.GET.getlist('have_articles')
-    authorslug = request.GET.get('author')
+    have_articles = request.POST.getlist('have_articles')
+    authorslug = request.POST.get('author')
     author = None
     if authorslug:
         try:
             author = Author.objects.get(slug=authorslug)
         except Author.DoesNotExist:
             pass
-    min_date = parse_date(request.GET.get('date_min'))
-    max_date = month_end(parse_date(request.GET.get('date_max')))
+    min_date = parse_date(request.POST.get('date_min'))
+    max_date = month_end(parse_date(request.POST.get('date_max')))
     articles = visible(Article.objects)
     info = ''
     if author:
@@ -284,7 +284,7 @@ def paginate(request):
     articles = articles.filter(date__range=[min_date, max_date])
     paginator = Paginator(articles, PAGE_SIZE)
     pages = paginator.num_pages
-    page = int(request.GET.get('page',1))
+    page = int(request.POST.get('page',1))
     try:
         object_list = paginator.page(page).object_list
     except (EmptyPage, InvalidPage):

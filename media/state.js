@@ -50,6 +50,8 @@ function setVisible(str) {
 	}
 	if (google_ok && str != 'search')
 		searchControl.clearAllResults();
+	if (str != 'embed') // e.g. wipe out #authorslug
+		$("#embedded_content").html('You should not see this.');
 }
 
 function State(repr, config) {
@@ -147,7 +149,7 @@ function State(repr, config) {
 		});
 	};
 
-	// just_url_update means we don't want to hide the embedded content
+	// just_url_update is when nav data is loaded in parallel with a url
 	this.load_repr = function(just_url_update) {
 		var hashstring = repr.serialize(true);
 		var hit = State.cached[repr];
@@ -175,15 +177,18 @@ function State(repr, config) {
 			load(hit);
 		} else {
 			if (just_url_update)
-			State.request2 = $.getJSON("/ajax/paginator",
-				{"tags": repr.tags, "author": repr.author, "page": repr.page, "have_articles": State.have_articles,
-				 "date_min": repr.date_min, "date_max": repr.date_max, "hash": hashstring}, load);
+			State.request2 = $.ajax({
+				type: "POST",
+				dataType: "json",
+				url: "/ajax/paginator",
+				success: load,
+				data: {"tags": repr.tags, "author": repr.author,"page": repr.page, "have_articles": State.have_articles, "date_min": repr.date_min, "date_max": repr.date_max, "hash": hashstring}
+			});
 			else
 			State.request = $.ajax({
-				type: "GET",
+				type: "POST",
 				dataType: "json",
-				data: {"tags": repr.tags, "author": repr.author, "page": repr.page, "have_articles": State.have_articles,
-					   "date_min": repr.date_min, "date_max": repr.date_max, "hash": hashstring},
+				data: {"tags": repr.tags, "author": repr.author, "page": repr.page, "have_articles": State.have_articles, "date_min": repr.date_min, "date_max": repr.date_max, "hash": hashstring},
 				url: "/ajax/paginator",
 				success: load,
 				error: function(xhr) {
@@ -248,8 +253,10 @@ function State(repr, config) {
 		if (repr.url) {
 			this.load_url();
 			this.load_repr(true);
-		} else
+		} else {
 			this.load_repr(false);
+			// TODO attach throbber to #embedded_content here
+		}
 	}
 }
 
@@ -302,7 +309,7 @@ State.sync = function(overrides, config) {
 	var dict = {'tags': tags, 'date_min': min, 'date_max': max, 'author': author};
 	for (var i in overrides)
 		dict[i] = overrides[i];
-	return new State(new Repr(dict), config);
+	new State(new Repr(dict), config);
 };
 
 State.acquire_request = function() {

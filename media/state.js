@@ -201,31 +201,8 @@ function State(repr, config) {
 	};
 
 	State.acquire_request();
-	if (config['link']) {
+	if (config['link'])
 		State.activelink = config['link'].addClass("active");
-		if (!config['nofollow']) {
-			function make_relative(url) {
-				if (url.match("http://")) {
-					url = url.substring(7);
-					url = url.substring(url.indexOf("/"));
-				}
-				return url.length < 2 ? null : url;
-			}
-			repr.url = make_relative(config['link'].attr("href"));
-
-			if (repr.url) {
-				if (repr.url.match(/#/)) // 'embeddable' or search result link
-					repr.url = undefined;
-				else {
-					var page_match = repr.url.match(/^\/[0-9]+$/);
-					if (page_match) { // paginated root
-						repr.page = page_match.toString().substring(1);
-						repr.url = undefined;
-					}
-				}
-			}
-		}
-	}
 
 	if (History.useIframe || !config['keep_hash']) {
 		History.queue(repr.serialize());
@@ -255,7 +232,6 @@ function State(repr, config) {
 			this.load_repr(true);
 		} else {
 			this.load_repr(false);
-			// TODO attach throbber to #embedded_content here
 		}
 	}
 }

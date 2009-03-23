@@ -28,10 +28,12 @@ function Repr(dict) {
 	this.date_max = DATE_MAX;
 
 	var changed = false;
-	for (var i in dict) {
-		if (this[i] != undefined && this[i] != dict[i])
-			changed = true;
-		this[i] = dict[i];
+	if (dict) {
+		for (var i in dict) {
+			if (this[i] != undefined && this[i] != dict[i])
+				changed = true;
+			this[i] = dict[i];
+		}
 	}
 
 	if (!changed)

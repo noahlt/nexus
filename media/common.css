@@ -647,3 +647,7 @@ div.bar {
   height: 5px;
   background-color: #07d;
 }
+
+li.active {
+  cursor: wait !important;
+}

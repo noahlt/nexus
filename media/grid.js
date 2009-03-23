@@ -9,6 +9,27 @@ $(document).ready(function() {
 		return url.substring(url.indexOf("#"));
 	}
 
+	function syncForLink(link) {
+		function make_relative(url) {
+			if (url.match("http://")) {
+				url = url.substring(7);
+				url = url.substring(url.indexOf("/"));
+			}
+			return url.length < 2 ? '' : url;
+		}
+		var url = make_relative(link.attr("href"));
+		var page_match = url.match(/^\/[0-9]+$/);
+		if (page_match) { // paginated root
+			var page = page_match.toString().substring(1);
+			State.sync({'page': page}, {'link': link});
+		} else if (url) {
+			State.sync({'url': url}, {'link': link});
+		} else { // front page
+			new State(null, {'link': link});
+		}
+	}
+
+
 	$("a.list-hider").live("click", function(event) {
 		event.preventDefault();
 		$(".alist").show("slow");
@@ -62,7 +83,7 @@ $(document).ready(function() {
 		var author = $(this).attr("data-slug");
 		event.preventDefault();
 		if ($(this).hasClass("showall")) {
-			State.sync({'tags': [], 'date_min': DATE_MIN, 'date_max': DATE_MAX, 'author': $(this).attr('data-slug')}, {'link': $(this), 'nofollow': true});
+			State.sync({'tags': [], 'date_min': DATE_MIN, 'date_max': DATE_MAX, 'author': $(this).attr('data-slug')}, {'link': $(this)});
 			State.scrollup();
 			return;
 		} else if (page_author == author && $(".results").is(":visible")) {
@@ -81,7 +102,7 @@ $(document).ready(function() {
 			setTimeout(b, 8*i);
 			return;
 		} else {
-			State.sync({'author': $(this).attr('data-slug')}, {'link': $(this), 'nofollow': true});
+			State.sync({'author': $(this).attr('data-slug')}, {'link': $(this)});
 			State.scrollup();
 		}
 	});
@@ -90,12 +111,12 @@ $(document).ready(function() {
 		if (is_nonlocal(event))
 			return;
 		event.preventDefault();
-		State.sync({}, {'link': $(this)});
+		syncForLink($(this));
 		State.scrollup();
 	});
 
 	$(".backinfobox").live("click", function(event) {
-		State.sync({'author': $(this).attr('data-slug')}, {'link': $(this), 'nofollow': true});
+		State.sync({'author': $(this).attr('data-slug')}, {'link': $(this)});
 		State.scrollup();
 	});
 
@@ -105,7 +126,7 @@ $(document).ready(function() {
 	});
 
 	$(".clearinfobox").live("click", function(event) {
-		State.sync({'author': '', 'page': 1}, {'link': $(this), 'nofollow': true});
+		State.sync({'author': '', 'page': 1}, {'link': $(this)});
 	});
 
 	$("a.pagelink").live("click", function(event) {
@@ -124,7 +145,7 @@ $(document).ready(function() {
 			return; // it's probably non-html
 		}
 		event.preventDefault();
-		State.sync({}, {'link': $(this)});
+		syncForLink($(this));
 		State.scrollup();
 	});
 
@@ -158,7 +179,7 @@ $(document).ready(function() {
 		if (!$(".results").is(":visible"))
 			$(this).removeClass("activetag");
 		$(this).removeClass("useless").toggleClass("activetag");
-		State.sync();
+		State.sync(null, {'link': $(this)});
 		State.scrollup();
 	});
 
@@ -168,7 +189,7 @@ $(document).ready(function() {
 		selecting_dates = false;
 		$("#tags li").removeClass("useless");
 		$("#tags .activetag").removeClass("activetag");
-		new State(new Repr({'page': 1}));
+		new State(new Repr({'page': 1}), {'link': $(this)});
 		State.scrollup();
 	});
 
@@ -185,7 +206,7 @@ $(document).ready(function() {
 		var some_newly_selected = false;
 		if (!State.select_dates(min, max)[0])
 			$("#dates li").removeClass("activedate");
-		State.sync();
+		State.sync(null, {'link': $("#dates li").filter(".activedate")});
 	});
 
 	$("#dates li li").mousedown(function() {
@@ -213,14 +234,14 @@ $(document).ready(function() {
 		}
 		if (selecting_dates) {
 			selecting_dates = false;
-			State.sync();
+			State.sync(null, {'link': $("#dates li").filter(".activedate")});
 		}
 	});
 
 	$(document).mouseup(function(event) {
 		if (selecting_dates) {
 			selecting_dates = false;
-			State.sync();
+			State.sync(null, {'link': $("#dates li").filter(".activedate")});
 		}
 	});
 

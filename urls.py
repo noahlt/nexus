@@ -19,7 +19,6 @@ urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root),
 
     (r'^$', some_frontpage),
-    (r'^null/', lambda x: HttpResponse('')),
     (r'^ajax/embed/cover/$', frontpage_static_contents),
     (r'^ajax/embed/(\d{4})/(\d{2})/([-_a-zA-Z0-9]+)/$', articlepage),
     (r'^ajax/embed/images/([-_a-zA-Z0-9]+)$', authorimages),

@@ -266,7 +266,7 @@ class ArticleAdminForm(forms.ModelForm):
         if printed:
             self.cleaned_data['date'] = printed.date
         elif not date:
-            self._errors['date'] = ErrorList(["If this is a purely online article, enter a date manually."])
+            self._errors['printed'] = ErrorList(["Select an issue. If this article is not part of an issue, manually enter a date under \"Advanced Options\""])
 
         # auto-order articles if it's undefined
         order = self.cleaned_data.get('order')

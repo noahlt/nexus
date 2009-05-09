@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block extra %}
-	<div class="embed" style="display:none; float: right;"><a href="javascript: window.scroll(0,0);">Top of Page</a></div>
+	<div class="embed" style="float: right;"><a href="javascript: window.scroll(0,0);">Top of Page</a></div>
 	<p>
 	Tags: {% with article.tags.all as tags %}{% include "taglinks.html" %}{% endwith %}
 	</p>

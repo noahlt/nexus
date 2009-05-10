@@ -204,11 +204,8 @@ function State(repr, config) {
 	if (config['link'])
 		State.activelink = config['link'].addClass("active");
 
-	if (History.useIframe || !config['keep_hash']) {
+	if (History.useIframe || !config['keep_hash'])
 		History.queue(repr.serialize());
-		if (config['atomic'])
-			History.commit();
-	}
 
 	this.select_tags();
 	State.select_dates(repr.date_min, repr.date_max);

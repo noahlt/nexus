@@ -205,7 +205,7 @@ function State(repr, config) {
 		State.activelink = config['link'].addClass("active");
 
 	if (History.useIframe || !config['keep_hash'])
-		History.queue(repr.serialize());
+		History.put(repr.serialize());
 
 	this.select_tags();
 	State.select_dates(repr.date_min, repr.date_max);
@@ -307,7 +307,6 @@ State.acquire_request = function() {
 // call at end of dom update
 State.release_request = function() {
 	window.status = "Done";
-	History.commit();
 	document.title = State.title;
 	State.request = null;
 	State.request2 = null;

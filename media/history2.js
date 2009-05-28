@@ -5,15 +5,13 @@
  * Adapted by Eric Liang to work with existing code.
  *
  * History.init(callback('#serialized-history-state'))
- * History.queue('#serialized-history-state')
- * History.commit()
+ * History.put('#serialized-history-state')
  */
 
 function History() {}
 
 History.historyCurrentHash = undefined;
 History.historyCallback = undefined;
-History.historyQueue = undefined;
 History.useIframe = undefined;
 History.poller = undefined;
 
@@ -93,23 +91,14 @@ History.historyCheck = function() {
 	}
 };
 
-History.queue = function(hash) {
-	History.historyQueue = function() {
-		location.hash = hash;
-		History.historyCurrentHash = hash;
-		if (History.useIframe) {
-			var ihistory = $("#jQuery_history")[0];
-			var iframe = ihistory.contentWindow.document;
-			iframe.open();
-			iframe.close();
-			iframe.location.hash = hash;
-		}
-	};
-};
-
-History.commit = function() {
-	if (History.historyQueue) {
-		History.historyQueue();
-		History.historyQueue = undefined;
+History.put = function(hash) {
+	location.hash = hash;
+	History.historyCurrentHash = hash;
+	if (History.useIframe) {
+		var ihistory = $("#jQuery_history")[0];
+		var iframe = ihistory.contentWindow.document;
+		iframe.open();
+		iframe.close();
+		iframe.location.hash = hash;
 	}
 };

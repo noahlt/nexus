@@ -91,6 +91,5 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'nexus.cover',
     'nexus.archive',
-    'nexus.bugs_and_ideas',
     'django_evolution',
 )

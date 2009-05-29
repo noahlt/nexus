@@ -20,9 +20,6 @@ try {
 		searchControl.draw(document.getElementById("searchcontrol"));
 		searchControl.setSearchStartingCallback(null, function(searchControl, searcher) {
 			setVisible("search"); // called early because the search bar is drawn early
-		});
-		searchControl.setSearchCompleteCallback(null, function(searchControl, searcher) {
-			// otherwise we'll loop
 			if (State.query != searchControl.input.value) {
 				State.query = searchControl.input.value;
 				State.sync({'query': searchControl.input.value});

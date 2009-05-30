@@ -1,9 +1,13 @@
+/**
+ * Initializes web page; binds functions to links.
+ * - initializes state.js and uses it for navigation
+ */
 $(document).ready(function() {
 
-	var TAG_NORMAL = $("#alltags").width();
-	var TAG_EXPANDED = TAG_NORMAL + 13;
-	var STATIC_FRONTPAGE = $("#config_static").size() > 0; // XXX
-	State.init(TAG_NORMAL, TAG_EXPANDED, STATIC_FRONTPAGE);
+	var tag_normal = $("#alltags").width();
+	var tag_expanded = tag_normal + 13;
+	var static_cover = $("#config_static").size() > 0; // XXX
+	State.init(tag_normal, tag_expanded, static_cover);
 
 	function hash_of(url) { // IE6 YET AGAIN
 		return url.substring(url.indexOf("#"));
@@ -28,7 +32,6 @@ $(document).ready(function() {
 			new State(null, {'link': link});
 		}
 	}
-
 
 	$("a.list-hider").live("click", function(event) {
 		event.preventDefault();
@@ -157,7 +160,7 @@ $(document).ready(function() {
 
 	var selecting_dates = false;
 	var down = false;
-	$("#tags #alltags").width(TAG_EXPANDED);
+	$("#tags #alltags").width(tag_expanded);
 	$("#tags").disableTextSelect();
 	$("#dates").disableTextSelect();
 

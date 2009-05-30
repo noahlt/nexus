@@ -1,22 +1,18 @@
+/**
+ * A representation of navigational state.
+ *
+ * Repr.init(static_cover)
+ * Repr.deserialize('#serialized_history_state')
+ * new Repr(dict)
+ * new Repr(dict).serialize()
+ */
+
 var DATE_MIN = 100001;
 var DATE_MAX = 300001;
 var DEFAULT_PAGE = 1;
 var DEFAULT_URL = '';
 var FS = ',';
 var FS2 = '.';
-
-// parse no-hash fallbacks (new tab, new window, etc)
-if (location.pathname != "/") {
-	var page_match = location.pathname.match(/^\/[0-9]+$/);
-	if (page_match)
-		DEFAULT_PAGE = page_match.toString().substring(1);
-	else {
-		DEFAULT_URL = location.pathname;
-		if (DEFAULT_URL.charAt(DEFAULT_URL.length-1) == '/')
-			DEFAULT_URL = DEFAULT_URL.substring(0, DEFAULT_URL.length-1);
-	}
-} else if (STATIC_FRONTPAGE)
-	DEFAULT_URL = '/cover';
 
 function Repr(dict) {
 	this.query = '';
@@ -77,6 +73,21 @@ function Repr(dict) {
 		}
 		return '#' + output.join(FS);
 	};
+}
+
+Repr.init = function(static_cover) {
+	// parse no-hash fallbacks (new tab, new window, etc)
+	if (location.pathname != "/") {
+		var page_match = location.pathname.match(/^\/[0-9]+$/);
+		if (page_match)
+			DEFAULT_PAGE = page_match.toString().substring(1);
+		else {
+			DEFAULT_URL = location.pathname;
+			if (DEFAULT_URL.charAt(DEFAULT_URL.length-1) == '/')
+				DEFAULT_URL = DEFAULT_URL.substring(0, DEFAULT_URL.length-1);
+		}
+	} else if (static_cover)
+		DEFAULT_URL = '/cover';
 }
 
 Repr.deserialize = function(hash) {

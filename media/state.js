@@ -1,7 +1,17 @@
+/**
+ * Methods for navigation within the site.
+ * - uses history2.js for history tracking
+ *
+ * State.init(tag_normal, tag_expanded, static_cover)
+ * State.init_history_monitor()
+ * new State(repr, options)
+ * State.sync(repr, options)
+ * State.scrollup()
+ */
 var NONE_VISIBLE="<li id=\"none-visible\"><h3>No matching articles.</h3>Select fewer tags to the left, or specify a wider range of dates.</li>";
 
 // set by State.init(a,b,c,d)
-var TAG_NORMAL, TAG_EXPANDED, STATIC_FRONTPAGE;
+var TAG_NORMAL, TAG_EXPANDED;
 
 var google_ok = false;
 try {
@@ -230,10 +240,10 @@ function State(repr, config) {
 	}
 }
 
-State.init = function(tag_norm, tag_exp, cover) {
+State.init = function(tag_norm, tag_exp, static_cover) {
 	TAG_NORMAL = tag_norm;
 	TAG_EXPANDED = tag_exp;
-	STATIC_FRONTPAGE = cover;
+	Repr.init(static_cover);
 	$.ajax({
 		type: "GET",
 		dataType: "html",

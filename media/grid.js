@@ -1,13 +1,20 @@
 /**
  * Initializes web page; binds functions to links.
- * - initializes state.js and uses it for navigation
  */
+
 $(document).ready(function() {
 
-	var tag_normal = $("#alltags").width();
-	var tag_expanded = tag_normal + 13;
-	var static_cover = $("#config_static").size() > 0; // XXX
-	State.init(tag_normal, tag_expanded, static_cover);
+	window.TAG_NORMAL = $("#alltags").width();
+	window.TAG_EXPANDED = window.TAG_NORMAL + 13;
+
+	$.ajax({
+		type: "GET",
+		dataType: "html",
+		url: "/ajax/poll/current",
+		success: function(r) {
+			$("div #poll").html(r);
+		}
+	});
 
 	function hash_of(url) { // IE6 YET AGAIN
 		return url.substring(url.indexOf("#"));
@@ -160,7 +167,7 @@ $(document).ready(function() {
 
 	var selecting_dates = false;
 	var down = false;
-	$("#tags #alltags").width(tag_expanded);
+	$("#tags #alltags").width(window.TAG_EXPANDED);
 	$("#tags").disableTextSelect();
 	$("#dates").disableTextSelect();
 

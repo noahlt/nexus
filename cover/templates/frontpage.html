@@ -3,6 +3,11 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html> <head>
 <meta name="verify-v1" content="B+N8Rx6Syvo885d6FR89Akx/IFN15mlbW/lQldIWW54="/>
+{% if static %}
+<script type="text/javascript">
+window.STATIC_COVER = true;
+</script>
+{% endif %}
 <title>{{ title }}</title>
 <link rel="stylesheet" href="{{ MEDIA_URL }}common.css" type="text/css">
 <link rel="stylesheet" href="{{ MEDIA_URL }}images.css" type="text/css">
@@ -40,9 +45,6 @@
 </head>
 
 <body>
-{% if static %}
-<span id="config_static"></span>
-{% endif %}
 <h1>
 <a href="/">The Nexus<span class="beta">beta</span></a>
 </h1>
